@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RHEA Kernel — official website, project information, public documentation and updates.">
+  <meta name="theme-color" content="#080b12">
+  <link rel="canonical" href="https://rheakernel.com/">
+
+  <meta property="og:title" content="RHEA Kernel">
+  <meta property="og:description" content="Official website for RHEA Kernel. Project information, public documentation and updates.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rheakernel.com/">
+
+  <title>RHEA Kernel</title>
+
+  <style>
+    :root {
+      --bg: #080b12;
+      --panel: rgba(255,255,255,.045);
+      --panel-border: rgba(255,255,255,.09);
+      --text: #f6f7fb;
+      --muted: #a5adbd;
+      --accent-2: #b7c7ff;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% -10%, rgba(86,117,255,.16), transparent 34rem),
+        radial-gradient(circle at 90% 8%, rgba(117,73,255,.10), transparent 30rem),
+        var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(8,11,18,.72);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+
+    .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(153,177,255,.65));
+      box-shadow: 0 0 36px rgba(111,143,255,.28);
+      position: relative;
+    }
+
+    .mark::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 2px solid rgba(8,11,18,.8);
+      border-radius: 4px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      padding: 0;
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    nav a:hover,
+    nav a:focus-visible { color: var(--text); }
+
+    .hero {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      place-items: center;
+      padding: 90px 0 76px;
+    }
+
+    .hero-inner {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--accent-2);
+      border: 1px solid rgba(138,168,255,.22);
+      background: rgba(138,168,255,.065);
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: .84rem;
+      font-weight: 650;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #91aeff;
+      box-shadow: 0 0 14px rgba(145,174,255,.75);
+    }
+
+    h1 {
+      font-size: clamp(4rem, 10vw, 8.5rem);
+      line-height: .92;
+      letter-spacing: -.07em;
+      margin: 30px 0 26px;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(1.08rem, 2vw, 1.32rem);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 19px;
+      border-radius: 11px;
+      border: 1px solid var(--panel-border);
+      font-weight: 700;
+      font-size: .95rem;
+      transition: transform .18s ease, border-color .18s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button.primary {
+      color: #0b0e15;
+      background: #f4f6ff;
+      border-color: #f4f6ff;
+    }
+    .button.secondary { background: rgba(255,255,255,.035); }
+    .button.secondary:hover { border-color: rgba(255,255,255,.2); }
+
+    section { padding: 92px 0; }
+
+    .section-heading {
+      max-width: 720px;
+      margin-bottom: 36px;
+    }
+
+    .section-heading span {
+      color: var(--accent-2);
+      text-transform: uppercase;
+      font-size: .77rem;
+      font-weight: 800;
+      letter-spacing: .15em;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.05;
+      letter-spacing: -.045em;
+      margin: 10px 0 14px;
+    }
+
+    .section-heading p { color: var(--muted); margin: 0; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      min-height: 220px;
+      padding: 26px;
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.048), rgba(255,255,255,.025));
+    }
+
+    .card .number {
+      color: #7f8ba3;
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin: 34px 0 9px;
+      letter-spacing: -.02em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 16px;
+    }
+
+    .status-main,
+    .status-side {
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 28px;
+      background: var(--panel);
+    }
+
+    .status-main h3 { margin: 0 0 8px; font-size: 1.45rem; }
+    .status-main p, .status-side p { margin: 0; color: var(--muted); }
+    .status-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .status-label {
+      color: var(--accent-2);
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      font-weight: 800;
+    }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,.07);
+      padding: 34px 0 42px;
+      color: #7e8799;
+      font-size: .9rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 800px) {
+      nav ul { display: none; }
+      .hero { min-height: auto; padding: 110px 0 100px; }
+      .grid, .status { grid-template-columns: 1fr; }
+      section { padding: 70px 0; }
+      h1 { font-size: clamp(3.8rem, 19vw, 6rem); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .button { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="RHEA Kernel home">
+        <span class="mark" aria-hidden="true"></span>
+        <span>RHEA Kernel</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <ul>
+          <li><a href="#project">Project</a></li>
+          <li><a href="#updates">Updates</a></li>
+          <li><a href="#documentation">Documentation</a></li>
+          <li><a href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="eyebrow"><span class="dot"></span> Official RHEA Kernel website</div>
+        <h1>RHEA<br>Kernel</h1>
+        <p>An efficiency-focused kernel for reducing redundant work in LLM systems. This site is the official home for public project information, documentation and updates.</p>
+        <div class="actions">
+          <a class="button primary" href="#project">Explore the project</a>
+          <a class="button secondary" href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="project">
+      <div class="container">
+        <div class="section-heading">
+          <span>Project</span>
+          <h2>Built around efficiency.</h2>
+          <p>RHEA Kernel is being developed and validated as infrastructure for reducing unnecessary repeated work in language-model workloads while preserving useful behavior.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="number">01</div>
+            <h3>Efficiency</h3>
+            <p>Designed to reduce redundant model work and the resources associated with repeated computation.</p>
+          </article>
+          <article class="card">
+            <div class="number">02</div>
+            <h3>Validation</h3>
+            <p>Public results and validation material will be published here as they are approved for release.</p>
+          </article>
+          <article class="card">
+            <div class="number">03</div>
+            <h3>Development</h3>
+            <p>The website will track public project updates, documentation and milestones over time.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="updates">
+      <div class="container">
+        <div class="section-heading">
+          <span>Updates</span>
+          <h2>Project status.</h2>
+          <p>This section is reserved for verified public releases and project announcements.</p>
+        </div>
+        <div class="status">
+          <div class="status-main">
+            <div class="status-label">Current website status</div>
+            <h3>RHEA Kernel web presence is now online.</h3>
+            <p>The official website infrastructure is being established. Public project updates will appear here as they are released.</p>
+          </div>
+          <div class="status-side">
+            <div>
+              <div class="status-label">Domain</div>
+              <p>rheakernel.com</p>
+            </div>
+            <div>
+              <div class="status-label">Repository</div>
+              <p>Public GitHub project</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="documentation">
+      <div class="container">
+        <div class="section-heading">
+          <span>Documentation</span>
+          <h2>Public documentation is coming.</h2>
+          <p>Technical documentation, verified results and release material will be added here when ready for public publication.</p>
+        </div>
+        <a class="button secondary" href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">Open GitHub repository ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>© 2026 RHEA Kernel</span>
+      <span>Official project website · rheakernel.com</span>
+    </div>
+  </footer>
+</body>
+</html>
