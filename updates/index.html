@@ -7,50 +7,63 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/assets/css/site.css">
-<title>Updates — RHEA Kernel</title><meta name="description" content="Official public releases, milestones and announcements from RHEA Kernel will be published here.">
+<title>Updates — RHEA Kernel</title>
+<meta name="description" content="Official public RHEA Kernel milestones, validation records and website publication updates.">
 <link rel="canonical" href="https://rheakernel.com/updates/">
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@graph": [
+  "@context":"https://schema.org",
+  "@graph":[
     {
-      "@type": "WebPage",
-      "@id": "https://rheakernel.com/updates/#webpage",
-      "url": "https://rheakernel.com/updates/",
-      "name": "Updates — RHEA Kernel",
-      "description": "Official public releases, milestones and announcements from RHEA Kernel will be published here.",
-      "isPartOf": {
-        "@id": "https://rheakernel.com/#website"
-      },
-      "about": {
-        "@id": "https://rheakernel.com/#software"
-      },
-      "inLanguage": "en",
-      "breadcrumb": {
-        "@id": "https://rheakernel.com/updates/#breadcrumb"
-      }
+      "@type":"CollectionPage",
+      "@id":"https://rheakernel.com/updates/#webpage",
+      "url":"https://rheakernel.com/updates/",
+      "name":"Updates — RHEA Kernel",
+      "description":"Official public RHEA Kernel milestones, validation records and website publication updates.",
+      "isPartOf":{"@id":"https://rheakernel.com/#website"},
+      "about":{"@id":"https://rheakernel.com/#software"},
+      "inLanguage":"en",
+      "breadcrumb":{"@id":"https://rheakernel.com/updates/#breadcrumb"}
     },
     {
-      "@type": "BreadcrumbList",
-      "@id": "https://rheakernel.com/updates/#breadcrumb",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "RHEA Kernel",
-          "item": "https://rheakernel.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Updates",
-          "item": "https://rheakernel.com/updates/"
-        }
+      "@type":"BreadcrumbList",
+      "@id":"https://rheakernel.com/updates/#breadcrumb",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"RHEA Kernel","item":"https://rheakernel.com/"},
+        {"@type":"ListItem","position":2,"name":"Updates","item":"https://rheakernel.com/updates/"}
       ]
     }
   ]
 }
 </script>
+<style>
+.updates-lead{padding:8px 0 58px}
+.updates-note{max-width:900px;border:1px solid rgba(183,199,255,.16);background:rgba(183,199,255,.045);border-radius:16px;padding:20px 22px;color:#a5adbd}
+.updates-note strong{color:#f6f7fb}
+.timeline{position:relative;max-width:950px;padding:10px 0 90px;margin:0 auto}
+.timeline::before{content:"";position:absolute;left:143px;top:10px;bottom:90px;width:1px;background:rgba(255,255,255,.10)}
+.update{display:grid;grid-template-columns:120px 1fr;gap:46px;position:relative;padding:0 0 48px}
+.update:last-child{padding-bottom:0}
+.update-date{color:#7f899d;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding-top:5px;text-align:right}
+.update-body{position:relative;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.047),rgba(255,255,255,.022));padding:25px}
+.update-body::before{content:"";position:absolute;left:-31px;top:29px;width:9px;height:9px;border-radius:50%;background:#8faaff;box-shadow:0 0 14px rgba(145,174,255,.65)}
+.update-type{color:#b7c7ff;text-transform:uppercase;font-size:.69rem;font-weight:800;letter-spacing:.13em}
+.update-body h2{font-size:1.5rem;line-height:1.2;letter-spacing:-.02em;margin:10px 0 9px}
+.update-body p{color:#a5adbd;margin:0 0 12px}
+.update-body p:last-child{margin-bottom:0}
+.update-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.update-link{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.10);border-radius:10px;background:rgba(255,255,255,.025);font-weight:700;font-size:.84rem}
+.update-link:hover{border-color:rgba(255,255,255,.20)}
+.update-policy{padding:70px 0;border-top:1px solid rgba(255,255,255,.07)}
+.update-policy-inner{max-width:900px}
+.update-policy-inner h2{font-size:clamp(2rem,4vw,3.2rem)}
+.update-policy-inner p{color:#a5adbd;margin:0 0 18px}
+.update-policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+.policy-card{border:1px solid rgba(255,255,255,.085);border-radius:16px;padding:23px;background:rgba(255,255,255,.025)}
+.policy-card strong{display:block;margin-bottom:7px}
+.policy-card span{color:#a5adbd;font-size:.91rem}
+@media(max-width:720px){.timeline{margin:0}.timeline::before{left:6px}.update{grid-template-columns:1fr;gap:10px;padding-left:30px}.update-date{text-align:left;padding-top:0}.update-body::before{left:-29px;top:27px}.update-policy-grid{grid-template-columns:1fr}}
+</style>
 </head><body><header><div class="container nav">
 <a class="brand" href="/" aria-label="RHEA Kernel home">
 <img class="brand-mark" src="/assets/brand/rhea-mark-light.png" alt="" width="31" height="31">
@@ -63,12 +76,77 @@
 <li><a href="/about/">About</a></li>
 <li><a href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">GitHub</a></li>
 </ul></nav></div></header>
-<main><section class="page-hero"><div class="container page-hero-inner">
-<span class="section-kicker">Updates</span><h1 class="page-title">Project updates.</h1><p class="page-intro">Official public releases, milestones and announcements from RHEA Kernel will be published here.</p>
-</div></section><section class="page-main"><div class="container"><div class="placeholder">
-<div class="eyebrow"><span class="dot"></span>Official RHEA Kernel website</div>
-<h2>Updates are being prepared.</h2><p>This page is ready for verified project updates. New entries can be added without changing the site structure.</p>
-<div class="page-links"><a class="button primary" href="/">Return home</a><a class="button secondary" href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
-</div></div></section></main><footer><div class="container footer-inner">
+
+<main>
+<section class="page-hero"><div class="container page-hero-inner">
+<span class="section-kicker">Updates</span>
+<h1 class="page-title">Public milestones.</h1>
+<p class="page-intro">A concise record of RHEA Kernel milestones and public releases that have already been approved for disclosure.</p>
+</div></section>
+
+<section class="updates-lead"><div class="container">
+<div class="updates-note"><strong>Publication policy.</strong> Updates on this page are intentionally selective. Private development activity, unpublished experiments and proprietary implementation details are not included.</div>
+</div></section>
+
+<section><div class="container">
+<div class="timeline">
+
+<article class="update">
+<time class="update-date" datetime="2026-09-01">1 Sep 2026</time>
+<div class="update-body">
+<div class="update-type">Website</div>
+<h2>Public Results and Documentation sections published.</h2>
+<p>The official RHEA Kernel website now includes dedicated public Results and Documentation sections. These pages organize already-approved public material into a more accessible web format without expanding the technical disclosure boundary.</p>
+<div class="update-links"><a class="update-link" href="/results/">Results →</a><a class="update-link" href="/documentation/">Documentation →</a></div>
+</div>
+</article>
+
+<article class="update">
+<time class="update-date" datetime="2026-08-29">29 Aug 2026</time>
+<div class="update-body">
+<div class="update-type">Validation record</div>
+<h2>Dated public validation record established.</h2>
+<p>A dated RHEA Kernel public validation record documents selected experimental outcomes and integrity references while explicitly withholding proprietary implementation details.</p>
+<div class="update-links"><a class="update-link" href="https://github.com/YJNWI/RHEA-Kernel/blob/main/VALIDATION_RECORD_2026-08-29.md" target="_blank" rel="noopener noreferrer">Validation record ↗</a></div>
+</div>
+</article>
+
+<article class="update">
+<time class="update-date" datetime="2026-08-25">25 Aug 2026</time>
+<div class="update-body">
+<div class="update-type">Functional validation</div>
+<h2>v0.6.0-beta.3.6 received Functional Freeze.</h2>
+<p>The exact frozen beta.3.6 runtime received a formal Functional Freeze decision for the recorded validation scope. The public record separately states that Energy Freeze was not granted for beta.3.6 and that earlier energy results are not transferred to it.</p>
+<div class="update-links"><a class="update-link" href="/results/">View public summary →</a></div>
+</div>
+</article>
+
+<article class="update">
+<time class="update-date" datetime="2026-08-24">24 Aug 2026</time>
+<div class="update-body">
+<div class="update-type">Public record</div>
+<h2>Initial RHEA Kernel public record published.</h2>
+<p>The public repository established a high-level project record with selected experimental results, artifact fingerprints and rights notices. The underlying private artifacts and technical implementation were not published.</p>
+<div class="update-links"><a class="update-link" href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">Official repository ↗</a></div>
+</div>
+</article>
+
+</div>
+</div></section>
+
+<section class="update-policy"><div class="container">
+<div class="update-policy-inner">
+<span class="section-kicker">Update policy</span>
+<h2>What belongs here.</h2>
+<p>This page is a public milestone record, not a development log. Future entries should be added only after the underlying information is approved for public disclosure.</p>
+<div class="update-policy-grid">
+<div class="policy-card"><strong>Appropriate for Updates</strong><span>Public releases, dated validation records, approved milestones, website publications and other already-cleared announcements.</span></div>
+<div class="policy-card"><strong>Kept private</strong><span>Unpublished experiments, internal failures, implementation changes, private evidence, technical mechanisms and other non-public development detail.</span></div>
+</div>
+</div>
+</div></section>
+</main>
+
+<footer><div class="container footer-inner">
 <span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span>
 <span>Official project website · rheakernel.com</span></div></footer></body></html>
