@@ -7,7 +7,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/assets/css/site.css">
-<title>Results — RHEA Kernel</title><meta name="description" content="Verified public results and validation material for RHEA Kernel will be published here.">
+<title>Results — RHEA Kernel</title>
+<meta name="description" content="Selected public RHEA Kernel validation results across LLM calls, token use, elapsed time, energy measurements and functional validation.">
 <link rel="canonical" href="https://rheakernel.com/results/">
 <script type="application/ld+json">
 {
@@ -18,34 +19,18 @@
       "@id": "https://rheakernel.com/results/#webpage",
       "url": "https://rheakernel.com/results/",
       "name": "Results — RHEA Kernel",
-      "description": "Verified public results and validation material for RHEA Kernel will be published here.",
-      "isPartOf": {
-        "@id": "https://rheakernel.com/#website"
-      },
-      "about": {
-        "@id": "https://rheakernel.com/#software"
-      },
+      "description": "Selected public RHEA Kernel validation results across LLM calls, token use, elapsed time, energy measurements and functional validation.",
+      "isPartOf": {"@id": "https://rheakernel.com/#website"},
+      "about": {"@id": "https://rheakernel.com/#software"},
       "inLanguage": "en",
-      "breadcrumb": {
-        "@id": "https://rheakernel.com/results/#breadcrumb"
-      }
+      "breadcrumb": {"@id": "https://rheakernel.com/results/#breadcrumb"}
     },
     {
       "@type": "BreadcrumbList",
       "@id": "https://rheakernel.com/results/#breadcrumb",
       "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "RHEA Kernel",
-          "item": "https://rheakernel.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Results",
-          "item": "https://rheakernel.com/results/"
-        }
+        {"@type": "ListItem","position": 1,"name": "RHEA Kernel","item": "https://rheakernel.com/"},
+        {"@type": "ListItem","position": 2,"name": "Results","item": "https://rheakernel.com/results/"}
       ]
     }
   ]
@@ -63,12 +48,137 @@
 <li><a href="/about/">About</a></li>
 <li><a href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">GitHub</a></li>
 </ul></nav></div></header>
-<main><section class="page-hero"><div class="container page-hero-inner">
-<span class="section-kicker">Results</span><h1 class="page-title">Published results.</h1><p class="page-intro">Verified public results and validation material for RHEA Kernel will be published here.</p>
-</div></section><section class="page-main"><div class="container"><div class="placeholder">
-<div class="eyebrow"><span class="dot"></span>Official RHEA Kernel website</div>
-<h2>Results are being prepared.</h2><p>Only results approved for public release will appear on this page.</p>
-<div class="page-links"><a class="button primary" href="/">Return home</a><a class="button secondary" href="https://github.com/YJNWI/RHEA-Kernel" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
-</div></div></section></main><footer><div class="container footer-inner">
+
+<main>
+<section class="page-hero"><div class="container page-hero-inner">
+<span class="section-kicker">Results</span>
+<h1 class="page-title">Measured results.</h1>
+<p class="page-intro">Selected experimental outcomes from controlled RHEA Kernel validation campaigns. Published figures are benchmark-specific and are not universal performance guarantees.</p>
+</div></section>
+
+<section class="results-lead"><div class="container">
+<div class="results-note"><strong>Public-results policy.</strong> This page reports measured outcomes already disclosed in RHEA Kernel's public validation record. Proprietary implementation details and unpublished supporting material remain private.</div>
+
+<div class="metric-grid" aria-label="Selected benchmark highlights">
+<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">83.88%</div></div><div class="metric-label">fewer complete LLM calls</div></div>
+<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">83.94%</div></div><div class="metric-label">fewer prompt tokens</div></div>
+<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">83.53%</div></div><div class="metric-label">less end-to-end wall time</div></div>
+<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">81.16%</div></div><div class="metric-label">lower measured system-wide energy estimate</div></div>
+<div class="metric"><div><div class="metric-meta">Same benchmark</div><div class="metric-value">100%</div></div><div class="metric-label">coverage and accuracy for both baseline and RHEA</div></div>
+</div>
+</div></section>
+
+<section class="results-section"><div class="container">
+<div class="results-heading">
+<span class="section-kicker">Controlled benchmark</span>
+<h2>Llama 3.2 3B · 6 × 600 queries</h2>
+<p>RHEA Kernel v0.4.2.1 was measured against a controlled baseline across six rounds of 600 queries while both arms maintained 100% coverage and accuracy.</p>
+</div>
+<div class="result-split">
+<div class="table-wrap">
+<table class="results-table">
+<thead><tr><th>Metric</th><th>Mean reduction</th></tr></thead>
+<tbody>
+<tr><td>Complete LLM calls</td><td class="strong">83.8779%</td></tr>
+<tr><td>Prompt tokens</td><td class="strong">83.9446%</td></tr>
+<tr><td>Output tokens</td><td class="strong">83.5435%</td></tr>
+<tr><td>End-to-end wall time</td><td class="strong">83.5298%</td></tr>
+<tr><td>Measured system-wide energy estimate</td><td class="strong">81.1594%</td></tr>
+</tbody>
+</table>
+</div>
+<div class="result-panel">
+<h3>Quality preserved</h3>
+<p>The benchmark recorded the same required quality outcome for the controlled baseline and RHEA Kernel.</p>
+<div class="result-kv">
+<div><strong>100%</strong><span>Baseline coverage</span></div>
+<div><strong>100%</strong><span>RHEA coverage</span></div>
+<div><strong>100%</strong><span>Baseline accuracy</span></div>
+<div><strong>100%</strong><span>RHEA accuracy</span></div>
+</div>
+</div>
+</div>
+<div class="caution"><strong>Energy measurement note.</strong> The published energy figure uses sampled macOS system-wide telemetry integrated over the measured intervals. It is not a calibrated external power-meter measurement and is not process-exclusive.</div>
+</div></section>
+
+<section class="results-section"><div class="container">
+<div class="results-heading">
+<span class="section-kicker">Cross-model replication</span>
+<h2>Reproduced across additional model families.</h2>
+<p>The six-round × 600-query validation pattern was repeated with Qwen3 4B and Gemma3 4B. Output parity and quality were 100% across the recorded rounds.</p>
+</div>
+<div class="model-grid">
+<article class="model-card">
+<div class="model-sub">Independent replication</div>
+<h3>Qwen3 4B</h3>
+<div class="model-stats">
+<div class="model-stat"><strong>84.20%</strong><span>LLM call reduction</span></div>
+<div class="model-stat"><strong>84.18%</strong><span>Prompt token reduction</span></div>
+<div class="model-stat"><strong>83.69%</strong><span>Wall-time reduction</span></div>
+<div class="model-stat"><strong>81.71%</strong><span>Energy estimate reduction</span></div>
+</div>
+</article>
+<article class="model-card">
+<div class="model-sub">Independent replication</div>
+<h3>Gemma3 4B</h3>
+<div class="model-stats">
+<div class="model-stat"><strong>84.20%</strong><span>LLM call reduction</span></div>
+<div class="model-stat"><strong>84.18%</strong><span>Prompt token reduction</span></div>
+<div class="model-stat"><strong>81.81%</strong><span>Wall-time reduction</span></div>
+<div class="model-stat"><strong>80.38%</strong><span>Energy estimate reduction</span></div>
+</div>
+</article>
+</div>
+<p class="smallprint">These replications support reproducibility of the measured benchmark effect across more than one tested LLM family. They do not establish universal behavior outside the tested models and workloads.</p>
+</div></section>
+
+<section class="results-section"><div class="container">
+<div class="results-heading">
+<span class="section-kicker">Preregistered energy campaign</span>
+<h2>Three workload profiles · 24 valid paired measurements.</h2>
+<p>A later v0.6.0-beta.2.2 campaign evaluated three distinct workload profiles with preregistered procedures and 100% quality/parity checks in all recorded arms.</p>
+</div>
+<div class="freeze-grid">
+<div class="freeze-stat"><strong>24/24</strong><span>valid paired measurements</span></div>
+<div class="freeze-stat"><strong>0</strong><span>rejected pairs</span></div>
+<div class="freeze-stat"><strong>100%</strong><span>quality gate in all arms</span></div>
+<div class="freeze-stat"><strong>5.15–40.21%</strong><span>mean paired energy reduction across the three separate profiles</span></div>
+</div>
+<div class="caution"><strong>Do not average the profiles into one universal percentage.</strong> They are distinct experimental conditions. Each profile recorded 8 positive and 0 negative pairs, with the bootstrap 95% confidence interval above zero in every profile.</div>
+</div></section>
+
+<section class="results-section"><div class="container">
+<div class="results-heading">
+<span class="section-kicker">Functional validation</span>
+<h2>v0.6.0-beta.3.6 Functional Freeze.</h2>
+<p>On 25 August 2026, the exact frozen beta.3.6 runtime received a formal Functional Freeze decision. These are functional-validation results, not energy claims.</p>
+</div>
+<div class="freeze-grid">
+<div class="freeze-stat"><strong>171/171</strong><span>hosted validation tests passed</span></div>
+<div class="freeze-stat"><strong>2/2</strong><span>cross-model cases passed</span></div>
+<div class="freeze-stat"><strong>9/9</strong><span>endurance cases passed</span></div>
+<div class="freeze-stat"><strong>5,220/5,220</strong><span>recorded raw events validated</span></div>
+</div>
+<div class="caution"><strong>Energy Freeze was not granted for beta.3.6.</strong> Earlier energy results are not transferred to beta.3.6 by the public validation record.</div>
+</div></section>
+
+<section class="results-section"><div class="container">
+<div class="results-heading">
+<span class="section-kicker">Interpretation</span>
+<h2>What the public evidence supports.</h2>
+<p>Within the stated experiments, RHEA Kernel has demonstrated reductions in complete model invocations, token use, elapsed workload time and measured system-wide energy while preserving the required output quality.</p>
+</div>
+<div class="result-panel">
+<h3>Scope matters.</h3>
+<p>The project does not claim that the same percentages apply to every AI system, model, workload, company or hardware platform. Results on this page are tied to the specific experiments and measurement procedures described in the public record.</p>
+<div class="source-links">
+<a class="button primary" href="https://github.com/YJNWI/RHEA-Kernel/blob/main/RESULTS.md" target="_blank" rel="noopener noreferrer">Public results record ↗</a>
+<a class="button secondary" href="https://github.com/YJNWI/RHEA-Kernel/blob/main/VALIDATION_RECORD_2026-08-29.md" target="_blank" rel="noopener noreferrer">Dated validation record ↗</a>
+</div>
+</div>
+</div></section>
+</main>
+
+<footer><div class="container footer-inner">
 <span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span>
 <span>Official project website · rheakernel.com</span></div></footer></body></html>
