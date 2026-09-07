@@ -9,10 +9,10 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/assets/css/site.css">
 <title>Documentation — RHEA Kernel</title>
-<meta name="description" content="Public RHEA Kernel documentation: project scope, validation terminology, public version records, integrity references and disclosure boundaries.">
+<meta name="description" content="Public RHEA Kernel documentation: project scope, validation terminology, public evidence records, integrity references and disclosure boundaries.">
 <link rel="canonical" href="https://rheakernel.com/documentation/">
 <meta property="og:title" content="Documentation — RHEA Kernel">
-<meta property="og:description" content="Public RHEA Kernel documentation: project scope, validation terminology, public version records, integrity references and disclosure boundaries.">
+<meta property="og:description" content="Public RHEA Kernel documentation: project scope, validation terminology, public evidence records, integrity references and disclosure boundaries.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rheakernel.com/documentation/">
 <meta property="og:site_name" content="RHEA Kernel">
@@ -31,7 +31,7 @@
       "@id": "https://rheakernel.com/documentation/#webpage",
       "url": "https://rheakernel.com/documentation/",
       "name": "Documentation — RHEA Kernel",
-      "description": "Public RHEA Kernel documentation: project scope, validation terminology, public version records, integrity references and disclosure boundaries.",
+      "description": "Public RHEA Kernel documentation: project scope, validation terminology, public evidence records, integrity references and disclosure boundaries.",
       "isPartOf": {"@id": "https://rheakernel.com/#website"},
       "about": {"@id": "https://rheakernel.com/#project"},
       "inLanguage": "en",
@@ -115,7 +115,7 @@
 <section class="page-hero"><div class="container page-hero-inner">
 <span class="section-kicker">Documentation</span>
 <h1 class="page-title">Public documentation.</h1>
-<p class="page-intro">A public-facing guide to RHEA Kernel's scope, validation language, published version records and evidence model — without disclosing proprietary implementation.</p>
+<p class="page-intro">A public-facing guide to RHEA Kernel's scope, validation language, published evidence records and evidence model — without disclosing proprietary implementation.</p>
 </div></section>
 
 <section class="docs-intro"><div class="container">
@@ -133,7 +133,7 @@
 <a href="#public-scope">Public scope</a>
 <a href="#validation">Validation model</a>
 <a href="#terminology">Terminology</a>
-<a href="#versions">Public version map</a>
+<a href="#evidence">Public evidence map</a>
 <a href="#integrity">Artifact integrity</a>
 <a href="#disclosure">Disclosure boundary</a>
 <a href="#sources">Official sources</a>
@@ -146,7 +146,7 @@
 <h2>What RHEA Kernel is.</h2>
 <p>RHEA Kernel is an experimental AI-efficiency project focused on reducing computational, token, latency and energy cost in LLM-based workloads while preserving output quality.</p>
 <p>The project remains under active private development and experimental validation. The public website and repository document selected outcomes and project records rather than the mechanism used to produce them.</p>
-<div class="doc-callout"><strong>Documentation principle.</strong> Public RHEA Kernel material is designed to establish what was measured, under what stated scope, and which private artifacts were frozen — not to provide enough information to reconstruct the system.</div>
+<div class="doc-callout"><strong>Documentation principle.</strong> Public RHEA Kernel material is designed to establish what was measured, under what stated scope, and which selected private artifacts have public integrity references — not to provide enough information to reconstruct the system.</div>
 </section>
 
 <section class="doc-section" id="public-scope">
@@ -169,8 +169,8 @@
 <li><strong>Controlled baseline.</strong> Reported reductions are expressed relative to the comparison baseline used in the stated experiment.</li>
 <li><strong>Quality preservation.</strong> Public records report coverage, accuracy or output parity where those checks were part of the validation.</li>
 <li><strong>Cross-model replication.</strong> Repeating a validation pattern on additional model families supports reproducibility within those tested cases; it does not prove universal behavior.</li>
-<li><strong>Paired energy campaigns.</strong> Later energy experiments compare paired measurements under separately defined workload profiles rather than treating all profiles as one universal percentage.</li>
-<li><strong>Functional validation.</strong> Functional Freeze evidence refers to correctness and recorded behavior of the exact frozen runtime. It is distinct from an Energy Freeze.</li>
+<li><strong>Paired energy validation.</strong> Published paired measurements represent separate controlled workload conditions rather than one universal percentage.</li>
+<li><strong>Functional validation.</strong> A later frozen private runtime has published correctness and recorded-behavior evidence. Those functional results do not transfer an energy claim.</li>
 </ul>
 <div class="boundary"><strong>No universal savings claim.</strong> Published percentages are specific to their stated experiments and must not be treated as guaranteed savings for every model, workload, company, dataset or hardware platform.</div>
 </section>
@@ -185,29 +185,28 @@
 <div class="term"><dt>Output parity</dt><dd>A recorded check that the compared outputs satisfy the parity requirement defined for that validation campaign.</dd></div>
 <div class="term"><dt>Wall time</dt><dd>End-to-end elapsed workload time measured for the stated benchmark run.</dd></div>
 <div class="term"><dt>System-wide energy estimate</dt><dd>An energy estimate derived from sampled macOS system-wide telemetry in the published experiments. It is not a calibrated external power-meter measurement and is not process-exclusive.</dd></div>
-<div class="term"><dt>Functional Freeze</dt><dd>A formal decision that the exact recorded runtime has met the stated functional validation gate. It does not automatically transfer earlier energy results.</dd></div>
-<div class="term"><dt>Energy Freeze</dt><dd>A separate energy-validation status. Functional Freeze and Energy Freeze are intentionally treated as distinct claims.</dd></div>
+<div class="term"><dt>Functional Freeze</dt><dd>A formal recorded decision that a frozen private runtime met the stated functional-validation gate. It does not establish an energy claim.</dd></div>
 <div class="term"><dt>Frozen artifact</dt><dd>A retained private package whose exact contents are fixed and can later be checked against its recorded cryptographic fingerprint.</dd></div>
 <div class="term"><dt>SHA-256 fingerprint</dt><dd>A cryptographic digest used as an integrity reference. Publishing a hash does not disclose the underlying private artifact.</dd></div>
 </dl>
 </section>
 
-<section class="doc-section" id="versions">
-<span class="section-kicker">Public version map</span>
-<h2>Versions currently represented in the public record.</h2>
-<p>This is a documentation map, not a download list. RHEA Kernel's private runtime is not distributed from the public repository.</p>
+<section class="doc-section" id="evidence">
+<span class="section-kicker">Public evidence map</span>
+<h2>Evidence currently represented in the public record.</h2>
+<p>This is an evidence map, not a development-version map or download list. Current internal revision mapping and private development state are intentionally outside the public scope.</p>
 <div class="version-table-wrap">
 <table class="version-table">
-<thead><tr><th>Version</th><th>Public record</th><th>What is publicly established</th></tr></thead>
+<thead><tr><th>Public record</th><th>Recorded scope</th><th>What is publicly established</th></tr></thead>
 <tbody>
-<tr><td>v0.4.2.1</td><td>Controlled benchmark</td><td>6 × 600-query Llama 3.2 3B validation with published reductions in LLM calls, tokens, wall time and measured system-wide energy estimate, with 100% coverage and accuracy in the recorded benchmark.</td></tr>
-<tr><td>v0.4.2.3</td><td>Cross-model replication record</td><td>Historical frozen artifact record and public Qwen3 4B replication evidence associated with the controlled validation line.</td></tr>
-<tr><td>v0.6.0-beta.2.2</td><td>Preregistered energy campaign</td><td>Three workload profiles, 24 valid paired measurements, 0 rejected pairs and 100% recorded quality/parity checks, with profile-specific energy outcomes.</td></tr>
-<tr><td>v0.6.0-beta.3.6</td><td>Functional Freeze</td><td>Formal Functional Freeze granted for the exact frozen runtime on 25 August 2026, with hosted, cross-model, endurance and raw-event validation records. Energy Freeze was not granted by the cited public record.</td></tr>
+<tr><td>Controlled multi-round benchmark</td><td>Llama 3.2 3B · 6 × 600 queries</td><td>Published reductions in complete LLM calls, tokens, wall time and measured system-wide energy, with 100% coverage and accuracy in the recorded benchmark.</td></tr>
+<tr><td>Independent cross-model replication</td><td>Qwen3 4B and Gemma3 4B</td><td>The overall measured benchmark effect was reproduced on additional tested model families with 100% recorded quality/output parity.</td></tr>
+<tr><td>Preregistered paired energy validation</td><td>3 controlled conditions · 24 valid pairs</td><td>Condition-specific paired energy reductions of 5.1526% to 40.2103%, with 100% quality/output parity and positive statistical evidence in every reported condition.</td></tr>
+<tr><td>Later functional validation</td><td>Frozen private runtime · 25 Aug 2026</td><td>171/171 hosted tests, 2/2 cross-model cases, 9/9 endurance cases and 5,220/5,220 recorded raw events validated. These are functional results, not energy claims.</td></tr>
 </tbody>
 </table>
 </div>
-<div class="docs-small">The public record may contain historical versions that are not the project's current private development state. Version entries here describe only what has been publicly documented.</div>
+<div class="docs-small">Current internal version identifiers, validation-workflow mapping, experiment progress and development sequence are intentionally not represented here.</div>
 </section>
 
 <section class="doc-section" id="integrity">
@@ -216,10 +215,11 @@
 <p>Selected private RHEA Kernel artifacts are retained outside the public repository. Their SHA-256 fingerprints can be published without exposing those artifacts.</p>
 <div class="doc-number-grid">
 <div class="doc-number"><strong>SHA-256</strong><span>Cryptographic fingerprint format used in the public integrity records.</span></div>
-<div class="doc-number"><strong>Private</strong><span>The underlying frozen source packages and evidence bundles are not published by those fingerprint records.</span></div>
+<div class="doc-number"><strong>Private</strong><span>The underlying retained private artifacts are not published by those fingerprint records.</span></div>
 <div class="doc-number"><strong>Verifiable</strong><span>A retained copy can later be hashed and compared with the public fingerprint to check exact identity.</span></div>
 </div>
 <div class="doc-callout"><strong>Important limitation.</strong> A published artifact fingerprint is an integrity record only. The public repository explicitly states that it is not, by itself, a patent filing, statutory copyright registration, qualified electronic timestamp or legal opinion regarding priority or ownership.</div>
+<div class="doc-callout"><strong>Latest dated integrity note.</strong> The 7 September 2026 public record reports a retained private verification result of <strong>44 checks: 40 PASS, 0 FAIL, 4 SKIP</strong> for selected retained private material. It does not establish a new performance, energy, quality or commercial claim.</div>
 </section>
 
 <section class="doc-section" id="disclosure">
@@ -229,6 +229,7 @@
 <ul class="doc-list">
 <li><strong>No source release.</strong> RHEA Kernel is not released as open-source software.</li>
 <li><strong>No reconstruction guide.</strong> Public documentation is not intended to provide information sufficient to reconstruct the system.</li>
+<li><strong>No current private-state mapping.</strong> Current internal version identifiers, validation-workflow mapping, experiment progress and development sequence are intentionally outside the public scope.</li>
 <li><strong>No universal performance guarantee.</strong> Experimental figures remain tied to the stated validation context.</li>
 <li><strong>No implied license.</strong> Publication of selected records does not grant rights to unpublished proprietary material.</li>
 </ul>
@@ -242,7 +243,8 @@
 <article class="doc-card"><div class="label">Project</div><h3>README</h3><p>High-level purpose, public scope, disclosure boundary and current public status.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/README.md" target="_blank" rel="noopener noreferrer">Open README ↗</a></article>
 <article class="doc-card"><div class="label">Results</div><h3>Selected experimental results</h3><p>Historical public benchmark measurements and interpretation limits.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/RESULTS.md" target="_blank" rel="noopener noreferrer">Open results ↗</a></article>
 <article class="doc-card"><div class="label">Validation</div><h3>Dated validation record</h3><p>Public validation evidence dated 29 August 2026, including functional and integrity references.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/VALIDATION_RECORD_2026-08-29.md" target="_blank" rel="noopener noreferrer">Open validation record ↗</a></article>
-<article class="doc-card"><div class="label">Integrity</div><h3>Artifact fingerprints</h3><p>SHA-256 fingerprints of selected historical private frozen artifacts.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/PROOF.md" target="_blank" rel="noopener noreferrer">Open fingerprints ↗</a></article>
+<article class="doc-card"><div class="label">Integrity</div><h3>Artifact fingerprints</h3><p>SHA-256 fingerprints of selected retained private artifacts using intentionally generic public labels.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/PROOF.md" target="_blank" rel="noopener noreferrer">Open fingerprints ↗</a></article>
+<article class="doc-card"><div class="label">Latest record</div><h3>Selected integrity record</h3><p>Dated public integrity reference from 7 September 2026, without internal revision, workflow or current-progress mapping.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/INTEGRITY_RECORD_2026-09-07.md" target="_blank" rel="noopener noreferrer">Open integrity record ↗</a></article>
 <article class="doc-card"><div class="label">Rights</div><h3>Rights & disclosure</h3><p>Proprietary status, disclosure limits and rights notice.</p><a href="https://github.com/YJNWI/RHEA-Kernel/blob/main/RIGHTS.md" target="_blank" rel="noopener noreferrer">Open rights notice ↗</a></article>
 <article class="doc-card"><div class="label">Website</div><h3>Measured results</h3><p>Readable presentation of selected approved public validation outcomes.</p><a href="/results/">Open Results →</a></article>
 </div>

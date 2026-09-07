@@ -65,17 +65,17 @@
 <section class="page-hero"><div class="container page-hero-inner">
 <span class="section-kicker">Results</span>
 <h1 class="page-title">Measured results.</h1>
-<p class="page-intro">Selected experimental outcomes from controlled RHEA Kernel validation campaigns. Published figures are benchmark-specific and are not universal performance guarantees.</p>
+<p class="page-intro">Selected completed experimental outcomes from controlled RHEA Kernel validation work. Published figures are benchmark-specific and are not universal performance guarantees.</p>
 </div></section>
 
 <section class="results-lead"><div class="container">
 <div class="results-note"><strong>Public-results policy.</strong> This page reports measured outcomes already disclosed in RHEA Kernel's public validation record. Proprietary implementation details and unpublished supporting material remain private.</div>
 
 <div class="metric-grid" aria-label="Selected benchmark highlights">
-<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">83.88%</div></div><div class="metric-label">fewer complete LLM calls</div></div>
-<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">83.94%</div></div><div class="metric-label">fewer prompt tokens</div></div>
-<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">83.53%</div></div><div class="metric-label">less end-to-end wall time</div></div>
-<div class="metric"><div><div class="metric-meta">v0.4.2.1</div><div class="metric-value">81.16%</div></div><div class="metric-label">lower measured system-wide energy estimate</div></div>
+<div class="metric"><div><div class="metric-meta">Controlled benchmark</div><div class="metric-value">83.88%</div></div><div class="metric-label">fewer complete LLM calls</div></div>
+<div class="metric"><div><div class="metric-meta">Controlled benchmark</div><div class="metric-value">83.94%</div></div><div class="metric-label">fewer prompt tokens</div></div>
+<div class="metric"><div><div class="metric-meta">Controlled benchmark</div><div class="metric-value">83.53%</div></div><div class="metric-label">less end-to-end wall time</div></div>
+<div class="metric"><div><div class="metric-meta">Controlled benchmark</div><div class="metric-value">81.16%</div></div><div class="metric-label">lower measured system-wide energy estimate</div></div>
 <div class="metric"><div><div class="metric-meta">Same benchmark</div><div class="metric-value">100%</div></div><div class="metric-label">coverage and accuracy for both baseline and RHEA</div></div>
 </div>
 </div></section>
@@ -84,7 +84,7 @@
 <div class="results-heading">
 <span class="section-kicker">Controlled benchmark</span>
 <h2>Llama 3.2 3B · 6 × 600 queries</h2>
-<p>RHEA Kernel v0.4.2.1 was measured against a controlled baseline across six rounds of 600 queries while both arms maintained 100% coverage and accuracy.</p>
+<p>RHEA Kernel was measured against a controlled baseline across six rounds of 600 queries while both arms maintained 100% coverage and accuracy.</p>
 </div>
 <div class="result-split">
 <div class="table-wrap">
@@ -146,24 +146,24 @@
 
 <section class="results-section"><div class="container">
 <div class="results-heading">
-<span class="section-kicker">Preregistered energy campaign</span>
-<h2>Three workload profiles · 24 valid paired measurements.</h2>
-<p>A later v0.6.0-beta.2.2 campaign evaluated three distinct workload profiles with preregistered procedures and 100% quality/parity checks in all recorded arms.</p>
+<span class="section-kicker">Preregistered paired energy validation</span>
+<h2>Three controlled conditions · 24 valid paired measurements.</h2>
+<p>A separate preregistered validation evaluated three distinct workload conditions with 100% quality and output-parity requirements in the recorded valid measurements.</p>
 </div>
 <div class="freeze-grid">
-<div class="freeze-stat"><strong>24/24</strong><span>valid paired measurements</span></div>
-<div class="freeze-stat"><strong>0</strong><span>rejected pairs</span></div>
-<div class="freeze-stat"><strong>100%</strong><span>quality gate in all arms</span></div>
-<div class="freeze-stat"><strong>5.15–40.21%</strong><span>mean paired energy reduction across the three separate profiles</span></div>
+<div class="freeze-stat"><strong>24</strong><span>valid paired measurements</span></div>
+<div class="freeze-stat"><strong>3</strong><span>controlled workload conditions</span></div>
+<div class="freeze-stat"><strong>100%</strong><span>quality and output-parity requirements</span></div>
+<div class="freeze-stat"><strong>5.15–40.21%</strong><span>mean paired energy reduction across the separate conditions</span></div>
 </div>
-<div class="caution"><strong>Do not average the profiles into one universal percentage.</strong> They are distinct experimental conditions. Each profile recorded 8 positive and 0 negative pairs, with the bootstrap 95% confidence interval above zero in every profile.</div>
+<div class="caution"><strong>Do not combine the conditions into one universal percentage.</strong> They are separate experiments. Each condition recorded 8 positive and 0 negative pairs, with the bootstrap 95% confidence interval above zero and an exact two-sided sign test of p = 0.0078125.</div>
 </div></section>
 
 <section class="results-section"><div class="container">
 <div class="results-heading">
 <span class="section-kicker">Functional validation</span>
-<h2>v0.6.0-beta.3.6 Functional Freeze.</h2>
-<p>On 25 August 2026, the exact frozen beta.3.6 runtime received a formal Functional Freeze decision. These are functional-validation results, not energy claims.</p>
+<h2>Later functional validation.</h2>
+<p>On 25 August 2026, a later frozen private runtime received a formal Functional Freeze decision. These are functional-validation results, not energy claims.</p>
 </div>
 <div class="freeze-grid">
 <div class="freeze-stat"><strong>171/171</strong><span>hosted validation tests passed</span></div>
@@ -171,7 +171,7 @@
 <div class="freeze-stat"><strong>9/9</strong><span>endurance cases passed</span></div>
 <div class="freeze-stat"><strong>5,220/5,220</strong><span>recorded raw events validated</span></div>
 </div>
-<div class="caution"><strong>Energy Freeze was not granted for beta.3.6.</strong> Earlier energy results are not transferred to beta.3.6 by the public validation record.</div>
+<div class="caution"><strong>Functional evidence is not an energy claim.</strong> No energy claim is transferred to the later frozen private runtime by the dated public validation record.</div>
 </div></section>
 
 <section class="results-section"><div class="container">
