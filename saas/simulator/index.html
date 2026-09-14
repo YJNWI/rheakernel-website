@@ -11,79 +11,230 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/assets/css/site.css">
-<title>RHEA Savings Simulator — RHEA Kernel as a Service</title>
-<meta name="description" content="Estimate the potential financial impact of RHEA Kernel on an LLM workload using a simple or advanced browser-based savings calculator.">
+
+<title>RHEA Savings Simulator — Data-based LLM savings estimate</title>
+<meta name="description" content="Estimate potential RHEA Kernel savings from your own measured LLM workload data, with simple and advanced calculation modes and a time projection chart.">
 <link rel="canonical" href="https://rheakernel.com/saas/simulator/">
+
 <meta property="og:title" content="RHEA Savings Simulator — RHEA Kernel">
-<meta property="og:description" content="Estimate potential LLM cost savings with RHEA Kernel using a simple or advanced browser-based calculator.">
+<meta property="og:description" content="Estimate potential LLM savings from your own workload data. No historical benchmark reduction percentage is used in the calculation.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rheakernel.com/saas/simulator/">
 <meta property="og:site_name" content="RHEA Kernel">
 <meta property="og:image" content="https://rheakernel.com/assets/brand/rhea-search-banner.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://rheakernel.com/assets/brand/rhea-search-banner.png">
+
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"RHEA Savings Simulator","url":"https://rheakernel.com/saas/simulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Browser-based calculator for illustrative RHEA Kernel as a Service savings scenarios."}
+{"@context":"https://schema.org","@type":"WebApplication","name":"RHEA Savings Simulator","url":"https://rheakernel.com/saas/simulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Browser-based calculator that estimates potential RHEA Kernel savings from customer-provided measured LLM workload data."}
 </script>
+
 <style>
-.sim-brand{display:inline-flex;align-items:center;line-height:1;text-decoration:none}.sim-brand img{display:block;height:auto;width:min(100%,320px);max-width:320px;object-fit:contain}
-.sim-hero{padding:90px 0 55px}.sim-hero h1{font-size:clamp(3rem,7vw,5.6rem);line-height:.98;letter-spacing:-.045em;margin:18px 0}.sim-hero p{max-width:850px;color:#a5adbd;font-size:clamp(1.02rem,2vw,1.2rem)}
-.sim-shell{padding:0 0 90px}.sim-card{border:1px solid rgba(255,255,255,.1);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.022));overflow:hidden}.sim-tabs{display:flex;gap:8px;padding:18px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}.sim-tab{border:1px solid rgba(255,255,255,.1);background:transparent;color:#a5adbd;border-radius:10px;padding:10px 15px;font-weight:750;cursor:pointer}.sim-tab[aria-selected="true"]{background:#dfe6ff;color:#101522;border-color:#dfe6ff}.sim-body{padding:28px}.sim-pane[hidden]{display:none}.sim-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.8fr);gap:28px;align-items:start}.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field.full{grid-column:1/-1}.field label{display:block;font-size:.8rem;font-weight:750;color:#dce3f5;margin-bottom:7px}.field small{display:block;color:#7f899d;font-size:.74rem;margin-top:6px;line-height:1.45}.field input,.field select{width:100%;min-height:45px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#101722;color:#f6f7fb;padding:10px 12px;font:inherit}.field input:focus,.field select:focus{border-color:#91aaff;outline:2px solid rgba(145,170,255,.18);outline-offset:1px}.quality-row{display:flex;align-items:flex-start;gap:10px;border:1px solid rgba(183,199,255,.16);background:rgba(183,199,255,.04);border-radius:12px;padding:14px 15px}.quality-row input{width:18px;height:18px;margin-top:2px;accent-color:#b7c7ff}.quality-row label{font-size:.87rem;color:#dce3f5}.quality-row span{display:block;color:#7f899d;font-size:.75rem;margin-top:3px}.results{border:1px solid rgba(183,199,255,.18);border-radius:16px;background:#0e1520;padding:22px;position:sticky;top:98px}.results h2{font-size:1.2rem;margin:0 0 18px}.result-row{display:flex;justify-content:space-between;gap:18px;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}.result-row:first-of-type{border-top:0}.result-row span{color:#8f99aa;font-size:.83rem}.result-row strong{font-size:.95rem;text-align:right}.result-row.primary strong{font-size:1.35rem;color:#dfe6ff}.result-row.positive strong{color:#9fe0ca}.result-note{margin-top:16px;color:#7f899d;font-size:.76rem;line-height:1.55}.sim-note{margin-top:24px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);padding:18px 20px;color:#a5adbd;font-size:.86rem}.sim-note strong{color:#f6f7fb}.formula{margin-top:16px;border-left:2px solid #b7c7ff;padding:3px 0 3px 16px;color:#a5adbd;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.82rem;white-space:pre-line}.privacy{margin-top:18px;color:#7f899d;font-size:.78rem}.actions-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.error{display:none;margin-top:14px;color:#ffcfb0;font-size:.82rem}.error.show{display:block}
+.sim-brand{display:inline-flex;align-items:center;line-height:1;text-decoration:none}
+.sim-brand img{display:block;height:auto;width:min(100%,320px);max-width:320px;object-fit:contain}
+.sim-hero{padding:90px 0 54px}
+.sim-hero h1{font-size:clamp(3rem,7vw,5.6rem);line-height:.98;letter-spacing:-.045em;margin:18px 0}
+.sim-hero p{max-width:880px;color:#a5adbd;font-size:clamp(1.02rem,2vw,1.2rem)}
+.data-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(183,199,255,.19);background:rgba(183,199,255,.045);border-radius:999px;padding:8px 12px;color:#dce3f5;font-size:.78rem;font-weight:800}
+.data-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:#9fe0ca}
+.sim-note{margin-top:22px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);padding:18px 20px;color:#a5adbd;font-size:.86rem;line-height:1.55}
+.sim-note strong{color:#f6f7fb}
+.sim-shell{padding:0 0 90px}
+.sim-card{border:1px solid rgba(255,255,255,.1);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.022));overflow:hidden}
+.sim-tabs{display:flex;gap:8px;padding:18px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+.sim-tab{border:1px solid rgba(255,255,255,.1);background:transparent;color:#a5adbd;border-radius:10px;padding:10px 15px;font-weight:750;cursor:pointer;min-height:44px}
+.sim-tab[aria-selected="true"]{background:#dfe6ff;color:#101522;border-color:#dfe6ff}
+.sim-body{padding:28px}
+.sim-pane[hidden]{display:none}
+.sim-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,.82fr);gap:28px;align-items:start}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field.full{grid-column:1/-1}
+.field label{display:block;font-size:.8rem;font-weight:750;color:#dce3f5;margin-bottom:7px}
+.field small{display:block;color:#7f899d;font-size:.74rem;margin-top:6px;line-height:1.45}
+.field input,.field select{width:100%;min-height:46px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#101722;color:#f6f7fb;padding:10px 12px;font:inherit}
+.field input:focus,.field select:focus{border-color:#91aaff;outline:2px solid rgba(145,170,255,.18);outline-offset:1px}
+.quality-row{display:flex;align-items:flex-start;gap:10px;border:1px solid rgba(183,199,255,.16);background:rgba(183,199,255,.04);border-radius:12px;padding:14px 15px}
+.quality-row input{width:18px;height:18px;margin-top:2px;accent-color:#b7c7ff;flex:0 0 auto}
+.quality-row label{font-size:.87rem;color:#dce3f5}
+.quality-row span{display:block;color:#7f899d;font-size:.75rem;margin-top:3px;line-height:1.45}
+.results{border:1px solid rgba(183,199,255,.18);border-radius:16px;background:#0e1520;padding:22px;position:sticky;top:98px}
+.results h2{font-size:1.2rem;margin:0 0 18px}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi-card{border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025);padding:14px}
+.kpi-card span{display:block;color:#7f899d;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em}
+.kpi-card strong{display:block;font-size:1.45rem;margin-top:6px;letter-spacing:-.03em}
+.kpi-card.primary strong{color:#9fe0ca}
+.result-row{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-top:1px solid rgba(255,255,255,.07)}
+.result-row span{color:#8f99aa;font-size:.82rem}
+.result-row strong{font-size:.92rem;text-align:right}
+.result-row.primary strong{font-size:1.18rem;color:#dfe6ff}
+.result-note{margin-top:14px;color:#7f899d;font-size:.75rem;line-height:1.5}
+.error{display:none;margin-top:14px;color:#ffcfb0;font-size:.82rem;line-height:1.5}
+.error.show{display:block}
+.formula{margin-top:16px;border-left:2px solid #b7c7ff;padding:3px 0 3px 16px;color:#a5adbd;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.8rem;white-space:pre-line;line-height:1.55}
+.chart-wrap{margin-top:28px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(255,255,255,.02);padding:18px}
+.chart-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px}
+.chart-head h3{margin:0;font-size:1.05rem}
+.chart-head p{margin:4px 0 0;color:#7f899d;font-size:.76rem}
+.chart-total{text-align:right}
+.chart-total span{display:block;color:#7f899d;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em}
+.chart-total strong{display:block;font-size:1.25rem;margin-top:4px;color:#9fe0ca}
+.chart-svg{display:block;width:100%;height:auto;min-height:230px;overflow:visible}
+.chart-grid{stroke:rgba(255,255,255,.075);stroke-width:1}
+.chart-axis-text{fill:#7f899d;font-size:11px;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.chart-baseline{fill:none;stroke:#7f899d;stroke-width:2;stroke-dasharray:6 6}
+.chart-rhea{fill:none;stroke:#b7c7ff;stroke-width:2.5}
+.chart-saving{fill:none;stroke:#9fe0ca;stroke-width:3}
+.chart-dot{fill:#9fe0ca}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;color:#8f99aa;font-size:.73rem}
+.legend-item{display:flex;align-items:center;gap:7px}
+.legend-line{width:22px;height:2px;background:#9fe0ca}
+.legend-line.base{background:#7f899d}
+.legend-line.rhea{background:#b7c7ff}
+.privacy{margin-top:20px;color:#7f899d;font-size:.78rem;line-height:1.5}
+.actions-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
 @media(max-width:900px){.sim-grid{grid-template-columns:1fr}.results{position:static}.input-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
-@media(max-width:620px){.sim-body{padding:18px}.sim-tabs{padding:12px}.sim-tab{flex:1}.sim-hero{padding:70px 0 42px}}
+@media(max-width:620px){.sim-body{padding:18px}.sim-tabs{padding:12px}.sim-tab{flex:1}.sim-hero{padding:70px 0 42px}.kpi{grid-template-columns:1fr}.chart-wrap{padding:12px}.chart-axis-text{font-size:9px}}
 </style>
 </head>
+
 <body>
 <header><div class="container nav">
 <a class="sim-brand" href="/saas/" aria-label="RHEA Kernel as a Service"><img src="/assets/brand/rhea-saas-logo.png" alt="RHEA Kernel as a Service" width="1920" height="800"></a>
 <nav aria-label="Primary navigation"><ul>
-<li><a href="/">Project</a></li><li><a href="/results/">Results</a></li><li><a href="/saas/">As a Service</a></li><li><a href="/saas/simulator/" aria-current="page">Simulator</a></li><li><a href="/saas/#faq">FAQ</a></li>
-</ul></nav></div></header>
+<li><a href="/">Project</a></li>
+<li><a href="/results/">Results</a></li>
+<li><a href="/saas/">As a Service</a></li>
+<li><a href="/saas/simulator/" aria-current="page">Simulator</a></li>
+<li><a href="/saas/#faq">FAQ</a></li>
+</ul></nav>
+</div></header>
 
 <main>
 <section class="sim-hero"><div class="container">
-<span class="eyebrow"><span class="dot"></span>Public savings calculator</span>
+<span class="data-badge">Calculated from your workload data</span>
 <h1>RHEA Savings Simulator.</h1>
-<p>Estimate the potential financial impact of RHEA Kernel on your LLM workload. Choose <strong>Simple</strong> for a quick monthly-cost scenario or <strong>Advanced</strong> to calculate a baseline from requests, tokens and your effective model prices.</p>
-<div class="sim-note"><strong>Illustrative, not a guarantee.</strong> This calculator models scenarios from the assumptions you enter. Historical RHEA Kernel benchmark results are measured experimental outcomes and do not predict the savings of an individual customer. Actual commercial savings must be verified on the customer's own equivalent workload and agreed quality gate.</div>
+<p>Estimate how much RHEA could save on your LLM workload using measured operating data from your own system — not a historical RHEA benchmark percentage.</p>
+<div class="sim-note">
+<strong>How this estimate works.</strong> The calculator measures the cost of work in your own LLM workload that you identify as repeated, equivalent or otherwise reusable without a fresh full-model computation. It then deducts attributable RHEA operating costs and the applicable performance fee. Actual commercial Verified Net Savings are established only after RHEA validates eligible work and the agreed quality gate is maintained.
+</div>
 </div></section>
 
 <section class="sim-shell"><div class="container">
 <div class="sim-card">
+
 <div class="sim-tabs" role="tablist" aria-label="Simulator mode">
-<button class="sim-tab" id="tab-simple" role="tab" aria-selected="true" aria-controls="pane-simple">Simple</button>
-<button class="sim-tab" id="tab-advanced" role="tab" aria-selected="false" aria-controls="pane-advanced">Advanced</button>
+<button class="sim-tab" id="tab-simple" type="button" role="tab" aria-selected="true" aria-controls="pane-simple">Simple</button>
+<button class="sim-tab" id="tab-advanced" type="button" role="tab" aria-selected="false" aria-controls="pane-advanced">Advanced</button>
 </div>
 
 <div class="sim-body">
+
 <section class="sim-pane" id="pane-simple" role="tabpanel" aria-labelledby="tab-simple">
 <div class="sim-grid">
 <div>
 <div class="input-grid">
-<div class="field"><label for="simple-currency">Currency</label><select id="simple-currency"><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option><option value="GBP">GBP (£)</option></select></div>
-<div class="field"><label for="simple-cost">Current monthly LLM cost</label><input id="simple-cost" type="number" min="0" step="0.01" placeholder="e.g. 10000" inputmode="decimal"><small>Use the comparable monthly cost of the workload you want to model.</small></div>
-<div class="field"><label for="simple-reduction">Assumed RHEA cost reduction (%)</label><input id="simple-reduction" type="number" min="0" max="100" step="0.1" placeholder="e.g. 30" inputmode="decimal"><small>This is your scenario assumption, not a guaranteed RHEA result.</small></div>
-<div class="field"><label for="simple-incremental">Incremental RHEA operating cost / month</label><input id="simple-incremental" type="number" min="0" step="0.01" value="0" inputmode="decimal"><small>Include agreed incremental costs attributable to operating RHEA.</small></div>
-<div class="field full"><label for="simple-rate">Commercial terms</label><select id="simple-rate"><option value="25">Standard customer · 25%</option><option value="20">Founding customer #1 · 20% for first 12 months</option><option value="22.5">Founding customer #2 or #3 · 22.5% for first 12 months</option></select></div>
-<div class="field full quality-row"><input id="simple-quality" type="checkbox" checked><label for="simple-quality">Assume the agreed quality gate is maintained.<span>If quality is not maintained, the modeled cost reduction does not qualify as Verified Net Savings.</span></label></div>
+<div class="field">
+<label for="simple-currency">Currency</label>
+<select id="simple-currency"><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option><option value="GBP">GBP (£)</option></select>
 </div>
-<div class="error" id="simple-error">Enter a monthly cost and an assumed reduction between 0% and 100%.</div>
-<div class="formula">Verified Net Savings =
-Baseline Equivalent Cost
-− RHEA-enabled workload cost
-− incremental costs attributable to running RHEA</div>
+
+<div class="field">
+<label for="simple-days">Measured data period (days)</label>
+<input id="simple-days" type="number" min="1" max="365" step="1" value="30" inputmode="numeric">
+<small>How many days of real usage the figures below represent.</small>
+</div>
+
+<div class="field">
+<label for="simple-spend">Actual LLM spend in that period</label>
+<input id="simple-spend" type="number" min="0" step="0.01" placeholder="e.g. 10000" inputmode="decimal">
+<small>Use the provider/API cost for the measured workload period.</small>
+</div>
+
+<div class="field">
+<label for="simple-total-requests">Total LLM requests in that period</label>
+<input id="simple-total-requests" type="number" min="1" step="1" placeholder="e.g. 200000" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="simple-addressable-requests">Observed repeated / equivalent requests</label>
+<input id="simple-addressable-requests" type="number" min="0" step="1" placeholder="e.g. 50000" inputmode="numeric">
+<small>Requests identified from your own data as repeated/equivalent work. Simple mode assumes they have roughly the same average cost as the full request set.</small>
+</div>
+
+<div class="field">
+<label for="simple-rhea-cost">Attributable RHEA operating cost in that period</label>
+<input id="simple-rhea-cost" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+<small>If unknown, leave 0. Actual Verified Net Savings deduct agreed attributable RHEA costs.</small>
+</div>
+
+<div class="field">
+<label for="simple-horizon">Projection horizon</label>
+<select id="simple-horizon">
+<option value="1">1 month</option>
+<option value="3">3 months</option>
+<option value="6">6 months</option>
+<option value="12" selected>12 months</option>
+<option value="24">24 months</option>
+<option value="36">36 months</option>
+</select>
+</div>
+
+<div class="field">
+<label for="simple-rate">Commercial terms</label>
+<select id="simple-rate">
+<option value="25">Standard customer · RHEA 25%</option>
+<option value="20">Founding customer #1 · RHEA 20% for first 12 months</option>
+<option value="22.5">Founding customer #2/#3 · RHEA 22.5% for first 12 months</option>
+</select>
+</div>
+
+<div class="field full quality-row">
+<input id="simple-quality" type="checkbox" checked>
+<label for="simple-quality">Assume the agreed quality gate is maintained.
+<span>If required quality is not maintained, the modeled reduction does not qualify as commercial savings.</span>
+</label>
+</div>
+</div>
+
+<div class="error" id="simple-error"></div>
+
+<div class="formula">Simple data model:
+Addressable LLM cost = actual measured spend × (observed repeated/equivalent requests ÷ total requests)
+
+Potential net savings before fee =
+max(0, addressable LLM cost − attributable RHEA operating cost)</div>
 </div>
 
 <aside class="results" aria-live="polite">
-<h2>Estimated monthly impact</h2>
-<div class="result-row"><span>Baseline Equivalent Cost</span><strong id="simple-baseline">—</strong></div>
-<div class="result-row"><span>RHEA-enabled workload cost</span><strong id="simple-rhea-cost">—</strong></div>
-<div class="result-row primary"><span>Verified Net Savings estimate</span><strong id="simple-vns">—</strong></div>
+<h2>Data-based estimate</h2>
+<div class="kpi">
+<div class="kpi-card primary"><span>Customer saving</span><strong id="simple-pct">—</strong></div>
+<div class="kpi-card"><span>Projected saving</span><strong id="simple-projected">—</strong></div>
+</div>
+<div class="result-row"><span>Measured baseline cost</span><strong id="simple-baseline">—</strong></div>
+<div class="result-row"><span>Addressable LLM cost</span><strong id="simple-addressable">—</strong></div>
+<div class="result-row primary"><span>Potential net savings before RHEA fee</span><strong id="simple-net">—</strong></div>
 <div class="result-row"><span>RHEA performance fee</span><strong id="simple-fee">—</strong></div>
-<div class="result-row positive"><span>Customer net savings</span><strong id="simple-customer">—</strong></div>
-<div class="result-row positive"><span>Annualized customer net savings</span><strong id="simple-annual">—</strong></div>
-<div class="result-note" id="simple-status">Enter your scenario to calculate an estimate.</div>
+<div class="result-row primary"><span>Customer net savings in measured period</span><strong id="simple-customer">—</strong></div>
+<div class="result-row"><span>Estimated customer cost with RHEA</span><strong id="simple-final-cost">—</strong></div>
+<div class="result-note" id="simple-status">Enter your measured workload data to calculate an estimate.</div>
 </aside>
+</div>
+
+<div class="chart-wrap">
+<div class="chart-head">
+<div><h3>Projected cumulative cost and savings</h3><p>Linear projection from the measured period. It assumes workload volume and cost profile remain constant.</p></div>
+<div class="chart-total"><span>Customer savings over horizon</span><strong id="simple-chart-total">—</strong></div>
+</div>
+<svg id="simple-chart" class="chart-svg" viewBox="0 0 760 300" role="img" aria-label="Projected cumulative baseline cost, customer cost with RHEA and cumulative savings">
+<text x="380" y="150" text-anchor="middle" class="chart-axis-text">Enter data to display projection</text>
+</svg>
+<div class="legend">
+<span class="legend-item"><span class="legend-line base"></span>Baseline cumulative cost</span>
+<span class="legend-item"><span class="legend-line rhea"></span>Estimated customer cumulative cost with RHEA</span>
+<span class="legend-item"><span class="legend-line"></span>Cumulative customer savings</span>
+</div>
 </div>
 </section>
 
@@ -91,122 +242,449 @@ Baseline Equivalent Cost
 <div class="sim-grid">
 <div>
 <div class="input-grid">
-<div class="field"><label for="advanced-currency">Currency</label><select id="advanced-currency"><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option><option value="GBP">GBP (£)</option></select></div>
-<div class="field"><label for="advanced-requests">Requests / month</label><input id="advanced-requests" type="number" min="0" step="1" placeholder="e.g. 200000" inputmode="numeric"></div>
-<div class="field"><label for="advanced-input-tokens">Average input tokens / request</label><input id="advanced-input-tokens" type="number" min="0" step="1" placeholder="e.g. 1200" inputmode="numeric"></div>
-<div class="field"><label for="advanced-output-tokens">Average output tokens / request</label><input id="advanced-output-tokens" type="number" min="0" step="1" placeholder="e.g. 300" inputmode="numeric"></div>
-<div class="field"><label for="advanced-input-price">Input price / 1M tokens</label><input id="advanced-input-price" type="number" min="0" step="0.0001" placeholder="Your effective price" inputmode="decimal"></div>
-<div class="field"><label for="advanced-output-price">Output price / 1M tokens</label><input id="advanced-output-price" type="number" min="0" step="0.0001" placeholder="Your effective price" inputmode="decimal"></div>
-<div class="field"><label for="advanced-reduction">Assumed RHEA cost reduction (%)</label><input id="advanced-reduction" type="number" min="0" max="100" step="0.1" placeholder="e.g. 30" inputmode="decimal"><small>Scenario assumption only; historical benchmarks are not customer forecasts.</small></div>
-<div class="field"><label for="advanced-incremental">Incremental RHEA operating cost / month</label><input id="advanced-incremental" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
-<div class="field full"><label for="advanced-rate">Commercial terms</label><select id="advanced-rate"><option value="25">Standard customer · 25%</option><option value="20">Founding customer #1 · 20% for first 12 months</option><option value="22.5">Founding customer #2 or #3 · 22.5% for first 12 months</option></select></div>
-<div class="field full quality-row"><input id="advanced-quality" type="checkbox" checked><label for="advanced-quality">Assume the agreed quality gate is maintained.<span>A cheaper result that fails the agreed quality requirement does not qualify as Verified Net Savings.</span></label></div>
+
+<div class="field">
+<label for="advanced-currency">Currency</label>
+<select id="advanced-currency"><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option><option value="GBP">GBP (£)</option></select>
 </div>
-<div class="error" id="advanced-error">Complete requests, token volumes, token prices and an assumed reduction between 0% and 100%.</div>
-<div class="sim-note"><strong>Advanced baseline.</strong> The calculator estimates monthly baseline model cost as request volume × average input/output tokens × your effective token prices. It does not model RHEA's internal implementation.</div>
+
+<div class="field">
+<label for="advanced-days">Measured data period (days)</label>
+<input id="advanced-days" type="number" min="1" max="365" step="1" value="30" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="advanced-requests">Total LLM requests</label>
+<input id="advanced-requests" type="number" min="1" step="1" placeholder="e.g. 200000" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="advanced-addressable-requests">Observed repeated / equivalent requests</label>
+<input id="advanced-addressable-requests" type="number" min="0" step="1" placeholder="e.g. 50000" inputmode="numeric">
+<small>Must be no greater than total requests.</small>
+</div>
+
+<div class="field">
+<label for="advanced-input-tokens">Average input tokens / all requests</label>
+<input id="advanced-input-tokens" type="number" min="0" step="1" placeholder="e.g. 1200" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="advanced-output-tokens">Average output tokens / all requests</label>
+<input id="advanced-output-tokens" type="number" min="0" step="1" placeholder="e.g. 300" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="advanced-addressable-input">Average input tokens / repeated-equivalent request</label>
+<input id="advanced-addressable-input" type="number" min="0" step="1" placeholder="e.g. 900" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="advanced-addressable-output">Average output tokens / repeated-equivalent request</label>
+<input id="advanced-addressable-output" type="number" min="0" step="1" placeholder="e.g. 220" inputmode="numeric">
+</div>
+
+<div class="field">
+<label for="advanced-input-price">Actual input price / 1M tokens</label>
+<input id="advanced-input-price" type="number" min="0" step="0.0001" placeholder="Your effective price" inputmode="decimal">
+</div>
+
+<div class="field">
+<label for="advanced-output-price">Actual output price / 1M tokens</label>
+<input id="advanced-output-price" type="number" min="0" step="0.0001" placeholder="Your effective price" inputmode="decimal">
+</div>
+
+<div class="field">
+<label for="advanced-rhea-cost">Attributable RHEA operating cost in that period</label>
+<input id="advanced-rhea-cost" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+</div>
+
+<div class="field">
+<label for="advanced-horizon">Projection horizon</label>
+<select id="advanced-horizon">
+<option value="1">1 month</option>
+<option value="3">3 months</option>
+<option value="6">6 months</option>
+<option value="12" selected>12 months</option>
+<option value="24">24 months</option>
+<option value="36">36 months</option>
+</select>
+</div>
+
+<div class="field full">
+<label for="advanced-rate">Commercial terms</label>
+<select id="advanced-rate">
+<option value="25">Standard customer · RHEA 25%</option>
+<option value="20">Founding customer #1 · RHEA 20% for first 12 months</option>
+<option value="22.5">Founding customer #2/#3 · RHEA 22.5% for first 12 months</option>
+</select>
+</div>
+
+<div class="field full quality-row">
+<input id="advanced-quality" type="checkbox" checked>
+<label for="advanced-quality">Assume the agreed quality gate is maintained.
+<span>Actual commercial savings require equivalent workload and preserved required quality.</span>
+</label>
+</div>
+</div>
+
+<div class="error" id="advanced-error"></div>
+
+<div class="formula">Advanced data model:
+Measured baseline cost =
+total requests × measured average token cost/request
+
+Addressable LLM cost =
+observed repeated/equivalent requests × measured average token cost for that subset
+
+Potential net savings before fee =
+max(0, addressable LLM cost − attributable RHEA operating cost)</div>
 </div>
 
 <aside class="results" aria-live="polite">
-<h2>Estimated monthly impact</h2>
-<div class="result-row"><span>Baseline Equivalent Cost</span><strong id="advanced-baseline">—</strong></div>
-<div class="result-row"><span>RHEA-enabled workload cost</span><strong id="advanced-rhea-cost">—</strong></div>
-<div class="result-row primary"><span>Verified Net Savings estimate</span><strong id="advanced-vns">—</strong></div>
+<h2>Data-based estimate</h2>
+<div class="kpi">
+<div class="kpi-card primary"><span>Customer saving</span><strong id="advanced-pct">—</strong></div>
+<div class="kpi-card"><span>Projected saving</span><strong id="advanced-projected">—</strong></div>
+</div>
+<div class="result-row"><span>Measured baseline cost</span><strong id="advanced-baseline">—</strong></div>
+<div class="result-row"><span>Addressable LLM cost</span><strong id="advanced-addressable">—</strong></div>
+<div class="result-row primary"><span>Potential net savings before RHEA fee</span><strong id="advanced-net">—</strong></div>
 <div class="result-row"><span>RHEA performance fee</span><strong id="advanced-fee">—</strong></div>
-<div class="result-row positive"><span>Customer net savings</span><strong id="advanced-customer">—</strong></div>
-<div class="result-row positive"><span>Annualized customer net savings</span><strong id="advanced-annual">—</strong></div>
-<div class="result-note" id="advanced-status">Enter your workload to calculate an estimate.</div>
+<div class="result-row primary"><span>Customer net savings in measured period</span><strong id="advanced-customer">—</strong></div>
+<div class="result-row"><span>Estimated customer cost with RHEA</span><strong id="advanced-final-cost">—</strong></div>
+<div class="result-note" id="advanced-status">Enter your measured workload data to calculate an estimate.</div>
 </aside>
+</div>
+
+<div class="chart-wrap">
+<div class="chart-head">
+<div><h3>Projected cumulative cost and savings</h3><p>Linear projection from the measured period. It does not assume historical RHEA benchmark performance.</p></div>
+<div class="chart-total"><span>Customer savings over horizon</span><strong id="advanced-chart-total">—</strong></div>
+</div>
+<svg id="advanced-chart" class="chart-svg" viewBox="0 0 760 300" role="img" aria-label="Projected cumulative baseline cost, customer cost with RHEA and cumulative savings">
+<text x="380" y="150" text-anchor="middle" class="chart-axis-text">Enter data to display projection</text>
+</svg>
+<div class="legend">
+<span class="legend-item"><span class="legend-line base"></span>Baseline cumulative cost</span>
+<span class="legend-item"><span class="legend-line rhea"></span>Estimated customer cumulative cost with RHEA</span>
+<span class="legend-item"><span class="legend-line"></span>Cumulative customer savings</span>
+</div>
 </div>
 </section>
 
-<div class="privacy"><strong>Privacy:</strong> calculator inputs are processed locally in your browser by this page's JavaScript. The simulator does not send the values you enter to RHEA and does not store them in local storage.</div>
-<div class="actions-row"><a class="button primary" href="/saas/#verification">How savings are verified →</a><a class="button secondary" href="/results/">Historical measured results →</a><a class="button secondary" href="/saas/">Back to RHEA as a Service</a></div>
+<div class="sim-note">
+<strong>No benchmark percentage is used.</strong> This public simulator uses only the workload and cost figures entered above. The estimate intentionally does not attempt to model undisclosed RHEA mechanisms or additional savings that cannot be derived from the supplied operating data.
+</div>
+
+<div class="privacy"><strong>Privacy:</strong> calculator inputs are processed locally in your browser. The page does not transmit the values you enter to RHEA and does not store them in local storage.</div>
+
+<div class="actions-row">
+<a class="button primary" href="/saas/#verification">How commercial savings are verified →</a>
+<a class="button secondary" href="/results/">Historical measured results →</a>
+<a class="button secondary" href="/saas/">Back to RHEA as a Service</a>
+</div>
+
 </div>
 </div>
 </div></section>
 </main>
 
-<footer><div class="container footer-inner"><span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span><span>RHEA Savings Simulator · illustrative estimates</span></div></footer>
+<footer><div class="container footer-inner">
+<span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span>
+<span>RHEA Savings Simulator · data-based estimate</span>
+</div></footer>
 
 <script>
 'use strict';
-const $=id=>document.getElementById(id);
-const tabs=[['simple','tab-simple','pane-simple'],['advanced','tab-advanced','pane-advanced']];
-for(const [mode,tabId,paneId] of tabs){
-  $(tabId).addEventListener('click',()=>{
-    for(const [m,t,p] of tabs){
-      const active=m===mode;
-      $(t).setAttribute('aria-selected',String(active));
-      $(p).hidden=!active;
+
+const $ = id => document.getElementById(id);
+const MONTH_DAYS = 365.25 / 12;
+
+const tabs = [
+  ['simple', 'tab-simple', 'pane-simple'],
+  ['advanced', 'tab-advanced', 'pane-advanced']
+];
+
+for (const [mode, tabId, paneId] of tabs) {
+  $(tabId).addEventListener('click', () => {
+    for (const [m, t, p] of tabs) {
+      const active = m === mode;
+      $(t).setAttribute('aria-selected', String(active));
+      $(p).hidden = !active;
     }
   });
 }
-function num(id){const v=Number($(id).value);return Number.isFinite(v)?v:null}
-function money(value,currency){
-  if(value===null||!Number.isFinite(value))return '—';
-  return new Intl.NumberFormat('en-GB',{style:'currency',currency,maximumFractionDigits:2}).format(value);
+
+function n(id) {
+  if ($(id).value === '') return null;
+  const v = Number($(id).value);
+  return Number.isFinite(v) ? v : null;
 }
-function scenario(base,reduction,incremental,rate,quality){
-  const rheaCost=base*(1-reduction/100);
-  const gross=base-rheaCost;
-  const verified=quality?Math.max(0,gross-incremental):0;
-  const fee=verified*(rate/100);
-  const customer=verified-fee;
-  return {base,rheaCost,gross,verified,fee,customer,annual:customer*12};
+
+function money(v, currency) {
+  if (!Number.isFinite(v)) return '—';
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 2
+  }).format(v);
 }
-function render(prefix,r,currency,quality){
-  $(prefix+'-baseline').textContent=money(r.base,currency);
-  $(prefix+'-rhea-cost').textContent=money(r.rheaCost,currency);
-  $(prefix+'-vns').textContent=money(r.verified,currency);
-  $(prefix+'-fee').textContent=money(r.fee,currency);
-  $(prefix+'-customer').textContent=money(r.customer,currency);
-  $(prefix+'-annual').textContent=money(r.annual,currency);
-  $(prefix+'-status').textContent=!quality
-    ?'Quality gate assumed not maintained: modeled cost reduction does not qualify as Verified Net Savings.'
-    :(r.verified>0
-      ?'Positive Verified Net Savings scenario. RHEA fee is applied only to the positive verified amount.'
-      :'No positive Verified Net Savings in this scenario: RHEA performance fee is 0.');
+
+function pct(v) {
+  if (!Number.isFinite(v)) return '—';
+  return new Intl.NumberFormat('en-GB', {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1
+  }).format(v) + '%';
 }
-function clear(prefix){
-  for(const k of ['baseline','rhea-cost','vns','fee','customer','annual'])$(prefix+'-'+k).textContent='—';
+
+function compactMoney(v, currency) {
+  if (!Number.isFinite(v)) return '';
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency,
+    notation: 'compact',
+    maximumFractionDigits: 1
+  }).format(v);
 }
-function calcSimple(){
-  const base=num('simple-cost');
-  const reduction=num('simple-reduction');
-  const incremental=num('simple-incremental');
-  const rate=num('simple-rate');
-  const quality=$('simple-quality').checked;
-  const currency=$('simple-currency').value;
-  const valid=base!==null&&base>=0&&reduction!==null&&reduction>=0&&reduction<=100&&incremental!==null&&incremental>=0&&rate!==null;
-  $('simple-error').classList.toggle('show',!valid&&($('simple-cost').value!==''||$('simple-reduction').value!==''));
-  if(!valid||$('simple-cost').value===''||$('simple-reduction').value===''){
-    clear('simple');$('simple-status').textContent='Enter your scenario to calculate an estimate.';return;
+
+function commercialModel(baseline, addressable, rheaCost, rate, quality, days, horizon) {
+  const boundedAddressable = Math.min(Math.max(0, addressable), Math.max(0, baseline));
+  const potentialNet = quality ? Math.max(0, boundedAddressable - rheaCost) : 0;
+  const fee = potentialNet * (rate / 100);
+  const customerSavings = potentialNet - fee;
+  const finalCost = Math.max(0, baseline - customerSavings);
+  const savingPct = baseline > 0 ? (customerSavings / baseline) * 100 : 0;
+  const monthlyFactor = MONTH_DAYS / days;
+  const monthlyBaseline = baseline * monthlyFactor;
+  const monthlyFinal = finalCost * monthlyFactor;
+  const monthlySavings = customerSavings * monthlyFactor;
+  const projectedSavings = monthlySavings * horizon;
+
+  return {
+    baseline,
+    addressable: boundedAddressable,
+    potentialNet,
+    fee,
+    customerSavings,
+    finalCost,
+    savingPct,
+    monthlyBaseline,
+    monthlyFinal,
+    monthlySavings,
+    projectedSavings,
+    horizon
+  };
+}
+
+function clear(prefix) {
+  const ids = ['pct', 'projected', 'baseline', 'addressable', 'net', 'fee', 'customer', 'final-cost', 'chart-total'];
+  for (const id of ids) $(prefix + '-' + id).textContent = '—';
+  drawEmpty(prefix);
+}
+
+function render(prefix, r, currency, quality) {
+  $(prefix + '-pct').textContent = pct(r.savingPct);
+  $(prefix + '-projected').textContent = money(r.projectedSavings, currency);
+  $(prefix + '-baseline').textContent = money(r.baseline, currency);
+  $(prefix + '-addressable').textContent = money(r.addressable, currency);
+  $(prefix + '-net').textContent = money(r.potentialNet, currency);
+  $(prefix + '-fee').textContent = money(r.fee, currency);
+  $(prefix + '-customer').textContent = money(r.customerSavings, currency);
+  $(prefix + '-final-cost').textContent = money(r.finalCost, currency);
+  $(prefix + '-chart-total').textContent = money(r.projectedSavings, currency);
+
+  $(prefix + '-status').textContent = !quality
+    ? 'Quality gate assumed not maintained: potential commercial savings are set to 0.'
+    : r.customerSavings > 0
+      ? 'Estimate derived from your measured workload data. Actual Verified Net Savings require deployment-time verification.'
+      : 'No positive customer net savings are produced by the entered data after attributable RHEA cost and fee.';
+
+  drawChart(prefix, r, currency);
+}
+
+function svgEl(tag, attrs = {}) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+  return el;
+}
+
+function drawEmpty(prefix) {
+  const svg = $(prefix + '-chart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const text = svgEl('text', {x:380, y:150, 'text-anchor':'middle', class:'chart-axis-text'});
+  text.textContent = 'Enter data to display projection';
+  svg.appendChild(text);
+}
+
+function drawChart(prefix, r, currency) {
+  const svg = $(prefix + '-chart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  const W = 760, H = 300;
+  const left = 76, right = 18, top = 18, bottom = 45;
+  const innerW = W - left - right;
+  const innerH = H - top - bottom;
+  const horizon = Math.max(1, Math.round(r.horizon));
+
+  const rows = [];
+  for (let m = 0; m <= horizon; m++) {
+    rows.push({
+      m,
+      baseline: r.monthlyBaseline * m,
+      final: r.monthlyFinal * m,
+      savings: r.monthlySavings * m
+    });
   }
-  render('simple',scenario(base,reduction,incremental,rate,quality),currency,quality);
-}
-function calcAdvanced(){
-  const requests=num('advanced-requests');
-  const it=num('advanced-input-tokens');
-  const ot=num('advanced-output-tokens');
-  const ip=num('advanced-input-price');
-  const op=num('advanced-output-price');
-  const reduction=num('advanced-reduction');
-  const incremental=num('advanced-incremental');
-  const rate=num('advanced-rate');
-  const quality=$('advanced-quality').checked;
-  const currency=$('advanced-currency').value;
-  const required=['advanced-requests','advanced-input-tokens','advanced-output-tokens','advanced-input-price','advanced-output-price','advanced-reduction'];
-  const complete=required.every(id=>$(id).value!=='');
-  const valid=[requests,it,ot,ip,op,incremental].every(v=>v!==null&&v>=0)&&reduction!==null&&reduction>=0&&reduction<=100&&rate!==null;
-  $('advanced-error').classList.toggle('show',complete&&!valid);
-  if(!complete||!valid){
-    clear('advanced');$('advanced-status').textContent='Enter your workload to calculate an estimate.';return;
+
+  const maxY = Math.max(1, ...rows.map(d => d.baseline));
+  const x = m => left + (m / horizon) * innerW;
+  const y = v => top + innerH - (v / maxY) * innerH;
+
+  for (let i = 0; i <= 4; i++) {
+    const value = maxY * (i / 4);
+    const yy = y(value);
+    svg.appendChild(svgEl('line', {x1:left, y1:yy, x2:W-right, y2:yy, class:'chart-grid'}));
+    const label = svgEl('text', {x:left-10, y:yy+4, 'text-anchor':'end', class:'chart-axis-text'});
+    label.textContent = compactMoney(value, currency);
+    svg.appendChild(label);
   }
-  const base=requests*((it/1e6)*ip+(ot/1e6)*op);
-  render('advanced',scenario(base,reduction,incremental,rate,quality),currency,quality);
+
+  const tickCount = Math.min(horizon, 6);
+  for (let i = 0; i <= tickCount; i++) {
+    const m = Math.round((horizon * i) / tickCount);
+    const xx = x(m);
+    const label = svgEl('text', {x:xx, y:H-17, 'text-anchor':'middle', class:'chart-axis-text'});
+    label.textContent = m === 0 ? 'Now' : 'M' + m;
+    svg.appendChild(label);
+  }
+
+  function pathFor(key) {
+    return rows.map((d, i) => (i === 0 ? 'M' : 'L') + x(d.m).toFixed(2) + ' ' + y(d[key]).toFixed(2)).join(' ');
+  }
+
+  svg.appendChild(svgEl('path', {d:pathFor('baseline'), class:'chart-baseline'}));
+  svg.appendChild(svgEl('path', {d:pathFor('final'), class:'chart-rhea'}));
+  svg.appendChild(svgEl('path', {d:pathFor('savings'), class:'chart-saving'}));
+
+  const end = rows[rows.length - 1];
+  svg.appendChild(svgEl('circle', {cx:x(end.m), cy:y(end.savings), r:4, class:'chart-dot'}));
+
+  const saveLabel = svgEl('text', {
+    x: Math.max(left + 60, x(end.m) - 8),
+    y: Math.max(top + 13, y(end.savings) - 10),
+    'text-anchor':'end',
+    class:'chart-axis-text'
+  });
+  saveLabel.textContent = 'Savings ' + compactMoney(end.savings, currency);
+  svg.appendChild(saveLabel);
 }
-for(const id of ['simple-currency','simple-cost','simple-reduction','simple-incremental','simple-rate','simple-quality'])$(id).addEventListener('input',calcSimple);
-for(const id of ['advanced-currency','advanced-requests','advanced-input-tokens','advanced-output-tokens','advanced-input-price','advanced-output-price','advanced-reduction','advanced-incremental','advanced-rate','advanced-quality'])$(id).addEventListener('input',calcAdvanced);
+
+function setError(prefix, message) {
+  const el = $(prefix + '-error');
+  el.textContent = message || '';
+  el.classList.toggle('show', Boolean(message));
+}
+
+function calcSimple() {
+  const currency = $('simple-currency').value;
+  const days = n('simple-days');
+  const spend = n('simple-spend');
+  const total = n('simple-total-requests');
+  const addressableReq = n('simple-addressable-requests');
+  const rheaCost = n('simple-rhea-cost');
+  const horizon = n('simple-horizon');
+  const rate = n('simple-rate');
+  const quality = $('simple-quality').checked;
+
+  const requiredFilled = [days, spend, total, addressableReq, rheaCost, horizon, rate].every(v => v !== null);
+  if (!requiredFilled) {
+    setError('simple', '');
+    clear('simple');
+    $('simple-status').textContent = 'Enter your measured workload data to calculate an estimate.';
+    return;
+  }
+
+  if (days <= 0 || spend < 0 || total <= 0 || addressableReq < 0 || addressableReq > total || rheaCost < 0 || horizon <= 0) {
+    setError('simple', 'Check the inputs. Repeated/equivalent requests cannot exceed total requests, and all cost/time values must be valid non-negative numbers.');
+    clear('simple');
+    return;
+  }
+
+  setError('simple', '');
+  const addressableCost = spend * (addressableReq / total);
+  const r = commercialModel(spend, addressableCost, rheaCost, rate, quality, days, horizon);
+  render('simple', r, currency, quality);
+}
+
+function calcAdvanced() {
+  const currency = $('advanced-currency').value;
+  const days = n('advanced-days');
+  const total = n('advanced-requests');
+  const addressableReq = n('advanced-addressable-requests');
+  const avgIn = n('advanced-input-tokens');
+  const avgOut = n('advanced-output-tokens');
+  const addrIn = n('advanced-addressable-input');
+  const addrOut = n('advanced-addressable-output');
+  const inPrice = n('advanced-input-price');
+  const outPrice = n('advanced-output-price');
+  const rheaCost = n('advanced-rhea-cost');
+  const horizon = n('advanced-horizon');
+  const rate = n('advanced-rate');
+  const quality = $('advanced-quality').checked;
+
+  const values = [days,total,addressableReq,avgIn,avgOut,addrIn,addrOut,inPrice,outPrice,rheaCost,horizon,rate];
+  if (!values.every(v => v !== null)) {
+    setError('advanced', '');
+    clear('advanced');
+    $('advanced-status').textContent = 'Enter your measured workload data to calculate an estimate.';
+    return;
+  }
+
+  if (days <= 0 || total <= 0 || addressableReq < 0 || addressableReq > total ||
+      [avgIn,avgOut,addrIn,addrOut,inPrice,outPrice,rheaCost].some(v => v < 0) || horizon <= 0) {
+    setError('advanced', 'Check the inputs. Repeated/equivalent requests cannot exceed total requests, and token, price, cost and time values must be valid non-negative numbers.');
+    clear('advanced');
+    return;
+  }
+
+  setError('advanced', '');
+
+  const avgRequestCost = (avgIn / 1e6) * inPrice + (avgOut / 1e6) * outPrice;
+  const addressableRequestCost = (addrIn / 1e6) * inPrice + (addrOut / 1e6) * outPrice;
+
+  const baseline = total * avgRequestCost;
+  const addressableCost = addressableReq * addressableRequestCost;
+
+  const r = commercialModel(baseline, addressableCost, rheaCost, rate, quality, days, horizon);
+  render('advanced', r, currency, quality);
+}
+
+const simpleIds = [
+  'simple-currency','simple-days','simple-spend','simple-total-requests',
+  'simple-addressable-requests','simple-rhea-cost','simple-horizon',
+  'simple-rate','simple-quality'
+];
+
+const advancedIds = [
+  'advanced-currency','advanced-days','advanced-requests','advanced-addressable-requests',
+  'advanced-input-tokens','advanced-output-tokens','advanced-addressable-input',
+  'advanced-addressable-output','advanced-input-price','advanced-output-price',
+  'advanced-rhea-cost','advanced-horizon','advanced-rate','advanced-quality'
+];
+
+for (const id of simpleIds) {
+  $(id).addEventListener('input', calcSimple);
+  $(id).addEventListener('change', calcSimple);
+}
+for (const id of advancedIds) {
+  $(id).addEventListener('input', calcAdvanced);
+  $(id).addEventListener('change', calcAdvanced);
+}
+
+drawEmpty('simple');
+drawEmpty('advanced');
 calcSimple();
 calcAdvanced();
 </script>
