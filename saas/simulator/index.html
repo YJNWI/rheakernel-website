@@ -195,7 +195,7 @@
 <section class="sim-hero"><div class="container">
 <span class="data-badge">Customer-data estimate</span>
 <h1>RHEA Savings Simulator.</h1>
-<p>Estimate how much RHEA could save on your LLM workload using your own measured usage and cost data. The calculator does not use RHEA's historical benchmark reduction percentages.</p>
+<p>Estimate how much RHEA could save on your LLM workload using your own measured usage and cost data. The calculator does not use RHEA's historical benchmark reduction percentages or an invented learning coefficient.</p>
 <div class="sim-note">
 <strong>What the calculator measures.</strong> You identify work in your existing LLM workload that is genuinely repeated or equivalent and therefore potentially reusable without a fresh full-model computation. The simulator prices that measured subset, deducts attributable RHEA operating cost, applies the current performance-fee terms, and projects the result over the time period you choose. Actual commercial savings remain subject to deployment-time verification and the agreed quality gate.
 </div>
@@ -282,6 +282,13 @@
     <p class="control-help">Count identified from your own logs or workload analysis.</p>
     <p class="input-feedback" id="eligible-requests-feedback"></p>
   </div>
+  <div class="control simple-only">
+    <label for="private-learning-calls">Additional reusable request coverage learned per measured period</label>
+    <input id="private-learning-calls" type="number" min="0" step="1" value="0" inputmode="numeric">
+    <p class="control-help">How many additional future requests are expected to become reusable after each measured period, based on your observed/validated learning rate. Use 0 when you do not have this measurement.</p>
+    <p class="input-feedback" id="private-learning-calls-feedback"></p>
+  </div>
+
 
   <div class="control shared-only" hidden>
     <label for="shared-eligible-requests">Requests eligible for Shared Network lookup</label>
@@ -325,6 +332,20 @@
     <input id="eligible-output" type="number" min="0" step="1" placeholder="e.g. 220" inputmode="numeric">
     <p class="input-feedback" id="eligible-output-feedback"></p>
   </div>
+  <div class="control advanced-only" hidden>
+    <label for="private-new-items">New validated reusable knowledge items / measured period</label>
+    <input id="private-new-items" type="number" min="0" step="1" value="0" inputmode="numeric">
+    <p class="control-help">New private knowledge items that become valid and reusable during the measured period.</p>
+    <p class="input-feedback" id="private-new-items-feedback"></p>
+  </div>
+
+  <div class="control advanced-only" hidden>
+    <label for="private-matches-per-item">Future request matches / new item / measured period</label>
+    <input id="private-matches-per-item" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+    <p class="control-help">Observed or expected request coverage produced by each newly validated item during an equivalent period. The simulator multiplies this by new items; it does not use a RHEA learning coefficient.</p>
+    <p class="input-feedback" id="private-matches-per-item-feedback"></p>
+  </div>
+
 
   <div class="control advanced-only" hidden>
     <label for="input-price">Actual input price / 1M tokens</label>
@@ -452,7 +473,7 @@
   </div>
 
   <aside class="routing-panel">
-    <h3 id="split-title">Measured workload split</h3>
+    <h3 id="split-title">Projected workload learning</h3>
     <p id="route-period">Repeated/equivalent work versus remaining workload.</p>
     <div class="donut" id="routing-donut" role="img" aria-label="Measured workload split">
       <div class="donut-center">
@@ -461,6 +482,11 @@
       </div>
     </div>
     <div class="routing-row"><span><i class="swatch"></i>Private repeated / equivalent</span><strong id="eligible-count">—</strong></div>
+    <div class="routing-row"><span><i class="swatch"></i>Private reusable at horizon</span><strong id="private-end-count">—</strong></div>
+    <div class="routing-row"><span>Initial reusable share</span><strong id="initial-reuse-rate">—</strong></div>
+    <div class="routing-row"><span>End-of-horizon reusable share</span><strong id="end-reuse-rate">—</strong></div>
+    <div class="routing-row"><span>Month 1 customer saving %</span><strong id="initial-saving-rate">—</strong></div>
+    <div class="routing-row"><span>Final-month customer saving %</span><strong id="end-saving-rate">—</strong></div>
     <div class="routing-row shared-only" id="shared-matched-row" hidden><span><i class="swatch" style="background:#a7baff"></i>Shared Network matched</span><strong id="shared-matched-count">—</strong></div><div class="routing-row"><span><i class="swatch remaining"></i>Remaining requests</span><strong id="remaining-count">—</strong></div>
     <div class="route-note" id="route-note">The percentage inside this ring is the share of requests that are potentially reusable, not the financial savings percentage. Private reuse comes from the request counts you enter; Shared Network reuse is added only from a privacy-safe live aggregate snapshot.</div>
   </aside>
@@ -703,7 +729,7 @@ function validateCommon(){
   return {errors,days,requests,eligible,rheaCost,sharedEligible:sharedEligible||0};
 }
 
-function buildInputs(){
+function buildInputsBase(){
   const common=validateCommon();
   const months=monthsFromDuration();
   const currency=$('currency').value;
@@ -825,15 +851,112 @@ function buildInputs(){
   };
 }
 
+
+function buildInputs(){
+  const base=buildInputsBase();
+
+  for(const id of ['private-learning-calls','private-new-items','private-matches-per-item']){
+    setFeedback(id,'');
+  }
+
+  if(!base.valid) return base;
+
+  let learningCallsPeriod=0;
+  let privateEligibleCostPerCall=0;
+  let privateTokenPerCall=0;
+  const extraErrors=[];
+
+  if(state.mode==='simple'){
+    const learned=readNumber('private-learning-calls');
+    if(learned===null || learned<0){
+      setFeedback('private-learning-calls','Enter a non-negative measured learning rate.');
+      extraErrors.push('private-learning-calls');
+    }else{
+      learningCallsPeriod=learned;
+    }
+
+    privateEligibleCostPerCall=base.requests>0
+      ? base.baselinePeriod/base.requests
+      : 0;
+
+    const simpleTokens=readNumber('simple-tokens');
+    privateTokenPerCall=Number.isFinite(simpleTokens) && simpleTokens>=0
+      ? simpleTokens
+      : 0;
+  }else{
+    const newItems=readNumber('private-new-items');
+    const matchesPerItem=readNumber('private-matches-per-item');
+
+    if(newItems===null || newItems<0){
+      setFeedback('private-new-items','Enter a non-negative number of new validated items.');
+      extraErrors.push('private-new-items');
+    }
+    if(matchesPerItem===null || matchesPerItem<0){
+      setFeedback('private-matches-per-item','Enter a non-negative measured match rate per new item.');
+      extraErrors.push('private-matches-per-item');
+    }
+
+    if(!extraErrors.length){
+      learningCallsPeriod=newItems*matchesPerItem;
+    }
+
+    const eligibleIn=readNumber('eligible-input');
+    const eligibleOut=readNumber('eligible-output');
+    const inputPrice=readNumber('input-price');
+    const outputPrice=readNumber('output-price');
+
+    if([eligibleIn,eligibleOut,inputPrice,outputPrice].every(Number.isFinite)){
+      privateEligibleCostPerCall=
+        (eligibleIn/1e6)*inputPrice+
+        (eligibleOut/1e6)*outputPrice;
+      privateTokenPerCall=eligibleIn+eligibleOut;
+    }
+  }
+
+  if(extraErrors.length){
+    return {
+      valid:false,
+      errors:[...(base.errors||[]),...extraErrors]
+    };
+  }
+
+  return {
+    ...base,
+    privateLearningCallsPeriod:learningCallsPeriod,
+    privateEligibleCostPerCall,
+    privateTokenPerCall
+  };
+}
+
+function projectPrivateReusableCalls(initialCalls, learnedCallsPerMonth, monthIndex, totalCalls){
+  const initial=Math.max(0,Number(initialCalls)||0);
+  const learned=Math.max(0,Number(learnedCallsPerMonth)||0);
+  const month=Math.max(0,Number(monthIndex)||0);
+  const total=Math.max(0,Number(totalCalls)||0);
+  return Math.min(total,initial+learned*month);
+}
+
 function calculate(inputs){
   const factor=MONTH_DAYS/inputs.days;
   const baselineMonthly=inputs.baselinePeriod*factor;
-  const privateAddressableMonthly=inputs.privateAddressablePeriod*factor;
-  const privateCallsMonthly=inputs.eligible*factor;
-  const privateTokensMonthly=inputs.privateTokensPeriod*factor;
+
+  const totalCallsMonthly=inputs.requests*factor;
+  const initialPrivateCallsMonthly=inputs.eligible*factor;
+  const privateLearningCallsMonthly=inputs.privateLearningCallsPeriod*factor;
+
+  const privateCostPerCall=Math.max(0,inputs.privateEligibleCostPerCall||0);
+  const privateTokenPerCall=Math.max(0,inputs.privateTokenPerCall||0);
+
   const sharedEligibleCallsMonthly=inputs.sharedEligible*factor;
   const sharedEligibleCostMonthly=inputs.sharedEligibleCostPeriod*factor;
   const sharedEligibleTokensMonthly=inputs.sharedEligibleTokensPeriod*factor;
+  const sharedCostPerCall=sharedEligibleCallsMonthly>0
+    ? sharedEligibleCostMonthly/sharedEligibleCallsMonthly
+    : 0;
+  const sharedTokensPerCall=sharedEligibleCallsMonthly>0
+    ? sharedEligibleTokensMonthly/sharedEligibleCallsMonthly
+    : 0;
+
   const rheaOpMonthly=inputs.rheaCostPeriod*factor;
 
   const rows=[];
@@ -850,21 +973,56 @@ function calculate(inputs){
   let cumulativeTokens=0;
 
   for(let month=0;month<inputs.months;month++){
-    const publicMatchRate=inputs.plan==='shared'?networkMatchRateForMonth(month):0;
-    const sharedMatchedCalls=sharedEligibleCallsMonthly*publicMatchRate;
-    const sharedGrossSavings=sharedEligibleCostMonthly*publicMatchRate;
-    const sharedTokensSaved=sharedEligibleTokensMonthly*publicMatchRate;
+    const privateReusableCalls=projectPrivateReusableCalls(
+      initialPrivateCallsMonthly,
+      privateLearningCallsMonthly,
+      month,
+      totalCallsMonthly
+    );
+
+    const privateGrossSavings=Math.min(
+      baselineMonthly,
+      privateReusableCalls*privateCostPerCall
+    );
+
+    const publicMatchRate=inputs.plan==='shared'
+      ? networkMatchRateForMonth(month)
+      : 0;
+
+    const rawSharedMatchedCalls=sharedEligibleCallsMonthly*publicMatchRate;
+    const remainingAfterPrivate=Math.max(0,totalCallsMonthly-privateReusableCalls);
+    const sharedMatchedCalls=Math.min(rawSharedMatchedCalls,remainingAfterPrivate);
+
+    const sharedGrossSavings=sharedMatchedCalls*sharedCostPerCall;
+    const sharedTokensSaved=sharedMatchedCalls*sharedTokensPerCall;
 
     const grossModelSavings=Math.min(
       baselineMonthly,
-      privateAddressableMonthly+sharedGrossSavings
+      privateGrossSavings+sharedGrossSavings
     );
-    const vns=inputs.quality?Math.max(0,grossModelSavings-rheaOpMonthly):0;
+
+    const vns=inputs.quality
+      ? Math.max(0,grossModelSavings-rheaOpMonthly)
+      : 0;
+
     const rate=feeRateForMonth(inputs.term,month);
     const fee=vns*rate;
     const customerSavings=Math.max(0,vns-fee);
-    const modelSpendWithRhea=Math.max(0,baselineMonthly-grossModelSavings);
+
+    const qualifiedGross=inputs.quality?grossModelSavings:0;
+    const modelSpendWithRhea=Math.max(0,baselineMonthly-qualifiedGross);
     const customerSpend=modelSpendWithRhea+rheaOpMonthly+fee;
+
+    const combinedReusableCalls=Math.min(
+      totalCallsMonthly,
+      privateReusableCalls+sharedMatchedCalls
+    );
+    const combinedReusableRate=totalCallsMonthly>0
+      ? combinedReusableCalls/totalCallsMonthly
+      : 0;
+    const monthlySavingRate=baselineMonthly>0
+      ? customerSavings/baselineMonthly
+      : 0;
 
     cumulativeBaseline+=baselineMonthly;
     cumulativeCustomerSpend+=customerSpend;
@@ -873,17 +1031,22 @@ function calculate(inputs){
     cumulativeGross+=grossModelSavings;
     cumulativeSharedGross+=sharedGrossSavings;
     cumulativeVns+=vns;
-    cumulativePrivateCalls+=privateCallsMonthly;
+    cumulativePrivateCalls+=privateReusableCalls;
     cumulativeSharedCalls+=sharedMatchedCalls;
-    cumulativeCalls+=privateCallsMonthly+sharedMatchedCalls;
-    cumulativeTokens+=privateTokensMonthly+sharedTokensSaved;
+    cumulativeCalls+=combinedReusableCalls;
+    cumulativeTokens+=privateReusableCalls*privateTokenPerCall+sharedTokensSaved;
 
     rows.push({
       month,
       rate,
       publicMatchRate,
+      privateReusableCalls,
       sharedMatchedCalls,
+      combinedReusableCalls,
+      combinedReusableRate,
+      monthlySavingRate,
       baselineMonthly,
+      privateGrossSavings,
       grossModelSavings,
       sharedGrossSavings,
       vns,
@@ -901,20 +1064,55 @@ function calculate(inputs){
   }
 
   const last=rows.at(-1);
-  const savingRate=last.cumulativeBaseline>0?last.cumulativeCustomerSavings/last.cumulativeBaseline:0;
-  const measuredPeriodSharedMatched = inputs.plan==='shared'
-    ? inputs.sharedEligible*networkMatchRateForMonth(0)
+  const savingRate=last.cumulativeBaseline>0
+    ? last.cumulativeCustomerSavings/last.cumulativeBaseline
     : 0;
-  const privateRequestRate=reusableRequestRate(inputs.requests,inputs.eligible,0);
-  const combinedPeriodRate=reusableRequestRate(
-    inputs.requests,
-    inputs.eligible,
-    measuredPeriodSharedMatched
+
+  const initialCombinedRate=rows.length
+    ? rows[0].combinedReusableRate
+    : 0;
+
+  const endPrivateReusableCallsMonthly=projectPrivateReusableCalls(
+    initialPrivateCallsMonthly,
+    privateLearningCallsMonthly,
+    inputs.months,
+    totalCallsMonthly
   );
+
+  const endPublicMatchRate=inputs.plan==='shared'
+    ? networkMatchRateForMonth(inputs.months)
+    : 0;
+
+  const rawEndShared=sharedEligibleCallsMonthly*endPublicMatchRate;
+  const endRemainingAfterPrivate=Math.max(
+    0,
+    totalCallsMonthly-endPrivateReusableCallsMonthly
+  );
+  const endSharedMatchedCallsMonthly=Math.min(
+    rawEndShared,
+    endRemainingAfterPrivate
+  );
+
+  const endCombinedCallsMonthly=Math.min(
+    totalCallsMonthly,
+    endPrivateReusableCallsMonthly+endSharedMatchedCallsMonthly
+  );
+
+  const endCombinedRate=totalCallsMonthly>0
+    ? endCombinedCallsMonthly/totalCallsMonthly
+    : 0;
+
+  const endPrivateEquivalent=endPrivateReusableCallsMonthly/factor;
+  const endSharedEquivalent=endSharedMatchedCallsMonthly/factor;
 
   return {
     inputs,rows,
-    baselineMonthly,privateAddressableMonthly,rheaOpMonthly,
+    baselineMonthly,
+    rheaOpMonthly,
+    initialPrivateCallsMonthly,
+    privateLearningCallsMonthly,
+    endPrivateReusableCallsMonthly,
+    endSharedMatchedCallsMonthly,
     cumulativeBaseline:last.cumulativeBaseline,
     cumulativeCustomerSpend:last.cumulativeCustomerSpend,
     cumulativeCustomerSavings:last.cumulativeCustomerSavings,
@@ -927,9 +1125,12 @@ function calculate(inputs){
     cumulativeSharedCalls,
     cumulativeTokens,
     savingRate,
-    privateRequestRate,
-    combinedPeriodRate,
-    measuredPeriodSharedMatched
+    initialCombinedRate,
+    endCombinedRate,
+    privateRequestRate:inputs.requests>0?inputs.eligible/inputs.requests:0,
+    combinedPeriodRate:endCombinedRate,
+    measuredPeriodSharedMatched:endSharedEquivalent,
+    endPrivateEquivalent
   };
 }
 
@@ -947,6 +1148,10 @@ function clearDashboard(){
   $('chart-insight').textContent='Enter workload data to build the projection.';
   $('simulation-status').textContent='Enter measured workload data to calculate.';
   $('simulation-status').classList.remove('error');
+  for(const id of ['private-end-count','initial-reuse-rate','end-reuse-rate','initial-saving-rate','end-saving-rate']){
+    const el=$(id);
+    if(el) el.textContent='—';
+  }
   drawEmptyChart();
   renderTable([]);
   renderDonut(null,0);
@@ -968,16 +1173,41 @@ function render(view){
   $('metric-tokens-note').textContent=`Projected over ${durationLabel(inputs)}`;
   $('metric-percent-note').textContent=`${money(view.cumulativeCustomerSavings,inputs.currency)} kept by customer`;
 
+  const factor=MONTH_DAYS/inputs.days;
   const sharedMatchedPeriod=view.measuredPeriodSharedMatched;
-  const remaining=Math.max(0,inputs.requests-inputs.eligible-sharedMatchedPeriod);
-  $('eligible-rate').textContent=percentage(view.combinedPeriodRate);
-  $('eligible-rate-label').textContent='of requests potentially reusable';
+  const privateEndPeriod=view.endPrivateEquivalent;
+  const remaining=Math.max(
+    0,
+    inputs.requests-privateEndPeriod-sharedMatchedPeriod
+  );
+
+  const firstRow=view.rows[0];
+  const lastRow=view.rows.at(-1);
+
+  $('eligible-rate').textContent=percentage(view.endCombinedRate);
+  $('eligible-rate-label').textContent='of requests reusable at horizon';
   $('eligible-count').textContent=compact(inputs.eligible);
+  $('private-end-count').textContent=compact(privateEndPeriod);
   $('shared-matched-count').textContent=compact(sharedMatchedPeriod);
   $('remaining-count').textContent=compact(remaining);
-  $('route-period').textContent=`Measured request split · ${number(inputs.days,0)} ${inputs.days===1?'day':'days'}`;
-  $('route-note').textContent=`The ring shows ${percentage(view.combinedPeriodRate)} of requests as potentially reusable. This is a request-share metric, not the financial savings percentage. Customer net saving is ${percentage(view.savingRate)} under the entered costs and current fee terms.`;
-  renderDonut(view.combinedPeriodRate, inputs.plan==='shared'&&inputs.requests>0?sharedMatchedPeriod/inputs.requests:0);
+
+  $('initial-reuse-rate').textContent=percentage(view.initialCombinedRate);
+  $('end-reuse-rate').textContent=percentage(view.endCombinedRate);
+  $('initial-saving-rate').textContent=percentage(firstRow?.monthlySavingRate||0);
+  $('end-saving-rate').textContent=percentage(lastRow?.monthlySavingRate||0);
+
+  $('route-period').textContent=`Learning projection · ${durationLabel(inputs)}`;
+  $('route-note').textContent=
+    `Reusable request coverage moves from ${percentage(view.initialCombinedRate)} now to ${percentage(view.endCombinedRate)} at the end of the selected horizon. `+
+    `The final month's customer net saving moves from ${percentage(firstRow?.monthlySavingRate||0)} in month 1 to ${percentage(lastRow?.monthlySavingRate||0)}. `+
+    `Private growth comes only from the measured learning inputs; Shared Network growth comes only from the privacy-safe aggregate snapshot.`;
+
+  renderDonut(
+    view.endCombinedRate,
+    inputs.plan==='shared'&&inputs.requests>0
+      ? sharedMatchedPeriod/inputs.requests
+      : 0
+  );
 
   $('baseline-cost').textContent=money(view.cumulativeBaseline,inputs.currency);
   $('addressable-cost').textContent=money(view.cumulativeGross,inputs.currency);
@@ -1013,8 +1243,11 @@ function render(view){
   const sharedPart=inputs.plan==='shared' && view.cumulativeSharedGross>0
     ? ` Shared Network adds ${money(view.cumulativeSharedGross,inputs.currency)} of gross model savings over the horizon.`
     : '';
+  const learningPart=view.rows.length
+    ? ` Monthly customer net saving changes from ${percentage(view.rows[0].monthlySavingRate)} in month 1 to ${percentage(view.rows.at(-1).monthlySavingRate)} in the final month as measured reusable coverage accumulates.`
+    : '';
   $('chart-insight').innerHTML=view.cumulativeCustomerSavings>0
-    ? `Projected customer savings: <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> (${percentage(view.savingRate)} of equivalent baseline spend) over ${durationLabel(inputs)}.${sharedPart}`
+    ? `Projected customer savings: <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> (${percentage(view.savingRate)} of equivalent baseline spend) over ${durationLabel(inputs)}.${learningPart}${sharedPart}`
     : `The entered data does not produce positive customer net savings under the selected assumptions.`;
 
   updateNetworkPanel(view);
@@ -1284,7 +1517,7 @@ document.querySelectorAll('[data-plan]').forEach(button=>{
 });
 
 for(const id of [
-  'currency','period-days','simple-spend','requests','simple-tokens','eligible-requests','shared-eligible-requests',
+  'currency','period-days','simple-spend','requests','simple-tokens','eligible-requests','private-learning-calls','private-new-items','private-matches-per-item','shared-eligible-requests',
   'avg-input','avg-output','eligible-input','eligible-output','shared-input','shared-output','input-price','output-price',
   'rhea-cost','commercial-terms','quality','duration','duration-unit'
 ]){
