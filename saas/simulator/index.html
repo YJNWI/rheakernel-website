@@ -11,1536 +11,712 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/assets/css/site.css">
-
 <title>RHEA Savings Simulator — RHEA Kernel as a Service</title>
-<meta name="description" content="Estimate potential RHEA Kernel savings from your own measured LLM workload data. No historical RHEA benchmark reduction percentage is used in the calculation.">
+<meta name="description" content="Interactive RHEA Kernel savings simulator with Private and Shared + Private scenarios, visible learning inputs and current performance-based commercial terms.">
 <link rel="canonical" href="https://rheakernel.com/saas/simulator/">
-
 <meta property="og:title" content="RHEA Savings Simulator — RHEA Kernel">
-<meta property="og:description" content="Estimate potential LLM savings from measured workload data, with a transparent time projection and current RHEA commercial terms.">
+<meta property="og:description" content="Explore an illustrative RHEA workload scenario over time using visible learning inputs and current performance-based commercial terms.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rheakernel.com/saas/simulator/">
 <meta property="og:site_name" content="RHEA Kernel">
 <meta property="og:image" content="https://rheakernel.com/assets/brand/rhea-search-banner.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://rheakernel.com/assets/brand/rhea-search-banner.png">
-
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"RHEA Savings Simulator","url":"https://rheakernel.com/saas/simulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Browser-based calculator that estimates potential RHEA Kernel savings from customer-provided measured LLM workload data."}
+{"@context":"https://schema.org","@type":"WebApplication","name":"RHEA Savings Simulator","url":"https://rheakernel.com/saas/simulator/","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Browser-based interactive simulator for RHEA Kernel Private and Shared + Private scenarios."}
 </script>
-
 <style>
 :root{
-  --sim-bg:#080b12;--sim-panel:#10151f;--sim-panel-2:#131a26;--sim-border:#252d3b;
-  --sim-text:#f6f7fb;--sim-muted:#a5adbd;--sim-dim:#828da1;--sim-accent:#b7c7ff;
-  --sim-green:#77d4bc;--sim-base:#929cac;--sim-blue:#a7baff;--sim-warn:#efbd98;
-  --sim-mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace
+  --sim-bg:#080b12;--panel:#10151f;--panel-2:#131a26;--border:#252d3b;
+  --text:#f6f7fb;--muted:#a5adbd;--dim:#828da1;--accent:#b7c7ff;
+  --private:#a7baff;--shared:#77d4bc;--baseline:#929cac;--warn:#efbd98;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace
 }
 .sim-brand{display:inline-flex;align-items:center;line-height:1;text-decoration:none}
 .sim-brand img{display:block;height:auto;width:min(100%,320px);max-width:320px;object-fit:contain}
-.sim-hero{padding:88px 0 56px}
+.sim-hero{padding:86px 0 52px}
 .sim-hero h1{font-size:clamp(3rem,7vw,5.5rem);line-height:.98;letter-spacing:-.045em;margin:18px 0}
-.sim-hero p{max-width:900px;color:var(--sim-muted);font-size:clamp(1.02rem,2vw,1.18rem)}
+.sim-hero p{max-width:900px;color:var(--muted);font-size:clamp(1.02rem,2vw,1.18rem)}
 .data-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(183,199,255,.19);background:rgba(183,199,255,.045);border-radius:999px;padding:8px 12px;color:#dce3f5;font-size:.76rem;font-weight:800;letter-spacing:.03em}
-.data-badge:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sim-green)}
-.sim-note{margin-top:22px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);padding:18px 20px;color:var(--sim-muted);font-size:.84rem;line-height:1.58}
-.sim-note strong{color:var(--sim-text)}
+.data-badge:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--shared)}
+.sim-note{margin-top:22px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);padding:18px 20px;color:var(--muted);font-size:.84rem;line-height:1.58}
+.sim-note strong{color:var(--text)}
 .sim-section{padding:0 0 90px}
 .dashboard-frame{border:1px solid #2c384c;border-radius:18px;background:#0c111b;overflow:hidden;box-shadow:0 26px 90px #0002}
-.dash-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;border-bottom:1px solid var(--sim-border);background:#121a27;flex-wrap:wrap}
+.dash-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border);background:#121a27;flex-wrap:wrap}
 .workspace-label{display:flex;align-items:center;gap:12px;font-size:.875rem;min-width:0}
-.workspace-avatar{width:31px;height:31px;display:grid;place-items:center;border:1px solid #38445c;border-radius:6px;background:#1d2940;color:var(--sim-accent);font-size:.75rem;flex:0 0 auto}
-.workspace-label small{display:block;color:var(--sim-dim);font-size:.75rem}
-.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--sim-border);border-radius:6px;padding:4px 8px;color:var(--sim-muted);font-size:.72rem;line-height:1.4;white-space:nowrap}
-.tag.live{background:#10261f;color:var(--sim-green);border-color:#285042;letter-spacing:.05em;font-weight:700}
-.segmented{display:inline-flex;padding:4px;border-radius:9px;background:#0b1019;border:1px solid var(--sim-border);gap:4px}
-.segmented button{background:transparent;border:0;border-radius:6px;padding:8px 13px;font-size:.8125rem;color:var(--sim-muted);min-height:36px;cursor:pointer}
+.workspace-avatar{width:31px;height:31px;display:grid;place-items:center;border:1px solid #38445c;border-radius:6px;background:#1d2940;color:var(--accent);font-size:.75rem;flex:0 0 auto}
+.workspace-label small{display:block;color:var(--dim);font-size:.75rem}
+.tag{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--muted);font-size:.72rem;line-height:1.4;white-space:nowrap}
+.tag.demo{background:#182033;color:#c3d0ef;border-color:#303d57;letter-spacing:.065em;font-weight:650}
+.segmented{display:inline-flex;padding:4px;border-radius:9px;background:#0b1019;border:1px solid var(--border);gap:4px}
+.segmented button{background:transparent;border:0;border-radius:6px;padding:8px 13px;font-size:.8125rem;color:var(--muted);min-height:36px;cursor:pointer}
 .segmented button[aria-pressed="true"]{background:#243047;color:#f0f4ff;box-shadow:0 1px 5px #0003}
-.mode-copy{padding:14px 24px;border-bottom:1px solid var(--sim-border);background:#0f1622;color:var(--sim-muted);font-size:.78rem;line-height:1.55}
-.mode-copy strong{color:var(--sim-text)}
-.toolbar-controls{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
-.toolbar-group{display:flex;flex-direction:column;gap:5px}
-.toolbar-group>span{color:var(--sim-dim);font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
-.plan-copy{padding:12px 24px;border-bottom:1px solid var(--sim-border);background:#101925;color:var(--sim-muted);font-size:.76rem;line-height:1.55}
-.plan-copy strong{color:var(--sim-text)}
-.network-panel{border-bottom:1px solid #2c413d;background:#0f1d1b;padding:18px 24px}
-.network-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
-.network-head h3{margin:0;font-size:.92rem}.network-head p{margin:5px 0 0;color:var(--sim-muted);font-size:.72rem;max-width:760px;line-height:1.55}
-.network-state{display:inline-flex;align-items:center;gap:7px;border:1px solid #35594f;border-radius:999px;padding:6px 10px;color:#bfe8dc;font-size:.68rem;font-weight:750;letter-spacing:.04em;text-transform:uppercase}
-.network-state:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sim-green)}
-.network-state.prelaunch{border-color:#4a4f5a;color:#b9c1cf}.network-state.prelaunch:before{background:#7f899d}
-.network-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:15px}
-.network-metric{border:1px solid #294039;border-radius:9px;background:#101a19;padding:12px;min-width:0}
-.network-metric span{display:block;color:var(--sim-dim);font-size:.66rem;line-height:1.35}
-.network-metric strong{display:block;color:#d5ebe5;font-size:.95rem;margin-top:5px;overflow-wrap:anywhere}
-.network-foot{margin-top:12px;color:var(--sim-dim);font-size:.69rem;line-height:1.55}
-.shared-only[hidden]{display:none!important}
-
-.input-block{border-bottom:1px solid var(--sim-border)}
-.dash-controls{padding:24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 24px;background:#0f1622}
+.plan-copy{padding:12px 24px;border-bottom:1px solid var(--border);background:#101925;color:var(--muted);font-size:.76rem;line-height:1.55}
+.plan-copy strong{color:var(--text)}
+.scale-presets{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;font-size:.75rem;color:var(--muted);background:#111925}
+.scale-presets button{padding:7px 11px;border:1px solid #344159;border-radius:6px;background:#182235;color:var(--text);font-size:.75rem}
+.scale-presets button[aria-pressed="true"]{border-color:var(--accent);background:#263550}
+.dash-controls{padding:24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 24px;background:#0f1622;border-bottom:1px solid var(--border)}
 .control{min-width:0}
 .control.full{grid-column:1/-1}
-.control label{font-size:.79rem;color:var(--sim-muted);display:block}
-.control .control-help{font-size:.71rem;color:var(--sim-dim);margin-top:7px;line-height:1.5}
+.control label{font-size:.79rem;color:var(--muted);display:block}
+.control .control-help{font-size:.71rem;color:var(--dim);margin-top:7px;line-height:1.5}
 .control input[type="number"],.control select{
   width:100%;min-width:0;min-height:42px;margin-top:10px;padding:10px;border:1px solid #344159;
-  border-radius:7px;background:#162032;color:var(--sim-text);font-family:var(--sim-mono);font-size:.8125rem
+  border-radius:7px;background:#162032;color:var(--text);font-family:var(--mono);font-size:.8125rem
 }
 .control select{font-family:inherit}
-.control input[aria-invalid="true"]{border-color:var(--sim-warn)}
-.input-feedback{font-size:.71rem;color:var(--sim-warn);line-height:1.45;margin-top:6px;min-height:0}
+.control input[aria-invalid="true"]{border-color:var(--warn)}
+.input-feedback{font-size:.71rem;color:var(--warn);line-height:1.45;margin-top:6px;min-height:0}
 .input-feedback:empty{display:none}
+.price-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:26px;padding:20px 24px;background:#101826;border-bottom:1px solid var(--border)}
+.price-toggle{display:flex;gap:9px;align-items:center;font-size:.8125rem;color:var(--text)}
+.price-toggle input{accent-color:var(--accent);width:16px;height:16px}
+.token-price-fields{display:flex;gap:8px;margin-top:12px}
+.token-price-fields input,.token-price-fields select{min-width:0;width:50%;min-height:42px;padding:9px 10px;margin:0;border:1px solid #344159;border-radius:7px;background:#162032;color:var(--text);font-size:.8125rem}
+.token-price-fields input:disabled{opacity:.65}
+.price-controls p{font-size:.75rem;color:var(--muted);line-height:1.6;margin-top:7px}
+.price-description strong{display:block;font-size:.8125rem;font-weight:500;color:var(--accent);margin-bottom:6px}
+.learning-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 24px;padding:20px 24px;background:#111925;border-bottom:1px solid var(--border)}
+.learning-head{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.learning-head strong{font-size:.9rem}
+.learning-head p{max-width:760px;color:var(--muted);font-size:.73rem;line-height:1.55}
+.shared-controls{background:#101e1c;border-bottom-color:#2c413d}
+.shared-controls[hidden]{display:none!important}
+.network-state{display:inline-flex;align-items:center;gap:7px;border:1px solid #4a4f5a;border-radius:999px;padding:6px 10px;color:#b9c1cf;font-size:.68rem;font-weight:750;letter-spacing:.04em;text-transform:uppercase}
+.network-state.live{border-color:#35594f;color:#bfe8dc}.network-state.live:before{background:var(--shared)}
+.network-state:before{content:"";width:6px;height:6px;border-radius:50%;background:#7f899d}
 .quality-row{display:flex;align-items:flex-start;gap:10px;border:1px solid rgba(183,199,255,.16);background:rgba(183,199,255,.04);border-radius:10px;padding:13px 14px}
-.quality-row input{width:18px;height:18px;margin-top:2px;accent-color:var(--sim-accent);flex:0 0 auto}
+.quality-row input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex:0 0 auto}
 .quality-row label{font-size:.8rem;color:#dce3f5;line-height:1.5}
-.quality-row span{display:block;color:var(--sim-dim);font-size:.71rem;margin-top:3px}
-.advanced-only[hidden],.simple-only[hidden]{display:none!important}
+.quality-row span{display:block;color:var(--dim);font-size:.71rem;margin-top:3px}
 .dash-main{padding:24px}
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.metric{padding:19px;border:1px solid var(--sim-border);border-radius:10px;background:#111925;min-width:0}
-.metric-label{font-size:.79rem;color:var(--sim-muted)}
+.metric{padding:19px;border:1px solid var(--border);border-radius:10px;background:#111925;min-width:0}
+.metric-label{font-size:.79rem;color:var(--muted)}
 .metric strong{display:block;font-size:clamp(1.5rem,2.6vw,2rem);letter-spacing:-.05em;font-weight:550;margin:10px 0 5px;line-height:1.2;overflow-wrap:anywhere}
-.metric small{font-size:.72rem;color:var(--sim-green);display:block;line-height:1.45}
-.metric.primary{border-color:#35594f;background:#10201d}
-.metric.primary strong{color:#bfe8dc}
+.metric small{font-size:.72rem;color:var(--shared);display:block;line-height:1.45}
 .chart-layout{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:20px;margin-top:22px}
-.chart-panel{border:1px solid var(--sim-border);border-radius:12px;padding:22px;min-width:0;background:#0f1621}
+.chart-panel{border:1px solid var(--border);border-radius:12px;padding:22px;min-width:0;background:#0f1621}
 .chart-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
-.chart-heading h3{font-size:.9375rem;margin:0}
-.chart-heading p{font-size:.73rem;color:var(--sim-dim);margin:5px 0 0}
+.chart-heading h3{font-size:.9375rem;margin:0}.chart-heading p{font-size:.73rem;color:var(--dim);margin:5px 0 0}
 .duration-control{flex:0 1 220px;min-width:190px}
-.duration-control>label{display:block;color:var(--sim-muted);font-size:.72rem;margin-bottom:7px}
+.duration-control>label{display:block;color:var(--muted);font-size:.72rem;margin-bottom:7px}
 .duration-fields{display:flex;gap:7px}
-.duration-fields input,.duration-fields select{margin:0;min-height:39px;background:#162032;border:1px solid #344159;color:var(--sim-text);padding:8px 10px;border-radius:7px;font-size:.8125rem;min-width:0}
-.duration-fields input{width:80px;font-family:var(--sim-mono)}
-.duration-fields select{flex:1}
-.duration-help{color:var(--sim-dim);font-size:.69rem;line-height:1.45;margin-top:6px}
-.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px;font-size:.72rem;color:var(--sim-muted)}
-.legend span{display:flex;gap:7px;align-items:center}
-.legend i{width:17px;height:2px;background:var(--sim-base);display:inline-block}
-.legend .rhea i{background:var(--sim-blue)}
-.legend .saved i{background:var(--sim-green)}
+.duration-fields input,.duration-fields select{margin:0;min-height:39px;background:#162032;border:1px solid #344159;color:var(--text);padding:8px 10px;border-radius:7px;font-size:.8125rem;min-width:0}
+.duration-fields input{width:80px;font-family:var(--mono)}.duration-fields select{flex:1}
+.duration-help{color:var(--dim);font-size:.69rem;line-height:1.45;margin-top:6px}
+.chart-subtitle{font-size:.79rem;color:var(--muted);margin-top:15px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px;font-size:.72rem;color:var(--muted)}
+.legend span{display:flex;gap:7px;align-items:center}.legend i{width:17px;height:2px;background:var(--baseline);display:inline-block}
+.legend .private i{background:var(--private)}.legend .shared i{background:var(--shared)}
 .chart-wrap{position:relative;margin-top:12px}
 .chart{width:100%;height:auto;overflow:visible;touch-action:pan-y}
-.chart text{font-family:inherit;font-size:12px;fill:var(--sim-dim)}
-.chart .axis-title{font-size:11px;fill:var(--sim-muted)}
+.chart text{font-family:inherit;font-size:12px;fill:var(--dim)}
 .chart .grid-line{stroke:#263144;stroke-dasharray:3 5;stroke-width:1}
 .chart .data-line{fill:none;stroke-width:2.7;stroke-linejoin:round;stroke-linecap:round}
 .chart-tooltip{position:absolute;top:31px;left:65px;pointer-events:none;display:none;padding:11px 14px;border:1px solid #495876;background:#182232f5;box-shadow:0 8px 30px #0004;border-radius:8px;z-index:3;min-width:205px;font-size:.72rem}
 .chart-tooltip.visible{display:block}
 .tooltip-row{display:flex;justify-content:space-between;gap:24px;color:#c3ccdb;margin-top:5px}
-.chart-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.71rem;color:var(--sim-dim);padding-top:8px;flex-wrap:wrap}
-.chart-insight{margin-top:16px;border-top:1px solid var(--sim-border);padding-top:14px;color:var(--sim-muted);font-size:.79rem;line-height:1.5}
-.chart-insight strong{color:var(--sim-green);font-weight:600}
-.routing-panel{border:1px solid var(--sim-border);border-radius:12px;padding:22px;background:#111925;display:flex;flex-direction:column}
-.routing-panel h3{font-size:.9375rem;margin-bottom:6px}
-.routing-panel p{font-size:.72rem;color:var(--sim-dim)}
-.donut{width:145px;height:145px;border-radius:50%;background:conic-gradient(var(--sim-green) 0% 25%,#738099 25% 100%);position:relative;display:grid;place-items:center;margin:23px auto}
+.chart-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.71rem;color:var(--dim);padding-top:8px;flex-wrap:wrap}
+.chart-insight{margin-top:16px;border-top:1px solid var(--border);padding-top:14px;color:var(--muted);font-size:.79rem;line-height:1.5}
+.chart-insight strong{color:var(--shared);font-weight:600}
+.routing-panel{border:1px solid var(--border);border-radius:12px;padding:22px;background:#111925;display:flex;flex-direction:column}
+.routing-panel h3{font-size:.9375rem;margin-bottom:6px}.routing-panel p{font-size:.72rem;color:var(--dim)}
+.donut{width:145px;height:145px;border-radius:50%;position:relative;display:grid;place-items:center;margin:23px auto}
 .donut:before{content:"";position:absolute;inset:12px;border-radius:50%;background:#111925}
-.donut-center{position:relative;text-align:center}
-.donut-center strong{display:block;font-size:1.8rem;font-weight:550;letter-spacing:-.04em;line-height:1.2}
-.donut-center span{color:var(--sim-muted);font-size:.7rem}
+.donut-center{position:relative;text-align:center}.donut-center strong{display:block;font-size:1.8rem;font-weight:550;letter-spacing:-.04em;line-height:1.2}.donut-center span{color:var(--muted);font-size:.7rem}
 .routing-row{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #263041;font-size:.72rem}
-.routing-row:last-of-type{border-bottom:0}
-.routing-row>span{color:var(--sim-muted);display:flex;align-items:center;gap:7px}
-.routing-row strong{font-weight:500}
-.swatch{width:6px;height:6px;border-radius:50%;background:var(--sim-green);flex-shrink:0}
-.swatch.remaining{background:#738099}
-.route-note{font-size:.71rem;line-height:1.55;color:var(--sim-muted);border-top:1px solid var(--sim-border);margin-top:17px;padding-top:13px}
-.secondary-metrics{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--sim-border);border-radius:10px;margin-top:20px}
-.secondary-metrics>div{padding:16px 19px;border-right:1px solid var(--sim-border)}
-.secondary-metrics>div:last-child{border:0}
-.secondary-metrics span{display:block;font-size:.72rem;color:var(--sim-muted)}
-.secondary-metrics strong{display:block;margin-top:5px;font-size:1.06rem;font-weight:500;letter-spacing:-.02em;overflow-wrap:anywhere}
-.cost-breakdown{margin-top:22px;padding:20px;border:1px solid var(--sim-border);border-radius:10px;background:#101925}
-.cost-breakdown h3{font-size:.9375rem;margin-bottom:6px}
-.cost-breakdown>p{color:var(--sim-dim);font-size:.72rem}
+.routing-row:last-of-type{border-bottom:0}.routing-row>span{color:var(--muted);display:flex;align-items:center;gap:7px}.routing-row strong{font-weight:500}
+.swatch{width:6px;height:6px;border-radius:50%;background:var(--private);flex-shrink:0}.swatch.shared{background:var(--shared)}.swatch.new{background:#738099}
+.route-note{font-size:.71rem;line-height:1.55;color:var(--muted);border-top:1px solid var(--border);margin-top:17px;padding-top:13px}
+.secondary-metrics{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:10px;margin-top:20px}
+.secondary-metrics>div{padding:16px 19px;border-right:1px solid var(--border)}.secondary-metrics>div:last-child{border:0}
+.secondary-metrics span{display:block;font-size:.72rem;color:var(--muted)}.secondary-metrics strong{display:block;margin-top:5px;font-size:1.06rem;font-weight:500;letter-spacing:-.02em;overflow-wrap:anywhere}
+.cost-breakdown{margin-top:22px;padding:20px;border:1px solid var(--border);border-radius:10px;background:#101925}
+.cost-breakdown h3{font-size:.9375rem;margin-bottom:6px}.cost-breakdown>p{color:var(--dim);font-size:.75rem}
 .cost-breakdown dl{margin:15px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.cost-breakdown dt{font-size:.72rem;color:var(--sim-muted)}
-.cost-breakdown dd{margin:6px 0 0;color:var(--sim-text);font-size:1.02rem;font-weight:500;overflow-wrap:anywhere}
-.cost-summary{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--sim-border);margin-top:20px;padding:17px 0 0;font-size:.79rem;color:var(--sim-muted)}
-.cost-summary strong{font-weight:600;color:var(--sim-green)}
-.data-details{font-size:.79rem;color:var(--sim-muted);margin-top:18px}
-.data-details summary{cursor:pointer;padding:10px 0}
-.data-details p{margin:12px 0;max-width:980px;line-height:1.55}
-.table-scroll{overflow-x:auto}
-.data-table{width:100%;border-collapse:collapse;text-align:right;min-width:760px;font-size:.78rem}
-.data-table th,.data-table td{padding:10px 14px;border-bottom:1px solid var(--sim-border)}
-.data-table th{color:var(--sim-muted);font-weight:500;background:#121b29;white-space:nowrap}
-.data-table td:first-child,.data-table th:first-child{text-align:left}
-.data-table caption{text-align:left;padding:9px 0 15px;color:var(--sim-dim);font-size:.72rem}
-.privacy{margin-top:20px;color:var(--sim-dim);font-size:.76rem;line-height:1.55}
-.actions-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
-.status-line{margin-top:13px;font-size:.74rem;color:var(--sim-dim);line-height:1.5}
-.status-line.error{color:var(--sim-warn)}
-@media(max-width:1050px){.network-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-layout{grid-template-columns:minmax(0,1fr) 225px}.metric-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:800px){.chart-layout{grid-template-columns:1fr}.routing-panel{display:grid;grid-template-columns:150px 1fr;column-gap:25px}.routing-panel h3,.routing-panel>p{grid-column:1/-1}.donut{grid-column:1;grid-row:3/5;width:125px;height:125px}.routing-row{grid-column:2}.route-note{grid-column:1/-1}.secondary-metrics{grid-template-columns:repeat(2,1fr)}.secondary-metrics>div:nth-child(2){border-right:0}.secondary-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--sim-border)}}
-@media(max-width:620px){.sim-hero{padding:68px 0 42px}.network-metrics{grid-template-columns:1fr}.dash-toolbar,.mode-copy,.plan-copy,.network-panel,.dash-controls{padding-left:16px;padding-right:16px}.dash-controls{grid-template-columns:1fr}.dash-main{padding:14px}.metric-grid{gap:9px}.metric{padding:13px}.chart-panel{padding:15px 10px}.routing-panel{padding:18px;grid-template-columns:115px 1fr;column-gap:16px}.donut{width:108px;height:108px}.secondary-metrics>div{padding:13px}.cost-breakdown{padding:15px}.cost-breakdown dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.workspace-label{flex-wrap:wrap}.tag{white-space:normal}}
+.cost-breakdown dt{font-size:.75rem;color:var(--muted)}.cost-breakdown dd{margin:6px 0 0;color:var(--text);font-size:1.05rem;font-weight:500;overflow-wrap:anywhere}
+.cost-summary{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--border);margin-top:20px;padding:17px 0 0;font-size:.8125rem;color:var(--muted)}
+.cost-summary strong{font-weight:600;color:var(--text)}.cost-summary .net{color:var(--shared)}.cost-summary .negative{color:var(--warn)}
+.yearly-comparison{margin-top:22px}.yearly-comparison h3{font-size:.9375rem}.yearly-comparison p{font-size:.75rem;color:var(--muted);margin:7px 0 12px}
+.table-scroll{overflow-x:auto}.data-table{width:100%;border-collapse:collapse;text-align:right;min-width:650px;font-size:.8125rem}
+.data-table th,.data-table td{padding:10px 16px;border-bottom:1px solid var(--border)}.data-table th{color:var(--muted);font-weight:500;background:#121b29}
+.data-table td:first-child,.data-table th:first-child{text-align:left}.data-table caption{text-align:left;padding:9px 0 15px;color:var(--dim);font-size:.75rem}
+.demo-explainer{background:#101826;padding:15px 24px;border-top:1px solid #2b374b;display:flex;gap:12px;align-items:flex-start}
+.demo-explainer p{font-size:.75rem;color:var(--muted)}
+.data-details{font-size:.8125rem;color:var(--muted);margin-top:18px}.data-details summary{cursor:pointer;padding:10px 0}.data-details p{margin:12px 0;max-width:940px}
+.actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.privacy{margin-top:16px;color:var(--dim);font-size:.74rem;line-height:1.55}
+.status-line{margin-top:12px;color:var(--dim);font-size:.74rem}
+@media(max-width:1000px){.dash-controls,.learning-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-layout{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.price-controls{grid-template-columns:1fr;gap:12px;padding:18px 16px}.secondary-metrics{grid-template-columns:repeat(2,1fr)}.secondary-metrics>div:nth-child(2){border-right:0}.secondary-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--border)}}
+@media(max-width:570px){.sim-hero{padding:58px 0 40px}.dash-toolbar{padding:16px}.dash-toolbar>.segmented{width:100%}.dash-toolbar>.segmented button{flex:1}.dash-controls,.learning-controls{grid-template-columns:1fr;padding:18px 16px}.dash-main{padding:14px}.metric-grid{gap:9px}.metric{padding:13px}.metric strong{font-size:1.65rem}.chart-panel{padding:15px 10px}.routing-panel{padding:18px}.cost-breakdown{padding:15px}.cost-breakdown dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.secondary-metrics>div{padding:13px}}
 </style>
 </head>
-
 <body>
-<header><div class="container nav">
-<a class="sim-brand" href="/saas/" aria-label="RHEA Kernel as a Service"><img src="/assets/brand/rhea-saas-logo-transparent-v2.png" alt="RHEA Kernel as a Service" width="1920" height="800"></a>
-<nav aria-label="Primary navigation"><ul>
-<li><a href="/">Project</a></li>
-<li><a href="/results/">Results</a></li>
-<li><a href="/saas/">As a Service</a></li>
-<li><a href="/saas/simulator/" aria-current="page">Simulator</a></li>
-<li><a href="/saas/#faq">FAQ</a></li>
-</ul></nav>
-</div></header>
+<header class="site-header">
+  <div class="container nav">
+    <a class="sim-brand" href="/" aria-label="RHEA Kernel home">
+      <img src="/assets/brand/rhea-saas-logo-transparent-v2.png" alt="RHEA Kernel as a Service" width="1983" height="793">
+    </a>
+    <nav aria-label="Primary">
+      <a href="/results/">Results</a>
+      <a href="/documentation/">Documentation</a>
+      <a href="/saas/">RHEA as a Service</a>
+    </nav>
+  </div>
+</header>
 
 <main>
 <section class="sim-hero"><div class="container">
-<span class="data-badge">Customer-data estimate</span>
-<h1>RHEA Savings Simulator.</h1>
-<p>Estimate how much RHEA could save on your LLM workload using your own measured usage and cost data. The calculator does not use RHEA's historical benchmark reduction percentages or an invented learning coefficient.</p>
-<div class="sim-note">
-<strong>What the calculator measures.</strong> You identify work in your existing LLM workload that is genuinely repeated or equivalent and therefore potentially reusable without a fresh full-model computation. The simulator prices that measured subset, deducts attributable RHEA operating cost, applies the current performance-fee terms, and projects the result over the time period you choose. Actual commercial savings remain subject to deployment-time verification and the agreed quality gate.
-</div>
+  <span class="data-badge">Interactive simulated scenario</span>
+  <h1>RHEA Savings Simulator.</h1>
+  <p>Explore how reusable knowledge can change model calls, token work, energy estimates and monetary savings over time. Learning inputs are visible and editable: the simulator does not hide an invented RHEA learning curve.</p>
+  <div class="sim-note">
+    <strong>Important boundary.</strong> This simulator is an illustrative scenario, not a forecast, guarantee or measured RHEA benchmark. Its time growth comes only from the reusable-coverage values shown below. The commercial calculation uses RHEA's current performance-based terms.
+  </div>
 </div></section>
 
-<section class="sim-section"><div class="container">
+<section class="sim-section" id="simulator"><div class="container">
 <div class="dashboard-frame">
-
-<div class="dash-toolbar">
-  <div class="workspace-label">
-    <span class="workspace-avatar">R</span>
-    <span>Workload calculator <small>Your figures stay in this browser</small></span>
-    <span class="tag live">DATA-BASED ESTIMATE</span>
+  <div class="dash-toolbar">
+    <div class="workspace-label"><span class="workspace-avatar">A</span><span>Example workspace <small>Browser-local simulator</small></span><span class="tag demo">SIMULATED SCENARIO</span></div>
+    <div class="segmented" role="group" aria-label="Simulator plan">
+      <button type="button" data-plan="private" aria-pressed="false">Private</button>
+      <button type="button" data-plan="shared" aria-pressed="true">Shared + Private</button>
+    </div>
   </div>
-  <div class="toolbar-controls">
-    <div class="toolbar-group">
-      <span>Plan</span>
-      <div class="segmented" role="group" aria-label="RHEA service plan">
-        <button type="button" data-plan="private" aria-pressed="true">Private</button>
-        <button type="button" data-plan="shared" aria-pressed="false">Shared + Private</button>
+
+  <div class="plan-copy" id="plan-copy"><strong>Shared + Private.</strong> Private reusable coverage grows from the company's own validated activity. Shared coverage can additionally use privacy-safe aggregate network data when that becomes available.</div>
+
+  <div class="scale-presets" id="scale-presets" role="group" aria-label="Request volume presets"><span>Request volume presets</span></div>
+
+  <div class="dash-controls">
+    <div class="control">
+      <label for="requests">Requests / month</label>
+      <input id="requests" type="number" min="1" step="1" value="200000" inputmode="numeric">
+      <p class="control-help">Incoming workload kept constant across the selected horizon unless you change it.</p>
+      <p class="input-feedback" id="requests-feedback"></p>
+    </div>
+    <div class="control">
+      <label for="tokens">Tokens / request</label>
+      <input id="tokens" type="number" min="1" step="1" value="1500" inputmode="numeric">
+      <p class="control-help">Average billed input + output tokens.</p>
+      <p class="input-feedback" id="tokens-feedback"></p>
+    </div>
+    <div class="control">
+      <label for="model">Model profile</label>
+      <select id="model">
+        <option value="compact">Compact · 3–4B</option>
+        <option value="balanced" selected>Balanced · 8–14B</option>
+        <option value="large">Large · 70B+</option>
+      </select>
+      <p class="control-help">Illustrative cost, latency and energy assumptions.</p>
+    </div>
+    <div class="control">
+      <label for="commercial-terms">Commercial terms</label>
+      <select id="commercial-terms">
+        <option value="standard">Standard · RHEA 25%</option>
+        <option value="founder1">Founding customer #1 · 20% first 12 months</option>
+        <option value="founder23">Founding customer #2/#3 · 22.5% first 12 months</option>
+      </select>
+      <p class="control-help">Founding rates move to 25% after month 12.</p>
+    </div>
+  </div>
+
+  <div class="learning-controls">
+    <div class="learning-head">
+      <div><strong>Private learning — visible scenario inputs</strong><p>These two values replace the prototype's hidden learning coefficients. The first month starts from current reusable coverage; each later month adds the new reusable coverage you enter, capped naturally at the workload size.</p></div>
+    </div>
+    <div class="control">
+      <label for="private-current">Current private reusable requests / month</label>
+      <input id="private-current" type="number" min="0" step="1" value="40000" inputmode="numeric">
+      <p class="control-help">Requests that current private validated knowledge could already resolve without a fresh full-model call.</p>
+      <p class="input-feedback" id="private-current-feedback"></p>
+    </div>
+    <div class="control">
+      <label for="private-growth">New private reusable coverage / month</label>
+      <input id="private-growth" type="number" min="0" step="1" value="5000" inputmode="numeric">
+      <p class="control-help">Visible scenario input for how much additional monthly request coverage RHEA learns from validated activity.</p>
+      <p class="input-feedback" id="private-growth-feedback"></p>
+    </div>
+    <div class="control">
+      <label for="rhea-cost">Attributable RHEA operating cost / month</label>
+      <input id="rhea-cost" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+      <p class="control-help">Deducted before calculating Verified Net Savings and RHEA's fee.</p>
+      <p class="input-feedback" id="rhea-cost-feedback"></p>
+    </div>
+    <div class="control">
+      <div class="quality-row">
+        <input id="quality" type="checkbox" checked>
+        <label for="quality">Assume the agreed quality gate is maintained.<span>If quality is not maintained, the lower cost is not counted as Verified Net Savings and RHEA's fee is €0.</span></label>
       </div>
     </div>
-    <div class="toolbar-group">
-      <span>Calculator</span>
-      <div class="segmented" role="group" aria-label="Calculator mode">
-        <button type="button" data-mode="simple" aria-pressed="true">Simple</button>
-        <button type="button" data-mode="advanced" aria-pressed="false">Advanced</button>
-      </div>
+  </div>
+
+  <div class="learning-controls shared-controls" id="shared-controls">
+    <div class="learning-head">
+      <div><strong>Shared Network — privacy-safe aggregate scenario</strong><p id="network-explanation">Until live aggregate network data exists, these are visible scenario inputs. In production they can be filled from a privacy-safe monthly snapshot without exposing any company's individual data.</p></div>
+      <span class="network-state" id="network-state">Pre-launch</span>
     </div>
-  </div>
-</div>
-
-<div class="mode-copy" id="mode-copy">
-<strong>Simple mode:</strong> use actual spend, request volume, average billed tokens and an observed count of repeated/equivalent requests. It assumes that reusable requests have approximately the same average cost as the workload as a whole.
-</div>
-
-<div class="plan-copy" id="plan-copy">
-<strong>Private plan:</strong> savings are calculated only from repeated/equivalent work identified inside the customer's own authorized private scope.
-</div>
-
-<div class="input-block">
-<div class="dash-controls">
-
-  <div class="control">
-    <label for="currency">Currency</label>
-    <select id="currency">
-      <option value="EUR">EUR (€)</option>
-      <option value="USD">USD ($)</option>
-      <option value="GBP">GBP (£)</option>
-    </select>
-  </div>
-
-  <div class="control">
-    <label for="period-days">Measured period · days</label>
-    <input id="period-days" type="number" min="1" max="365" step="1" value="30" inputmode="numeric">
-    <p class="control-help">How many days the real workload figures represent.</p>
-    <p class="input-feedback" id="period-days-feedback"></p>
-  </div>
-
-  <div class="control simple-only">
-    <label for="simple-spend">Actual LLM spend in period</label>
-    <input id="simple-spend" type="number" min="0" step="0.01" placeholder="e.g. 10000" inputmode="decimal">
-    <p class="control-help">Provider/API spend for the measured workload.</p>
-    <p class="input-feedback" id="simple-spend-feedback"></p>
-  </div>
-
-  <div class="control">
-    <label for="requests">Total requests in period</label>
-    <input id="requests" type="number" min="1" step="1" placeholder="e.g. 200000" inputmode="numeric">
-    <p class="control-help">Actual LLM request count from the measured period.</p>
-    <p class="input-feedback" id="requests-feedback"></p>
-  </div>
-
-  <div class="control simple-only">
-    <label for="simple-tokens">Average billed tokens / request</label>
-    <input id="simple-tokens" type="number" min="0" step="1" placeholder="e.g. 1500" inputmode="numeric">
-    <p class="control-help">Input + output tokens, averaged across the measured workload.</p>
-    <p class="input-feedback" id="simple-tokens-feedback"></p>
-  </div>
-
-  <div class="control">
-    <label for="eligible-requests">Observed repeated / equivalent requests</label>
-    <input id="eligible-requests" type="number" min="0" step="1" placeholder="e.g. 40000" inputmode="numeric">
-    <p class="control-help">Count identified from your own logs or workload analysis.</p>
-    <p class="input-feedback" id="eligible-requests-feedback"></p>
-  </div>
-  <div class="control simple-only">
-    <label for="private-learning-calls">Additional reusable request coverage learned per measured period</label>
-    <input id="private-learning-calls" type="number" min="0" step="1" value="0" inputmode="numeric">
-    <p class="control-help">How many additional future requests are expected to become reusable after each measured period, based on your observed/validated learning rate. Use 0 when you do not have this measurement.</p>
-    <p class="input-feedback" id="private-learning-calls-feedback"></p>
-  </div>
-
-
-  <div class="control shared-only" hidden>
-    <label for="shared-eligible-requests">Requests eligible for Shared Network lookup</label>
-    <input id="shared-eligible-requests" type="number" min="0" step="1" placeholder="e.g. 60000" inputmode="numeric">
-    <p class="control-help">Requests that may use permitted shared/public knowledge and are not already counted as private repeated/equivalent requests. Optional until a live privacy-safe network snapshot exists.</p>
-    <p class="input-feedback" id="shared-eligible-requests-feedback"></p>
-  </div>
-
-  <div class="control advanced-only shared-only" hidden>
-    <label for="shared-input">Average input tokens / Shared-eligible request</label>
-    <input id="shared-input" type="number" min="0" step="1" placeholder="e.g. 1000" inputmode="numeric">
-    <p class="input-feedback" id="shared-input-feedback"></p>
-  </div>
-
-  <div class="control advanced-only shared-only" hidden>
-    <label for="shared-output">Average output tokens / Shared-eligible request</label>
-    <input id="shared-output" type="number" min="0" step="1" placeholder="e.g. 250" inputmode="numeric">
-    <p class="input-feedback" id="shared-output-feedback"></p>
-  </div>
-
-  <div class="control advanced-only" hidden>
-    <label for="avg-input">Average input tokens / all requests</label>
-    <input id="avg-input" type="number" min="0" step="1" placeholder="e.g. 1200" inputmode="numeric">
-    <p class="input-feedback" id="avg-input-feedback"></p>
-  </div>
-
-  <div class="control advanced-only" hidden>
-    <label for="avg-output">Average output tokens / all requests</label>
-    <input id="avg-output" type="number" min="0" step="1" placeholder="e.g. 300" inputmode="numeric">
-    <p class="input-feedback" id="avg-output-feedback"></p>
-  </div>
-
-  <div class="control advanced-only" hidden>
-    <label for="eligible-input">Average input tokens / repeated-equivalent request</label>
-    <input id="eligible-input" type="number" min="0" step="1" placeholder="e.g. 900" inputmode="numeric">
-    <p class="input-feedback" id="eligible-input-feedback"></p>
-  </div>
-
-  <div class="control advanced-only" hidden>
-    <label for="eligible-output">Average output tokens / repeated-equivalent request</label>
-    <input id="eligible-output" type="number" min="0" step="1" placeholder="e.g. 220" inputmode="numeric">
-    <p class="input-feedback" id="eligible-output-feedback"></p>
-  </div>
-  <div class="control advanced-only" hidden>
-    <label for="private-new-items">New validated reusable knowledge items / measured period</label>
-    <input id="private-new-items" type="number" min="0" step="1" value="0" inputmode="numeric">
-    <p class="control-help">New private knowledge items that become valid and reusable during the measured period.</p>
-    <p class="input-feedback" id="private-new-items-feedback"></p>
-  </div>
-
-  <div class="control advanced-only" hidden>
-    <label for="private-matches-per-item">Future request matches / new item / measured period</label>
-    <input id="private-matches-per-item" type="number" min="0" step="0.01" value="0" inputmode="decimal">
-    <p class="control-help">Observed or expected request coverage produced by each newly validated item during an equivalent period. The simulator multiplies this by new items; it does not use a RHEA learning coefficient.</p>
-    <p class="input-feedback" id="private-matches-per-item-feedback"></p>
-  </div>
-
-
-  <div class="control advanced-only" hidden>
-    <label for="input-price">Actual input price / 1M tokens</label>
-    <input id="input-price" type="number" min="0" step="0.0001" placeholder="e.g. 2.50" inputmode="decimal">
-    <p class="input-feedback" id="input-price-feedback"></p>
-  </div>
-
-  <div class="control advanced-only" hidden>
-    <label for="output-price">Actual output price / 1M tokens</label>
-    <input id="output-price" type="number" min="0" step="0.0001" placeholder="e.g. 10.00" inputmode="decimal">
-    <p class="input-feedback" id="output-price-feedback"></p>
-  </div>
-
-  <div class="control">
-    <label for="rhea-cost">Attributable RHEA operating cost in period</label>
-    <input id="rhea-cost" type="number" min="0" step="0.01" value="0" inputmode="decimal">
-    <p class="control-help">Leave at 0 when unknown. Contractual Verified Net Savings deduct agreed attributable RHEA costs.</p>
-    <p class="input-feedback" id="rhea-cost-feedback"></p>
-  </div>
-
-  <div class="control">
-    <label for="commercial-terms">Commercial terms</label>
-    <select id="commercial-terms">
-      <option value="standard">Standard customer · RHEA 25%</option>
-      <option value="founder1">Founding customer #1 · 20% first 12 months</option>
-      <option value="founder23">Founding customer #2/#3 · 22.5% first 12 months</option>
-    </select>
-    <p class="control-help">Founding rates automatically move to the standard 25% after month 12.</p>
-  </div>
-
-  <div class="control full">
-    <div class="quality-row">
-      <input id="quality" type="checkbox" checked>
-      <label for="quality">Assume the agreed quality gate is maintained.
-        <span>Lower cost achieved by failing the required quality threshold does not qualify as Verified Net Savings.</span>
-      </label>
+    <div class="control">
+      <label for="shared-current">Current shared reusable requests / month</label>
+      <input id="shared-current" type="number" min="0" step="1" value="20000" inputmode="numeric">
+      <p class="control-help">Additional requests currently matched by permitted shared knowledge, after private reuse.</p>
+      <p class="input-feedback" id="shared-current-feedback"></p>
+    </div>
+    <div class="control">
+      <label for="shared-growth">New shared reusable coverage / month</label>
+      <input id="shared-growth" type="number" min="0" step="1" value="3000" inputmode="numeric">
+      <p class="control-help">Visible aggregate scenario input. When real network metrics exist this can be updated from privacy-safe monthly aggregates.</p>
+      <p class="input-feedback" id="shared-growth-feedback"></p>
+    </div>
+    <div class="control">
+      <label>Aggregate network source</label>
+      <div class="control-help" id="network-source">No live customer network data is used in the pre-launch scenario.</div>
+    </div>
+    <div class="control">
+      <label>Privacy boundary</label>
+      <div class="control-help">No company-level values are required or exposed by this public page. Only aggregate network outputs may be consumed.</div>
     </div>
   </div>
 
-</div>
-</div>
-
-<div class="network-panel shared-only" id="network-panel" hidden>
-  <div class="network-head">
+  <div class="price-controls">
     <div>
-      <h3>Privacy-safe Shared Network snapshot</h3>
-      <p>The Shared + Private estimate is designed to use a monthly aggregate snapshot produced outside this public page. Company-level inputs stay in the private aggregation layer; this browser receives only privacy-safe aggregate outputs.</p>
-    </div>
-    <span class="network-state prelaunch" id="network-state-label">Pre-launch</span>
-  </div>
-  <div class="network-metrics">
-    <div class="network-metric"><span>Shared/public knowledge available now</span><strong id="network-items">Not live yet</strong></div>
-    <div class="network-metric"><span>Aggregate public-routed calls / month</span><strong id="network-calls">—</strong></div>
-    <div class="network-metric"><span>Approved new shared items / month</span><strong id="network-growth">—</strong></div>
-    <div class="network-metric"><span>Projected shared/public knowledge at selected horizon</span><strong id="network-projected-items">—</strong></div>
-  </div>
-  <p class="network-foot" id="network-foot">No live customer Shared Network data exists yet, so the simulator currently applies no additional Shared Network uplift. It never invents a network hit rate.</p>
-</div>
-
-<div class="dash-main">
-
-<div class="metric-grid" aria-label="Projected savings metrics">
-  <div class="metric">
-    <div class="metric-label">Potential calls avoided</div>
-    <strong id="metric-calls">—</strong>
-    <small id="metric-calls-note">Measured-data projection</small>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Potential tokens avoided</div>
-    <strong id="metric-tokens">—</strong>
-    <small id="metric-tokens-note">Measured-data projection</small>
-  </div>
-  <div class="metric">
-    <div class="metric-label">Gross model savings</div>
-    <strong id="metric-gross">—</strong>
-    <small>Before attributable RHEA cost and performance fee</small>
-  </div>
-  <div class="metric primary">
-    <div class="metric-label">Customer net saving %</div>
-    <strong id="metric-percent">—</strong>
-    <small id="metric-percent-note">Of equivalent baseline spend</small>
-  </div>
-</div>
-
-<div class="chart-layout">
-  <div class="chart-panel">
-    <div class="chart-heading">
-      <div>
-        <h3>Cumulative financial impact</h3>
-        <p>Same measured workload profile, projected without arbitrary growth assumptions.</p>
+      <label class="price-toggle"><input id="custom-token-price" type="checkbox">Use my approximate token price</label>
+      <div class="token-price-fields">
+        <input id="token-price" type="number" inputmode="decimal" min="0" step="0.0001" value="4" disabled aria-label="Approximate token cost">
+        <select id="token-price-unit" aria-label="Token price unit">
+          <option value="million">€ / 1M tokens</option>
+          <option value="single">€ / token</option>
+        </select>
       </div>
-      <div class="duration-control">
-        <label for="duration">Projection duration</label>
-        <div class="duration-fields">
-          <input id="duration" type="number" min="1" max="60" step="1" value="12" inputmode="numeric">
-          <select id="duration-unit" aria-label="Projection duration unit">
-            <option value="months">Months</option>
-            <option value="years">Years</option>
-          </select>
+      <p id="token-price-help">When off, the selected model profile's illustrative token price is used.</p>
+    </div>
+    <div class="price-description"><strong>A price for the workload</strong><p>Use a blended input + output price if you enable the custom price. Price changes monetary values only; it does not change the visible learning path.</p></div>
+  </div>
+
+  <div class="dash-main">
+    <div class="metric-grid" aria-label="Simulated totals for selected period">
+      <div class="metric"><div class="metric-label">Calls avoided</div><strong id="metric-calls">—</strong><small id="metric-calls-note"></small></div>
+      <div class="metric"><div class="metric-label">Tokens saved</div><strong id="metric-tokens">—</strong><small id="metric-tokens-note"></small></div>
+      <div class="metric"><div class="metric-label">Estimated energy saved</div><strong id="metric-energy">—</strong><small id="metric-energy-note"></small></div>
+      <div class="metric"><div class="metric-label">Gross model savings</div><strong id="metric-cost">—</strong><small>Before attributable RHEA cost and performance fee</small></div>
+    </div>
+
+    <div class="chart-layout">
+      <div class="chart-panel">
+        <div class="chart-heading">
+          <div><h3>Cumulative energy consumption</h3><p>Illustrative energy model · same incoming workload</p></div>
+          <div class="duration-control">
+            <label for="duration">Simulation duration</label>
+            <div class="duration-fields"><input id="duration" type="number" min="1" max="600" step="1" value="12" inputmode="numeric"><select id="duration-unit"><option value="months">Months</option><option value="years">Years</option></select></div>
+            <p id="duration-help" class="duration-help">Monthly resolution.</p>
+          </div>
         </div>
-        <p class="duration-help" id="duration-help">Monthly resolution.</p>
+        <p class="chart-subtitle" id="chart-subtitle"></p>
+        <div class="legend"><span><i></i>Without RHEA</span><span class="private"><i></i>RHEA Private</span><span class="shared"><i></i>RHEA Shared + Private</span></div>
+        <div class="chart-wrap"><svg class="chart" id="energy-chart" viewBox="0 0 700 300" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Simulated cumulative energy consumption</title><desc id="chart-desc">Cumulative comparison between the same workload without RHEA, with Private, and with Shared + Private.</desc></svg><div class="chart-tooltip" id="chart-tooltip" aria-hidden="true"></div></div>
+        <div class="chart-bottom"><span>Hover or tap a month to inspect</span><span>Illustrative scenario, not a forecast</span></div>
+        <p class="chart-insight" id="chart-insight"></p>
       </div>
+
+      <aside class="routing-panel">
+        <h3>Where requests go</h3><p id="route-period"></p>
+        <div class="donut" id="routing-donut" role="img"><div class="donut-center"><strong id="hit-rate">—</strong><span>memory hit rate</span></div></div>
+        <div class="routing-row"><span><i class="swatch"></i>Private memory</span><strong id="private-hits">—</strong></div>
+        <div class="routing-row"><span><i class="swatch shared"></i>Shared knowledge</span><strong id="shared-hits">—</strong></div>
+        <div class="routing-row"><span><i class="swatch new"></i>New inference</span><strong id="inference-hits">—</strong></div>
+        <div class="route-note" id="route-note"></div>
+      </aside>
     </div>
 
-    <div class="legend">
-      <span><i></i>Without RHEA</span>
-      <span class="rhea"><i></i>Customer spend with RHEA</span>
-      <span class="saved"><i></i>Customer savings</span>
+    <div class="secondary-metrics">
+      <div><span>LLM calls made</span><strong id="llm-calls">—</strong></div>
+      <div><span>Private knowledge hits</span><strong id="private-hits-count">—</strong></div>
+      <div><span>Shared knowledge hits</span><strong id="shared-hits-count">—</strong></div>
+      <div><span>Average latency</span><strong id="avg-latency">—</strong></div>
     </div>
 
-    <div class="chart-wrap">
-      <svg class="chart" id="cost-chart" viewBox="0 0 700 300" role="img" aria-labelledby="chart-title chart-desc">
-        <title id="chart-title">Projected cumulative financial impact</title>
-        <desc id="chart-desc">Cumulative baseline cost, customer cost with RHEA, and customer net savings over the selected time horizon.</desc>
-      </svg>
-      <div class="chart-tooltip" id="chart-tooltip" aria-hidden="true"></div>
+    <div class="cost-breakdown">
+      <h3>What the customer keeps</h3><p id="charges-period"></p>
+      <dl>
+        <div><dt>Model spend without RHEA</dt><dd id="baseline-model-cost">—</dd></div>
+        <div><dt>Model spend with RHEA</dt><dd id="rhea-model-cost">—</dd></div>
+        <div><dt>Gross model savings</dt><dd id="gross-savings">—</dd></div>
+        <div><dt>Attributable RHEA operating cost</dt><dd id="rhea-operating-cost">—</dd></div>
+        <div><dt>Verified Net Savings before fee</dt><dd id="verified-net-savings">—</dd></div>
+        <div><dt>RHEA performance fee</dt><dd id="performance-fee">—</dd></div>
+        <div><dt>Customer net savings</dt><dd id="company-net-savings">—</dd></div>
+        <div><dt>Total customer spend including RHEA</dt><dd id="company-total-spend">—</dd></div>
+        <div><dt>Upfront / setup payment</dt><dd>€0</dd></div>
+      </dl>
+      <div class="cost-summary"><span id="fee-label"></span><span id="net-label"></span></div>
     </div>
 
-    <div class="chart-bottom">
-      <span>Hover or tap a month to inspect</span>
-      <span>Linear projection from customer-provided measured data</span>
+    <div class="yearly-comparison">
+      <h3>Year-by-year commercial comparison</h3>
+      <p>Monthly settlement in arrears. Founding rates change to the standard 25% after the first 12 customer months.</p>
+      <div class="table-scroll"><table class="data-table"><caption>Illustrative scenario. Commercial fee applies only to positive Verified Net Savings while the quality gate is maintained.</caption><thead><tr><th scope="col">Customer year</th><th scope="col">Gross model savings</th><th scope="col">RHEA operating cost</th><th scope="col">Verified Net Savings</th><th scope="col">RHEA fee</th><th scope="col">Customer net savings</th></tr></thead><tbody id="yearly-comparison-body"></tbody></table></div>
     </div>
-
-    <p class="chart-insight" id="chart-insight">Enter workload data to build the projection.</p>
   </div>
 
-  <aside class="routing-panel">
-    <h3 id="split-title">Projected workload learning</h3>
-    <p id="route-period">Repeated/equivalent work versus remaining workload.</p>
-    <div class="donut" id="routing-donut" role="img" aria-label="Measured workload split">
-      <div class="donut-center">
-        <strong id="eligible-rate">—</strong>
-        <span id="eligible-rate-label">of requests potentially reusable</span>
-      </div>
-    </div>
-    <div class="routing-row"><span><i class="swatch"></i>Private repeated / equivalent</span><strong id="eligible-count">—</strong></div>
-    <div class="routing-row"><span><i class="swatch"></i>Private reusable at horizon</span><strong id="private-end-count">—</strong></div>
-    <div class="routing-row"><span>Initial reusable share</span><strong id="initial-reuse-rate">—</strong></div>
-    <div class="routing-row"><span>End-of-horizon reusable share</span><strong id="end-reuse-rate">—</strong></div>
-    <div class="routing-row"><span>Month 1 customer saving %</span><strong id="initial-saving-rate">—</strong></div>
-    <div class="routing-row"><span>Final-month customer saving %</span><strong id="end-saving-rate">—</strong></div>
-    <div class="routing-row shared-only" id="shared-matched-row" hidden><span><i class="swatch" style="background:#a7baff"></i>Shared Network matched</span><strong id="shared-matched-count">—</strong></div><div class="routing-row"><span><i class="swatch remaining"></i>Remaining requests</span><strong id="remaining-count">—</strong></div>
-    <div class="route-note" id="route-note">The percentage inside this ring is the share of requests that are potentially reusable, not the financial savings percentage. Private reuse comes from the request counts you enter; Shared Network reuse is added only from a privacy-safe live aggregate snapshot.</div>
-  </aside>
+  <div class="demo-explainer"><p><strong>SIMULATED / ILLUSTRATIVE.</strong> The learning path is generated only from the visible current-coverage and monthly-growth inputs above; it does not use the old prototype’s hidden learning or workload-growth coefficients. Energy, model routing and latency remain illustrative model assumptions, not measured RHEA benchmark results.</p></div>
 </div>
 
-<div class="secondary-metrics">
-  <div><span>Equivalent baseline spend</span><strong id="baseline-cost">—</strong></div>
-  <div><span>Addressable model cost</span><strong id="addressable-cost">—</strong></div>
-  <div><span>RHEA performance fee</span><strong id="rhea-fee">—</strong></div>
-  <div><span>Customer net savings</span><strong id="customer-savings">—</strong></div>
-</div>
-
-<div class="cost-breakdown">
-  <h3>What the customer keeps</h3>
-  <p id="charges-period">Complete the measured workload inputs to calculate.</p>
-  <dl>
-    <div><dt>Model spend without RHEA</dt><dd id="break-baseline">—</dd></div>
-    <div><dt>Model spend after potentially reusable work</dt><dd id="break-model-rhea">—</dd></div>
-    <div><dt>Attributable RHEA operating cost</dt><dd id="break-rhea-op">—</dd></div>
-    <div class="shared-only" id="break-shared-wrap" hidden><dt>Shared Network added gross savings</dt><dd id="break-shared">—</dd></div>
-    <div><dt>Potential Verified Net Savings before fee</dt><dd id="break-vns">—</dd></div>
-    <div><dt>RHEA performance fee</dt><dd id="break-fee">—</dd></div>
-    <div><dt>Customer net savings</dt><dd id="break-customer">—</dd></div>
-    <div><dt>Total customer spend including RHEA fee</dt><dd id="break-total-spend">—</dd></div>
-    <div><dt>Customer net saving %</dt><dd id="break-percent">—</dd></div>
-    <div><dt>Upfront / setup payment</dt><dd>0</dd></div>
-  </dl>
-  <div class="cost-summary">
-    <span id="fee-label">RHEA is paid only on positive Verified Net Savings.</span>
-    <span id="net-label"></span>
-  </div>
-</div>
-
-<details class="data-details">
-  <summary>Method, assumptions & month-by-month table</summary>
-  <p id="assumptions">
-    This calculator uses customer-provided measured workload data. It does not use historical RHEA benchmark percentages. Simple mode assumes privately reusable and Shared-eligible requests have the same average cost and token volume as the overall workload. Advanced mode prices each subset from its own measured token profile. Private plan savings come only from the customer's own repeated/equivalent work. Shared + Private can add a Shared Network component only from a privacy-safe monthly aggregate snapshot; no company-level values are exposed to this page.
-  </p>
-  <p>
-    The estimate deliberately excludes additional savings that cannot be derived from the supplied data. Actual RHEA deployment may classify fewer requests as eligible, and commercial savings require equivalent workload and the agreed quality gate. The simulator is not a guarantee or binding quote.
-  </p>
-  <div class="table-scroll">
-    <table class="data-table">
-      <caption>Projected monthly and cumulative financial values.</caption>
-      <thead>
-        <tr>
-          <th scope="col">Month</th>
-          <th scope="col">Baseline cumulative</th>
-          <th scope="col">Customer spend with RHEA cumulative</th>
-          <th scope="col">Customer savings cumulative</th>
-          <th scope="col">RHEA fee this month</th>
-          <th scope="col">Fee rate</th>
-        </tr>
-      </thead>
-      <tbody id="data-table-body"></tbody>
-    </table>
-  </div>
+<details class="data-details"><summary>Simulation method & monthly data</summary>
+<p>Private month N reusable coverage = current private reusable requests + N × new private reusable coverage, capped at total requests. Shared month N uses the same visible rule after private reuse. When a privacy-safe live Shared Network aggregate snapshot becomes available, the Shared inputs can be filled from that aggregate source without exposing company-level data.</p>
+<p>Commercial calculation: equivalent baseline model cost − RHEA-enabled model cost − attributable RHEA operating cost = Verified Net Savings. RHEA's fee is applied only to positive Verified Net Savings when the quality gate is maintained. Standard fee is 25%; Founding customer #1 is 20% for the first 12 months; Founding customers #2/#3 are 22.5% for the first 12 months; all move to 25% afterwards. No entry, setup or upfront fee is used.</p>
+<div class="table-scroll"><table class="data-table"><caption>Month-by-month simulated routing and commercial values.</caption><thead><tr><th>Month</th><th>Private hit %</th><th>Shared hit %</th><th>New inference %</th><th>Gross savings</th><th>RHEA fee</th><th>Customer net savings</th></tr></thead><tbody id="data-table-body"></tbody></table></div>
 </details>
 
-<p class="status-line" id="simulation-status" role="status" aria-live="polite" aria-atomic="true">Enter measured workload data to calculate.</p>
-
-<div class="sim-note">
-<strong>No historical benchmark multiplier.</strong> The public simulator does not apply the approximately 80% reductions seen in specific historical RHEA experiments to a prospective customer's workload. Every monetary result comes from the workload figures entered on this page.
-</div>
-
-<div class="privacy"><strong>Privacy:</strong> calculator inputs are processed locally by JavaScript in your browser and are not transmitted to RHEA or stored in local storage. Shared + Private may read a same-origin, read-only monthly aggregate network snapshot; that snapshot is designed to contain no company-level data.</div>
-
-<div class="actions-row">
-  <a class="button primary" href="/saas/#verification">How commercial savings are verified →</a>
-  <a class="button secondary" href="/results/">Historical measured results →</a>
-  <a class="button secondary" href="/saas/">Back to RHEA as a Service</a>
-</div>
-
-</div>
-</div>
+<p class="status-line" id="simulation-status" role="status" aria-live="polite"></p>
+<div class="privacy"><strong>Privacy:</strong> workload inputs are processed locally in your browser and are not transmitted or stored. Shared + Private may read only a same-origin privacy-safe aggregate network snapshot; no company-level data is required by this public page.</div>
+<div class="actions-row"><a class="button primary" href="/saas/#verification">How commercial savings are verified →</a><a class="button secondary" href="/results/">Historical measured results →</a><a class="button secondary" href="/saas/">Back to RHEA as a Service</a></div>
 </div></section>
 </main>
 
-<footer><div class="container footer-inner">
-<span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span>
-<span>RHEA Savings Simulator · customer-data + privacy-safe network estimate</span>
-</div></footer>
+<footer><div class="container footer-inner"><span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span><span>RHEA Savings Simulator · illustrative scenario</span></div></footer>
 
 <script>
 'use strict';
 
-const $ = id => document.getElementById(id);
-const MONTH_DAYS = 365.25 / 12;
-const CHART = {width:700,height:300,padding:{left:60,right:18,top:24,bottom:38},ticks:4,xTicks:7,mobileXTicks:4,mobileBreakpoint:500};
-const COLORS = {baseline:'#929cac',rhea:'#a7baff',saved:'#77d4bc',remaining:'#738099',shared:'#a7baff'};
-const NETWORK_FALLBACK = Object.freeze({
-  schema_version:1,
-  status:'prelaunch',
-  safe_for_publication:false,
-  snapshot_month:null,
-  updated_at:null,
-  shared_public_knowledge_items:0,
-  aggregate_public_routed_calls_monthly:0,
-  approved_new_shared_items_monthly:0,
-  current_public_match_rate:0,
-  monthly_public_match_rate_growth:0,
-  max_public_match_rate:0
+const $=id=>document.getElementById(id);
+const MONTHS_PER_YEAR=12;
+const COLORS={baseline:'#929cac',private:'#a7baff',shared:'#77d4bc',inference:'#738099'};
+const MODELS={
+  compact:{label:'Compact · 3–4B',joulesPerToken:0.008,costPerMillionTokens:0.6,latencyMs:1300},
+  balanced:{label:'Balanced · 8–14B',joulesPerToken:0.025,costPerMillionTokens:4,latencyMs:2600},
+  large:{label:'Large · 70B+',joulesPerToken:0.11,costPerMillionTokens:9.5,latencyMs:5300}
+};
+/* These are illustrative routing/energy assumptions retained from the user's
+   Codex simulator. They do NOT determine learning growth. */
+const MODEL_ASSUMPTIONS={
+  private:{smallModelShare:0.38,contextReduction:0.08},
+  shared:{smallModelShare:0.46,contextReduction:0.12},
+  smallEnergyRatio:0.30,
+  smallCostRatio:0.22,
+  smallLatencyRatio:0.36,
+  layerEnergyRatio:0.035,
+  reuseEnergyRatio:0.015,
+  layerLatencyMs:70,
+  reuseLatencyMs:55,
+  tokenReference:1500,
+  joulesPerKwh:3600000,
+  tokensPerMillion:1000000
+};
+
+const NETWORK_FALLBACK=Object.freeze({
+  schema_version:1,status:'prelaunch',safe_for_publication:false,
+  shared_public_knowledge_items:0,aggregate_public_routed_calls_monthly:0,
+  approved_new_shared_items_monthly:0,current_public_match_rate:0,
+  monthly_public_match_rate_growth:0,max_public_match_rate:0
 });
 
-const state = {mode:'simple',plan:'private',network:{...NETWORK_FALLBACK}};
-let chartGeometry = null;
-let lastView = null;
+const state={
+  plan:'shared',requests:200000,tokens:1500,model:'balanced',
+  privateCurrent:40000,privateGrowth:5000,
+  sharedCurrent:20000,sharedGrowth:3000,
+  rheaCost:0,term:'standard',quality:true,
+  months:12,customTokenPrice:false,costPerMillionTokens:null,tokenPriceUnit:'million',
+  network:{...NETWORK_FALLBACK},networkApplied:false
+};
 
-function number(value, digits=1){
-  if(!Number.isFinite(value)) return '—';
-  return new Intl.NumberFormat('en-GB',{maximumFractionDigits:digits}).format(value);
+function clamp(v,min,max){return Math.min(Math.max(v,min),max);}
+function number(v,d=1){return Number.isFinite(v)?new Intl.NumberFormat('en-GB',{maximumFractionDigits:d}).format(v):'—';}
+function compact(v){return Number.isFinite(v)?new Intl.NumberFormat('en-GB',{notation:'compact',maximumFractionDigits:2}).format(v):'—';}
+function percentage(v){return Number.isFinite(v)?`${number(v*100,1)}%`:'—';}
+function money(v,d=2){return Number.isFinite(v)?new Intl.NumberFormat('en-GB',{style:'currency',currency:'EUR',maximumFractionDigits:d}).format(v):'—';}
+function metricNumber(v,d=1){return Math.abs(v)>=1000000?compact(v):number(v,d);}
+function energyAmount(kwh){
+  const units=[['kWh',1],['MWh',1000],['GWh',1e6],['TWh',1e9]];
+  let chosen=units[0];for(const u of units){if(Math.abs(kwh)>=u[1])chosen=u;}
+  return `${number(kwh/chosen[1],2)} ${chosen[0]}`;
 }
-
-function compact(value){
-  if(!Number.isFinite(value)) return '—';
-  return new Intl.NumberFormat('en-GB',{notation:'compact',maximumFractionDigits:2}).format(value);
-}
-
-function money(value, currency){
-  if(!Number.isFinite(value)) return '—';
-  return new Intl.NumberFormat('en-GB',{
-    style:'currency',currency,
-    notation:Math.abs(value)>=1000000?'compact':'standard',
-    maximumFractionDigits:2
-  }).format(value);
-}
-
-function percentage(rate){
-  if(!Number.isFinite(rate)) return '—';
-  return `${number(rate*100,1)}%`;
-}
-
-function reusableRequestRate(totalRequests, privateReusableRequests, sharedMatchedRequests=0){
-  const total=Number(totalRequests);
-  const privatePart=Number(privateReusableRequests);
-  const sharedPart=Number(sharedMatchedRequests);
-  return Number.isFinite(total) && total>0 && Number.isFinite(privatePart) && Number.isFinite(sharedPart)
-    ? Math.min(1,Math.max(0,(privatePart+sharedPart)/total))
-    : 0;
-}
-
-function readNumber(id){
-  const raw=$(id).value.trim();
-  if(raw==='') return null;
-  const value=Number(raw);
-  return Number.isFinite(value)?value:null;
-}
-
-function clamp(v,min,max){ return Math.min(Math.max(v,min),max); }
-
-function setFeedback(id,message){
-  const el=$(id+'-feedback');
-  if(el) el.textContent=message||'';
-  const input=$(id);
-  if(input) input.setAttribute('aria-invalid',String(Boolean(message)));
-}
-
-function monthsFromDuration(){
-  const n=readNumber('duration');
-  const unit=$('duration-unit').value;
-  if(n===null || !Number.isInteger(n) || n<1){
-    $('duration-help').textContent='Enter a whole positive duration.';
-    return null;
-  }
-  const months=unit==='years'?n*12:n;
-  if(months<1 || months>600){
-    $('duration-help').textContent='Use a projection from 1 to 600 months.';
-    return null;
-  }
-  $('duration-help').textContent=unit==='years'
-    ?`${n} ${n===1?'year':'years'} · ${months} months · monthly resolution.`
-    :`${months} ${months===1?'month':'months'} · monthly resolution.`;
-  return months;
-}
-
-function feeRateForMonth(term, monthIndex){
-  if(term==='founder1' && monthIndex<12) return 0.20;
-  if(term==='founder23' && monthIndex<12) return 0.225;
+function readNumber(id){const raw=$(id).value.trim();if(raw==='')return null;const v=Number(raw);return Number.isFinite(v)?v:null;}
+function setFeedback(id,msg){const el=$(id+'-feedback');if(el)el.textContent=msg||'';const input=$(id);if(input)input.setAttribute('aria-invalid',String(Boolean(msg)));}
+function durationLabel(){return state.months===1?'1 month':state.months%12===0?`${state.months/12} ${state.months===12?'year':'years'}`:`${state.months} months`;}
+function feeRateForMonth(term,monthIndex){
+  if(term==='founder1'&&monthIndex<12)return 0.20;
+  if(term==='founder23'&&monthIndex<12)return 0.225;
   return 0.25;
 }
-
-function networkIsLive(){
-  const n=state.network;
-  return state.plan==='shared' && n && n.status==='live' && n.safe_for_publication===true;
+function effectiveTokenPrice(){
+  if(!state.customTokenPrice)return MODELS[state.model].costPerMillionTokens;
+  return Math.max(0,state.costPerMillionTokens??MODELS[state.model].costPerMillionTokens);
 }
-
-function networkMatchRateForMonth(monthIndex){
-  if(!networkIsLive()) return 0;
-  const n=state.network;
-  const current=clamp(Number(n.current_public_match_rate)||0,0,1);
-  const growth=Math.max(0,Number(n.monthly_public_match_rate_growth)||0);
-  const max=clamp(Number(n.max_public_match_rate)||current, current, 1);
-  return clamp(current + growth*monthIndex, 0, max);
-}
-
-function validateCommon(){
-  const errors=[];
-  const days=readNumber('period-days');
-  const requests=readNumber('requests');
-  const eligible=readNumber('eligible-requests');
-  const rheaCost=readNumber('rhea-cost');
-  const sharedEligible=state.plan==='shared'?readNumber('shared-eligible-requests'):0;
-
-  for(const id of ['period-days','requests','eligible-requests','rhea-cost','shared-eligible-requests']) setFeedback(id,'');
-
-  if(days===null || !Number.isInteger(days) || days<1 || days>365){
-    setFeedback('period-days','Enter 1–365 whole days.');
-    errors.push('period');
-  }
-  if(requests===null || !Number.isInteger(requests) || requests<1){
-    setFeedback('requests','Enter a positive whole request count.');
-    errors.push('requests');
-  }
-  if(eligible===null || !Number.isInteger(eligible) || eligible<0){
-    setFeedback('eligible-requests','Enter a non-negative whole request count.');
-    errors.push('eligible');
-  }else if(requests!==null && eligible>requests){
-    setFeedback('eligible-requests','Private repeated/equivalent requests cannot exceed total requests.');
-    errors.push('eligible');
-  }
-
-  if(state.plan==='shared'){
-    if(sharedEligible!==null && (!Number.isInteger(sharedEligible) || sharedEligible<0)){
-      setFeedback('shared-eligible-requests','Enter a non-negative whole request count.');
-      errors.push('sharedEligible');
-    }else if(sharedEligible!==null && requests!==null && eligible!==null && sharedEligible > Math.max(0,requests-eligible)){
-      setFeedback('shared-eligible-requests','Shared-eligible requests must exclude requests already counted as privately reusable.');
-      errors.push('sharedEligible');
-    }else if(networkIsLive() && sharedEligible===null){
-      setFeedback('shared-eligible-requests','A live Shared Network snapshot is available. Enter the requests in your workload that are eligible for shared/public lookup.');
-      errors.push('sharedEligible');
-    }
-  }
-
-  if(rheaCost===null || rheaCost<0){
-    setFeedback('rhea-cost','Enter a non-negative cost.');
-    errors.push('rheaCost');
-  }
-
-  return {errors,days,requests,eligible,rheaCost,sharedEligible:sharedEligible||0};
-}
-
-function buildInputsBase(){
-  const common=validateCommon();
-  const months=monthsFromDuration();
-  const currency=$('currency').value;
-  const term=$('commercial-terms').value;
-  const quality=$('quality').checked;
-  const errors=[...common.errors];
-
-  if(months===null) errors.push('duration');
-
-  let baselinePeriod=null;
-  let privateAddressablePeriod=null;
-  let privateTokensPeriod=null;
-  let sharedEligibleCostPeriod=0;
-  let sharedEligibleTokensPeriod=0;
-
-  if(state.mode==='simple'){
-    const spend=readNumber('simple-spend');
-    const avgTokens=readNumber('simple-tokens');
-    setFeedback('simple-spend','');
-    setFeedback('simple-tokens','');
-
-    if(spend===null || spend<0){
-      setFeedback('simple-spend','Enter the actual non-negative LLM spend for the measured period.');
-      errors.push('spend');
-    }
-    if(avgTokens===null || avgTokens<0){
-      setFeedback('simple-tokens','Enter a non-negative average billed token count.');
-      errors.push('tokens');
-    }
-
-    if(!errors.length){
-      const avgCostPerRequest=spend/common.requests;
-      baselinePeriod=spend;
-      privateAddressablePeriod=common.eligible*avgCostPerRequest;
-      privateTokensPeriod=common.eligible*avgTokens;
-      if(state.plan==='shared'){
-        sharedEligibleCostPeriod=common.sharedEligible*avgCostPerRequest;
-        sharedEligibleTokensPeriod=common.sharedEligible*avgTokens;
-      }
-    }
-  }else{
-    const avgIn=readNumber('avg-input');
-    const avgOut=readNumber('avg-output');
-    const eligibleIn=readNumber('eligible-input');
-    const eligibleOut=readNumber('eligible-output');
-    const sharedIn=state.plan==='shared'?readNumber('shared-input'):0;
-    const sharedOut=state.plan==='shared'?readNumber('shared-output'):0;
-    const inputPrice=readNumber('input-price');
-    const outputPrice=readNumber('output-price');
-
-    for(const id of ['avg-input','avg-output','eligible-input','eligible-output','shared-input','shared-output','input-price','output-price']) setFeedback(id,'');
-
-    const fields=[
-      ['avg-input',avgIn,'Enter non-negative average input tokens.'],
-      ['avg-output',avgOut,'Enter non-negative average output tokens.'],
-      ['eligible-input',eligibleIn,'Enter non-negative private reusable-subset input tokens.'],
-      ['eligible-output',eligibleOut,'Enter non-negative private reusable-subset output tokens.'],
-      ['input-price',inputPrice,'Enter a non-negative input price.'],
-      ['output-price',outputPrice,'Enter a non-negative output price.']
-    ];
-    if(state.plan==='shared' && networkIsLive()){
-      fields.push(
-        ['shared-input',sharedIn,'Enter non-negative Shared-eligible input tokens.'],
-        ['shared-output',sharedOut,'Enter non-negative Shared-eligible output tokens.']
-      );
-    }
-
-    for(const [id,val,msg] of fields){
-      if(val===null || val<0){ setFeedback(id,msg); errors.push(id); }
-    }
-
-    if(!errors.length){
-      const avgCost=(avgIn/1e6)*inputPrice+(avgOut/1e6)*outputPrice;
-      const privateCost=(eligibleIn/1e6)*inputPrice+(eligibleOut/1e6)*outputPrice;
-      const sharedCost=networkIsLive()
-        ? (((sharedIn||0)/1e6)*inputPrice+((sharedOut||0)/1e6)*outputPrice)
-        : 0;
-
-      baselinePeriod=common.requests*avgCost;
-      privateAddressablePeriod=common.eligible*privateCost;
-      privateTokensPeriod=common.eligible*(eligibleIn+eligibleOut);
-      if(state.plan==='shared'){
-        sharedEligibleCostPeriod=common.sharedEligible*sharedCost;
-        sharedEligibleTokensPeriod=common.sharedEligible*((sharedIn||0)+(sharedOut||0));
-      }
-
-      if(privateAddressablePeriod+sharedEligibleCostPeriod>baselinePeriod+1e-9){
-        setFeedback('eligible-input','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
-        setFeedback('eligible-output','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
-        if(state.plan==='shared'){
-          setFeedback('shared-input','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
-          setFeedback('shared-output','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
-        }
-        errors.push('subset-cost');
-      }
-    }
-  }
-
-  if(errors.length) return {valid:false,errors};
-
-  return {
-    valid:true,
-    mode:state.mode,
-    plan:state.plan,
-    days:common.days,
-    requests:common.requests,
-    eligible:common.eligible,
-    sharedEligible:common.sharedEligible,
-    rheaCostPeriod:common.rheaCost,
-    months,
-    currency,
-    term,
-    quality,
-    baselinePeriod,
-    privateAddressablePeriod,
-    privateTokensPeriod,
-    sharedEligibleCostPeriod,
-    sharedEligibleTokensPeriod
-  };
-}
-
-
-function buildInputs(){
-  const base=buildInputsBase();
-
-  for(const id of ['private-learning-calls','private-new-items','private-matches-per-item']){
+function validate(){
+  const defs=[
+    ['requests',1],['tokens',1],['private-current',0],['private-growth',0],
+    ['shared-current',0],['shared-growth',0],['rhea-cost',0]
+  ];
+  let ok=true;
+  for(const [id,min] of defs){
     setFeedback(id,'');
+    const v=readNumber(id);
+    if(v===null||v<min){setFeedback(id,`Enter a value of ${min} or more.`);ok=false;}
   }
-
-  if(!base.valid) return base;
-
-  let learningCallsPeriod=0;
-  let privateEligibleCostPerCall=0;
-  let privateTokenPerCall=0;
-  const extraErrors=[];
-
-  if(state.mode==='simple'){
-    const learned=readNumber('private-learning-calls');
-    if(learned===null || learned<0){
-      setFeedback('private-learning-calls','Enter a non-negative measured learning rate.');
-      extraErrors.push('private-learning-calls');
-    }else{
-      learningCallsPeriod=learned;
-    }
-
-    privateEligibleCostPerCall=base.requests>0
-      ? base.baselinePeriod/base.requests
-      : 0;
-
-    const simpleTokens=readNumber('simple-tokens');
-    privateTokenPerCall=Number.isFinite(simpleTokens) && simpleTokens>=0
-      ? simpleTokens
-      : 0;
-  }else{
-    const newItems=readNumber('private-new-items');
-    const matchesPerItem=readNumber('private-matches-per-item');
-
-    if(newItems===null || newItems<0){
-      setFeedback('private-new-items','Enter a non-negative number of new validated items.');
-      extraErrors.push('private-new-items');
-    }
-    if(matchesPerItem===null || matchesPerItem<0){
-      setFeedback('private-matches-per-item','Enter a non-negative measured match rate per new item.');
-      extraErrors.push('private-matches-per-item');
-    }
-
-    if(!extraErrors.length){
-      learningCallsPeriod=newItems*matchesPerItem;
-    }
-
-    const eligibleIn=readNumber('eligible-input');
-    const eligibleOut=readNumber('eligible-output');
-    const inputPrice=readNumber('input-price');
-    const outputPrice=readNumber('output-price');
-
-    if([eligibleIn,eligibleOut,inputPrice,outputPrice].every(Number.isFinite)){
-      privateEligibleCostPerCall=
-        (eligibleIn/1e6)*inputPrice+
-        (eligibleOut/1e6)*outputPrice;
-      privateTokenPerCall=eligibleIn+eligibleOut;
-    }
-  }
-
-  if(extraErrors.length){
-    return {
-      valid:false,
-      errors:[...(base.errors||[]),...extraErrors]
-    };
-  }
-
-  return {
-    ...base,
-    privateLearningCallsPeriod:learningCallsPeriod,
-    privateEligibleCostPerCall,
-    privateTokenPerCall
-  };
+  const req=readNumber('requests');
+  const pc=readNumber('private-current');
+  if(req!==null&&pc!==null&&pc>req){setFeedback('private-current','Cannot exceed total requests / month.');ok=false;}
+  const sc=readNumber('shared-current');
+  if(req!==null&&sc!==null&&sc>req){setFeedback('shared-current','Cannot exceed total requests / month.');ok=false;}
+  return ok;
 }
-
-function projectPrivateReusableCalls(initialCalls, learnedCallsPerMonth, monthIndex, totalCalls){
-  const initial=Math.max(0,Number(initialCalls)||0);
-  const learned=Math.max(0,Number(learnedCallsPerMonth)||0);
-  const month=Math.max(0,Number(monthIndex)||0);
-  const total=Math.max(0,Number(totalCalls)||0);
-  return Math.min(total,initial+learned*month);
+function syncState(){
+  if(!validate())return false;
+  state.requests=readNumber('requests');
+  state.tokens=readNumber('tokens');
+  state.privateCurrent=readNumber('private-current');
+  state.privateGrowth=readNumber('private-growth');
+  state.sharedCurrent=readNumber('shared-current');
+  state.sharedGrowth=readNumber('shared-growth');
+  state.rheaCost=readNumber('rhea-cost');
+  state.model=$('model').value;
+  state.term=$('commercial-terms').value;
+  state.quality=$('quality').checked;
+  return true;
 }
-
-function calculate(inputs){
-  const factor=MONTH_DAYS/inputs.days;
-  const baselineMonthly=inputs.baselinePeriod*factor;
-
-  const totalCallsMonthly=inputs.requests*factor;
-  const initialPrivateCallsMonthly=inputs.eligible*factor;
-  const privateLearningCallsMonthly=inputs.privateLearningCallsPeriod*factor;
-
-  const privateCostPerCall=Math.max(0,inputs.privateEligibleCostPerCall||0);
-  const privateTokenPerCall=Math.max(0,inputs.privateTokenPerCall||0);
-
-  const sharedEligibleCallsMonthly=inputs.sharedEligible*factor;
-  const sharedEligibleCostMonthly=inputs.sharedEligibleCostPeriod*factor;
-  const sharedEligibleTokensMonthly=inputs.sharedEligibleTokensPeriod*factor;
-  const sharedCostPerCall=sharedEligibleCallsMonthly>0
-    ? sharedEligibleCostMonthly/sharedEligibleCallsMonthly
-    : 0;
-  const sharedTokensPerCall=sharedEligibleCallsMonthly>0
-    ? sharedEligibleTokensMonthly/sharedEligibleCallsMonthly
-    : 0;
-
-  const rheaOpMonthly=inputs.rheaCostPeriod*factor;
-
-  const rows=[];
-  let cumulativeBaseline=0;
-  let cumulativeCustomerSpend=0;
-  let cumulativeCustomerSavings=0;
-  let cumulativeFee=0;
-  let cumulativeGross=0;
-  let cumulativeSharedGross=0;
-  let cumulativeVns=0;
-  let cumulativeCalls=0;
-  let cumulativePrivateCalls=0;
-  let cumulativeSharedCalls=0;
-  let cumulativeTokens=0;
+function projectCoverage(current,growth,monthIndex,total){
+  return Math.min(Math.max(0,total),Math.max(0,current)+Math.max(0,growth)*Math.max(0,monthIndex));
+}
+function simulateScenario(inputs=state){
+  const model=MODELS[inputs.model];
+  const tokenPrice=effectiveTokenPrice();
+  const A=MODEL_ASSUMPTIONS;
+  const rows={baseline:[],private:[],shared:[]};
 
   for(let month=0;month<inputs.months;month++){
-    const privateReusableCalls=projectPrivateReusableCalls(
-      initialPrivateCallsMonthly,
-      privateLearningCallsMonthly,
-      month,
-      totalCallsMonthly
-    );
+    const requests=inputs.requests;
+    const baseTokens=requests*inputs.tokens;
+    const baseEnergy=baseTokens*model.joulesPerToken/A.joulesPerKwh;
+    const baseCost=baseTokens*tokenPrice/A.tokensPerMillion;
+    const baseLatency=model.latencyMs*Math.sqrt(inputs.tokens/A.tokenReference);
 
-    const privateGrossSavings=Math.min(
-      baselineMonthly,
-      privateReusableCalls*privateCostPerCall
-    );
+    rows.baseline.push({month,requests,calls:requests,tokens:baseTokens,energy:baseEnergy,cost:baseCost,privateHits:0,sharedHits:0,smallCalls:0,latencyTotal:baseLatency*requests});
 
-    const publicMatchRate=inputs.plan==='shared'
-      ? networkMatchRateForMonth(month)
-      : 0;
+    const privateHits=projectCoverage(inputs.privateCurrent,inputs.privateGrowth,month,requests);
 
-    const rawSharedMatchedCalls=sharedEligibleCallsMonthly*publicMatchRate;
-    const remainingAfterPrivate=Math.max(0,totalCallsMonthly-privateReusableCalls);
-    const sharedMatchedCalls=Math.min(rawSharedMatchedCalls,remainingAfterPrivate);
-
-    const sharedGrossSavings=sharedMatchedCalls*sharedCostPerCall;
-    const sharedTokensSaved=sharedMatchedCalls*sharedTokensPerCall;
-
-    const grossModelSavings=Math.min(
-      baselineMonthly,
-      privateGrossSavings+sharedGrossSavings
-    );
-
-    const vns=inputs.quality
-      ? Math.max(0,grossModelSavings-rheaOpMonthly)
-      : 0;
-
-    const rate=feeRateForMonth(inputs.term,month);
+    for(const plan of ['private','shared']){
+      const cfg=A[plan];
+      const remainingAfterPrivate=Math.max(0,requests-privateHits);
+      const sharedHits=plan==='shared'
+        ? Math.min(remainingAfterPrivate,projectCoverage(inputs.sharedCurrent,inputs.sharedGrowth,month,remainingAfterPrivate))
+        : 0;
+      const calls=Math.max(0,requests-privateHits-sharedHits);
+      const smallCalls=Math.round(calls*cfg.smallModelShare);
+      const primaryCalls=calls-smallCalls;
+      const tokensPerCall=inputs.tokens*(1-cfg.contextReduction);
+      const tokens=calls*tokensPerCall;
+      const hitRate=requests>0?(privateHits+sharedHits)/requests:0;
+      const energy=(tokensPerCall*(primaryCalls+smallCalls*A.smallEnergyRatio)*model.joulesPerToken/A.joulesPerKwh)+baseEnergy*(A.layerEnergyRatio+hitRate*A.reuseEnergyRatio);
+      const cost=tokensPerCall*(primaryCalls+smallCalls*A.smallCostRatio)*tokenPrice/A.tokensPerMillion;
+      const latencyTotal=requests*A.layerLatencyMs+(privateHits+sharedHits)*A.reuseLatencyMs+(primaryCalls+smallCalls*A.smallLatencyRatio)*baseLatency*(1-cfg.contextReduction);
+      rows[plan].push({month,requests,calls,tokens,energy,cost,privateHits,sharedHits,smallCalls,latencyTotal});
+    }
+  }
+  return rows;
+}
+function aggregate(rows){
+  return rows.reduce((sum,row)=>{
+    for(const key of ['requests','calls','tokens','energy','cost','privateHits','sharedHits','smallCalls','latencyTotal'])sum[key]+=row[key];
+    return sum;
+  },{requests:0,calls:0,tokens:0,energy:0,cost:0,privateHits:0,sharedHits:0,smallCalls:0,latencyTotal:0});
+}
+function cumulative(rows,key){let total=0;return rows.map(r=>total+=r[key]);}
+function commercialRows(rows){
+  return rows.baseline.map((base,i)=>{
+    const selected=rows[state.plan][i];
+    const gross=Math.max(0,base.cost-selected.cost);
+    const vns=state.quality?Math.max(0,gross-state.rheaCost):0;
+    const rate=feeRateForMonth(state.term,i);
     const fee=vns*rate;
-    const customerSavings=Math.max(0,vns-fee);
+    const customerNet=Math.max(0,vns-fee);
+    const customerSpend=(state.quality?selected.cost:base.cost)+state.rheaCost+fee;
+    return {month:i,gross,vns,rate,fee,customerNet,customerSpend,baseCost:base.cost,rheaModelCost:selected.cost};
+  });
+}
+function getViewData(){
+  const rows=simulateScenario(state);
+  const totals=Object.fromEntries(Object.entries(rows).map(([k,v])=>[k,aggregate(v)]));
+  const series=Object.fromEntries(Object.entries(rows).map(([k,v])=>[k,cumulative(v,'energy')]));
+  const commercial=commercialRows(rows);
+  return {rows,totals,series,commercial};
+}
 
-    const qualifiedGross=inputs.quality?grossModelSavings:0;
-    const modelSpendWithRhea=Math.max(0,baselineMonthly-qualifiedGross);
-    const customerSpend=modelSpendWithRhea+rheaOpMonthly+fee;
+function svg(tag,attrs={}){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,String(v));return n;}
+function tickIndices(months,count){if(months<=count)return Array.from({length:months},(_,i)=>i);return [...new Set(Array.from({length:count},(_,i)=>Math.round(i*(months-1)/(count-1))))];}
+let chartGeometry=null;
+function renderChart(view){
+  const chart=$('energy-chart');chart.replaceChildren();
+  const width=700,height=300,p={left:58,right:18,top:24,bottom:38};
+  const all=[...view.series.baseline,...view.series.private,...view.series.shared];
+  const max=Math.max(...all,1);
+  const x=i=>p.left+(view.series.baseline.length<=1?0:i/(view.series.baseline.length-1))*(width-p.left-p.right);
+  const y=v=>height-p.bottom-(v/max)*(height-p.top-p.bottom);
 
-    const combinedReusableCalls=Math.min(
-      totalCallsMonthly,
-      privateReusableCalls+sharedMatchedCalls
-    );
-    const combinedReusableRate=totalCallsMonthly>0
-      ? combinedReusableCalls/totalCallsMonthly
-      : 0;
-    const monthlySavingRate=baselineMonthly>0
-      ? customerSavings/baselineMonthly
-      : 0;
-
-    cumulativeBaseline+=baselineMonthly;
-    cumulativeCustomerSpend+=customerSpend;
-    cumulativeCustomerSavings+=customerSavings;
-    cumulativeFee+=fee;
-    cumulativeGross+=grossModelSavings;
-    cumulativeSharedGross+=sharedGrossSavings;
-    cumulativeVns+=vns;
-    cumulativePrivateCalls+=privateReusableCalls;
-    cumulativeSharedCalls+=sharedMatchedCalls;
-    cumulativeCalls+=combinedReusableCalls;
-    cumulativeTokens+=privateReusableCalls*privateTokenPerCall+sharedTokensSaved;
-
-    rows.push({
-      month,
-      rate,
-      publicMatchRate,
-      privateReusableCalls,
-      sharedMatchedCalls,
-      combinedReusableCalls,
-      combinedReusableRate,
-      monthlySavingRate,
-      baselineMonthly,
-      privateGrossSavings,
-      grossModelSavings,
-      sharedGrossSavings,
-      vns,
-      fee,
-      customerSavings,
-      modelSpendWithRhea,
-      rheaOpMonthly,
-      customerSpend,
-      cumulativeBaseline,
-      cumulativeCustomerSpend,
-      cumulativeCustomerSavings,
-      cumulativeFee,
-      cumulativeSharedGross
-    });
+  for(let t=0;t<=4;t++){
+    const value=max*t/4,yy=y(value);
+    chart.append(svg('line',{x1:p.left,x2:width-p.right,y1:yy,y2:yy,class:'grid-line'}));
+    const label=svg('text',{x:p.left-8,y:yy+4,'text-anchor':'end'});label.textContent=energyAmount(value);chart.append(label);
   }
-
-  const last=rows.at(-1);
-  const savingRate=last.cumulativeBaseline>0
-    ? last.cumulativeCustomerSavings/last.cumulativeBaseline
-    : 0;
-
-  const initialCombinedRate=rows.length
-    ? rows[0].combinedReusableRate
-    : 0;
-
-  const endPrivateReusableCallsMonthly=projectPrivateReusableCalls(
-    initialPrivateCallsMonthly,
-    privateLearningCallsMonthly,
-    inputs.months,
-    totalCallsMonthly
-  );
-
-  const endPublicMatchRate=inputs.plan==='shared'
-    ? networkMatchRateForMonth(inputs.months)
-    : 0;
-
-  const rawEndShared=sharedEligibleCallsMonthly*endPublicMatchRate;
-  const endRemainingAfterPrivate=Math.max(
-    0,
-    totalCallsMonthly-endPrivateReusableCallsMonthly
-  );
-  const endSharedMatchedCallsMonthly=Math.min(
-    rawEndShared,
-    endRemainingAfterPrivate
-  );
-
-  const endCombinedCallsMonthly=Math.min(
-    totalCallsMonthly,
-    endPrivateReusableCallsMonthly+endSharedMatchedCallsMonthly
-  );
-
-  const endCombinedRate=totalCallsMonthly>0
-    ? endCombinedCallsMonthly/totalCallsMonthly
-    : 0;
-
-  const endPrivateEquivalent=endPrivateReusableCallsMonthly/factor;
-  const endSharedEquivalent=endSharedMatchedCallsMonthly/factor;
-
-  return {
-    inputs,rows,
-    baselineMonthly,
-    rheaOpMonthly,
-    initialPrivateCallsMonthly,
-    privateLearningCallsMonthly,
-    endPrivateReusableCallsMonthly,
-    endSharedMatchedCallsMonthly,
-    cumulativeBaseline:last.cumulativeBaseline,
-    cumulativeCustomerSpend:last.cumulativeCustomerSpend,
-    cumulativeCustomerSavings:last.cumulativeCustomerSavings,
-    cumulativeFee,
-    cumulativeGross,
-    cumulativeSharedGross,
-    cumulativeVns,
-    cumulativeCalls,
-    cumulativePrivateCalls,
-    cumulativeSharedCalls,
-    cumulativeTokens,
-    savingRate,
-    initialCombinedRate,
-    endCombinedRate,
-    privateRequestRate:inputs.requests>0?inputs.eligible/inputs.requests:0,
-    combinedPeriodRate:endCombinedRate,
-    measuredPeriodSharedMatched:endSharedEquivalent,
-    endPrivateEquivalent
-  };
-}
-
-function clearDashboard(){
-  for(const id of [
-    'metric-calls','metric-tokens','metric-gross','metric-percent','eligible-rate','eligible-count','shared-matched-count','remaining-count',
-    'baseline-cost','addressable-cost','rhea-fee','customer-savings','break-baseline','break-model-rhea',
-    'break-rhea-op','break-shared','break-vns','break-fee','break-customer','break-total-spend','break-percent'
-  ]){
-    const el=$(id);
-    if(el) el.textContent='—';
+  for(const i of tickIndices(view.series.baseline.length,7)){
+    const label=svg('text',{x:x(i),y:height-12,'text-anchor':'middle'});label.textContent=`M${i+1}`;chart.append(label);
   }
-  $('net-label').textContent='';
-  $('charges-period').textContent='Complete the measured workload inputs to calculate.';
-  $('chart-insight').textContent='Enter workload data to build the projection.';
-  $('simulation-status').textContent='Enter measured workload data to calculate.';
-  $('simulation-status').classList.remove('error');
-  for(const id of ['private-end-count','initial-reuse-rate','end-reuse-rate','initial-saving-rate','end-saving-rate']){
-    const el=$(id);
-    if(el) el.textContent='—';
+  const pathFor=arr=>arr.map((v,i)=>`${i?'L':'M'} ${x(i).toFixed(2)} ${y(v).toFixed(2)}`).join(' ');
+  for(const [key,color] of [['baseline',COLORS.baseline],['private',COLORS.private],['shared',COLORS.shared]]){
+    chart.append(svg('path',{d:pathFor(view.series[key]),class:'data-line',stroke:color}));
   }
-  drawEmptyChart();
-  renderTable([]);
-  renderDonut(null,0);
-  updateNetworkPanel(null);
+  const guide=svg('line',{id:'chart-guide',x1:p.left,x2:p.left,y1:p.top,y2:height-p.bottom,stroke:'#5d6e8a','stroke-width':'1',visibility:'hidden'});chart.append(guide);
+  chartGeometry={x,p,width,height,view};
 }
-
-function durationLabel(inputs){
-  return `${inputs.months} ${inputs.months===1?'month':'months'}`;
-}
-
-function render(view){
-  const {inputs}=view;
-  $('metric-calls').textContent=compact(view.cumulativeCalls);
-  $('metric-tokens').textContent=compact(view.cumulativeTokens);
-  $('metric-gross').textContent=money(view.cumulativeGross,inputs.currency);
-  $('metric-percent').textContent=percentage(view.savingRate);
-
-  $('metric-calls-note').textContent=`Projected over ${durationLabel(inputs)}`;
-  $('metric-tokens-note').textContent=`Projected over ${durationLabel(inputs)}`;
-  $('metric-percent-note').textContent=`${money(view.cumulativeCustomerSavings,inputs.currency)} kept by customer`;
-
-  const factor=MONTH_DAYS/inputs.days;
-  const sharedMatchedPeriod=view.measuredPeriodSharedMatched;
-  const privateEndPeriod=view.endPrivateEquivalent;
-  const remaining=Math.max(
-    0,
-    inputs.requests-privateEndPeriod-sharedMatchedPeriod
-  );
-
-  const firstRow=view.rows[0];
-  const lastRow=view.rows.at(-1);
-
-  $('eligible-rate').textContent=percentage(view.endCombinedRate);
-  $('eligible-rate-label').textContent='of requests reusable at horizon';
-  $('eligible-count').textContent=compact(inputs.eligible);
-  $('private-end-count').textContent=compact(privateEndPeriod);
-  $('shared-matched-count').textContent=compact(sharedMatchedPeriod);
-  $('remaining-count').textContent=compact(remaining);
-
-  $('initial-reuse-rate').textContent=percentage(view.initialCombinedRate);
-  $('end-reuse-rate').textContent=percentage(view.endCombinedRate);
-  $('initial-saving-rate').textContent=percentage(firstRow?.monthlySavingRate||0);
-  $('end-saving-rate').textContent=percentage(lastRow?.monthlySavingRate||0);
-
-  $('route-period').textContent=`Learning projection · ${durationLabel(inputs)}`;
-  $('route-note').textContent=
-    `Reusable request coverage moves from ${percentage(view.initialCombinedRate)} now to ${percentage(view.endCombinedRate)} at the end of the selected horizon. `+
-    `The final month's customer net saving moves from ${percentage(firstRow?.monthlySavingRate||0)} in month 1 to ${percentage(lastRow?.monthlySavingRate||0)}. `+
-    `Private growth comes only from the measured learning inputs; Shared Network growth comes only from the privacy-safe aggregate snapshot.`;
-
-  renderDonut(
-    view.endCombinedRate,
-    inputs.plan==='shared'&&inputs.requests>0
-      ? sharedMatchedPeriod/inputs.requests
-      : 0
-  );
-
-  $('baseline-cost').textContent=money(view.cumulativeBaseline,inputs.currency);
-  $('addressable-cost').textContent=money(view.cumulativeGross,inputs.currency);
-  $('rhea-fee').textContent=money(view.cumulativeFee,inputs.currency);
-  $('customer-savings').textContent=money(view.cumulativeCustomerSavings,inputs.currency);
-
-  const first=view.rows[0];
-  $('break-baseline').textContent=money(view.cumulativeBaseline,inputs.currency);
-  $('break-model-rhea').textContent=money(view.rows.reduce((s,r)=>s+r.modelSpendWithRhea,0),inputs.currency);
-  $('break-rhea-op').textContent=money(view.rows.reduce((s,r)=>s+r.rheaOpMonthly,0),inputs.currency);
-  $('break-shared').textContent=money(view.cumulativeSharedGross,inputs.currency);
-  $('break-vns').textContent=money(view.cumulativeVns,inputs.currency);
-  $('break-fee').textContent=money(view.cumulativeFee,inputs.currency);
-  $('break-customer').textContent=money(view.cumulativeCustomerSavings,inputs.currency);
-  $('break-total-spend').textContent=money(view.cumulativeCustomerSpend,inputs.currency);
-  $('break-percent').textContent=percentage(view.savingRate);
-
-  $('charges-period').textContent=`${inputs.plan==='shared'?'Shared + Private':'Private'} plan · projected totals over ${durationLabel(inputs)} from a ${inputs.days}-day measured workload period.`;
-  $('fee-label').textContent=`RHEA fee starts at ${percentage(first.rate)} under the selected terms${inputs.term==='standard'?'.':' and moves to 25% after month 12.'}`;
-  $('net-label').innerHTML=`Customer keeps <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> over the selected horizon.`;
-
-  if(!inputs.quality){
-    $('simulation-status').textContent='Quality gate is not maintained in this scenario, so potential Verified Net Savings and the RHEA performance fee are set to 0.';
-    $('simulation-status').classList.add('error');
-  }else if(inputs.plan==='shared' && !networkIsLive()){
-    $('simulation-status').textContent=`Shared + Private selected. No live privacy-safe Shared Network snapshot is available yet, so this estimate currently includes Private savings only; no network uplift is invented.`;
-    $('simulation-status').classList.remove('error');
-  }else{
-    $('simulation-status').textContent=`Estimate calculated from supplied workload data${inputs.plan==='shared'?' plus the privacy-safe monthly Shared Network snapshot':''}. Customer net saving: ${percentage(view.savingRate)} over the selected horizon.`;
-    $('simulation-status').classList.remove('error');
-  }
-
-  const sharedPart=inputs.plan==='shared' && view.cumulativeSharedGross>0
-    ? ` Shared Network adds ${money(view.cumulativeSharedGross,inputs.currency)} of gross model savings over the horizon.`
-    : '';
-  const learningPart=view.rows.length
-    ? ` Monthly customer net saving changes from ${percentage(view.rows[0].monthlySavingRate)} in month 1 to ${percentage(view.rows.at(-1).monthlySavingRate)} in the final month as measured reusable coverage accumulates.`
-    : '';
-  $('chart-insight').innerHTML=view.cumulativeCustomerSavings>0
-    ? `Projected customer savings: <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> (${percentage(view.savingRate)} of equivalent baseline spend) over ${durationLabel(inputs)}.${learningPart}${sharedPart}`
-    : `The entered data does not produce positive customer net savings under the selected assumptions.`;
-
-  updateNetworkPanel(view);
-  drawChart(view);
-  renderTable(view.rows,inputs.currency);
-}
-
-function renderDonut(totalRate,sharedRate){
-  const total=totalRate===null?0:clamp(totalRate,0,1)*100;
-  const shared=clamp(sharedRate||0,0,1)*100;
-  const privatePart=Math.max(0,total-shared);
-  $('routing-donut').style.background=`conic-gradient(${COLORS.saved} 0% ${privatePart}%,${COLORS.shared} ${privatePart}% ${total}%,${COLORS.remaining} ${total}% 100%)`;
-  $('routing-donut').setAttribute('aria-label',totalRate===null
-    ?'No measured workload split yet'
-    :`${number(privatePart,1)}% private reusable, ${number(shared,1)}% Shared Network matched and ${number(100-total,1)}% remaining workload.`);
-}
-
-function updateNetworkPanel(view){
-  if(state.plan!=='shared') return;
-  const n=state.network||NETWORK_FALLBACK;
-  const live=networkIsLive();
-  const label=$('network-state-label');
-  label.classList.toggle('prelaunch',!live);
-  label.textContent=live?`Aggregate · ${n.snapshot_month||'current'}`:'Pre-launch';
-
-  $('network-items').textContent=live?compact(Number(n.shared_public_knowledge_items)||0):'Not live yet';
-  $('network-calls').textContent=live?compact(Number(n.aggregate_public_routed_calls_monthly)||0):'—';
-  $('network-growth').textContent=live?compact(Number(n.approved_new_shared_items_monthly)||0):'—';
-
-  const months=view?.inputs?.months || monthsFromDuration() || 0;
-  const current=Number(n.shared_public_knowledge_items)||0;
-  const monthly=Number(n.approved_new_shared_items_monthly)||0;
-  $('network-projected-items').textContent=live?compact(current+monthly*months):'—';
-
-  if(live){
-    const start=networkMatchRateForMonth(0);
-    const end=networkMatchRateForMonth(Math.max(0,months-1));
-    $('network-foot').textContent=`Privacy-safe aggregate snapshot loaded. Public/shared match rate used by the calculator moves from ${percentage(start)} to ${percentage(end)} across the selected horizon according to the privately generated monthly aggregate trend. No company-level values are shipped to this page.`;
-  }else{
-    $('network-foot').textContent='No live customer Shared Network data exists yet, so the simulator currently applies no additional Shared Network uplift. The page is ready to consume a privacy-safe monthly aggregate snapshot later; it never invents a network hit rate.';
-  }
-}
-
-function svgEl(tag,attrs={},text){
-  const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
-  for(const [k,v] of Object.entries(attrs)) el.setAttribute(k,String(v));
-  if(text!==undefined) el.textContent=String(text);
-  return el;
-}
-
-function chartTickIndices(months,count){
-  if(months<=1) return [0];
-  const n=Math.min(months,count);
-  if(n<=1) return [0];
-  return [...new Set(Array.from({length:n},(_,i)=>Math.round(i*(months-1)/(n-1))))];
-}
-
-function drawEmptyChart(){
-  const svg=$('cost-chart');
-  svg.querySelectorAll(':scope > g').forEach(g=>g.remove());
-  const g=svgEl('g',{'aria-hidden':'true'});
-  g.append(svgEl('text',{x:350,y:155,'text-anchor':'middle'},'Enter data to display projection'));
-  svg.append(g);
-  chartGeometry=null;
-  $('chart-tooltip').classList.remove('visible');
-}
-
-function drawChart(view){
-  const svg=$('cost-chart');
-  svg.querySelectorAll(':scope > g').forEach(g=>g.remove());
-
-  const c={...CHART};
-  c.width=clamp(svg.clientWidth||c.width,300,c.width);
-  if(c.width<c.mobileBreakpoint) c.height=260;
-  svg.setAttribute('viewBox',`0 0 ${c.width} ${c.height}`);
-
-  const p=c.padding;
-  const w=c.width-p.left-p.right;
-  const h=c.height-p.top-p.bottom;
-  const max=Math.max(1,view.cumulativeBaseline)*1.08;
-
-  const x=i=>p.left+(view.rows.length===1?.5:i/(view.rows.length-1))*w;
-  const y=v=>p.top+h-(v/max)*h;
-
-  const grid=svgEl('g',{'aria-hidden':'true'});
-  for(let i=0;i<=c.ticks;i++){
-    const value=max*i/c.ticks;
-    const py=y(value);
-    grid.append(svgEl('line',{x1:p.left,x2:c.width-p.right,y1:py,y2:py,class:'grid-line'}));
-    grid.append(svgEl('text',{x:p.left-9,y:py+4,'text-anchor':'end'},compact(value)));
-  }
-  grid.append(svgEl('text',{x:p.left,y:12,class:'axis-title'},view.inputs.currency));
-  for(const i of chartTickIndices(view.rows.length,c.width<c.mobileBreakpoint?c.mobileXTicks:c.xTicks)){
-    grid.append(svgEl('text',{x:x(i),y:c.height-13,'text-anchor':'middle'},`M${i+1}`));
-  }
-  svg.append(grid);
-
-  const series={
-    baseline:view.rows.map(r=>r.cumulativeBaseline),
-    rhea:view.rows.map(r=>r.cumulativeCustomerSpend),
-    saved:view.rows.map(r=>r.cumulativeCustomerSavings)
-  };
-
-  const paths=svgEl('g',{'aria-hidden':'true'});
-  for(const key of ['baseline','rhea','saved']){
-    const d=series[key].map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
-    paths.append(svgEl('path',{
-      d,class:'data-line',stroke:COLORS[key],
-      'stroke-dasharray':key==='baseline'?'5 5':'none',
-      'stroke-width':key==='saved'?3:2.4
-    }));
-    const last=series[key].at(-1);
-    paths.append(svgEl('circle',{cx:x(series[key].length-1),cy:y(last),r:key==='saved'?4:3,fill:COLORS[key],stroke:'#0f1621','stroke-width':2}));
-  }
-
-  const guide=svgEl('g',{id:'chart-guide',visibility:'hidden','aria-hidden':'true'});
-  guide.append(svgEl('line',{id:'hover-line',x1:0,x2:0,y1:p.top,y2:p.top+h,stroke:'#536582','stroke-dasharray':'3 4'}));
-  svg.append(paths,guide);
-
-  chartGeometry={view,series,x,left:p.left,width:w,svgWidth:c.width};
-  $('chart-tooltip').classList.remove('visible');
-}
-
 function inspectChart(event){
-  if(!chartGeometry) return;
-  const g=chartGeometry;
-  const svg=$('cost-chart');
-  const rect=svg.getBoundingClientRect();
-  const px=(event.clientX-rect.left)/rect.width*g.svgWidth;
-  const idx=clamp(Math.round((px-g.left)/g.width*(g.view.rows.length-1)),0,g.view.rows.length-1);
+  if(!chartGeometry)return;
+  const rect=$('energy-chart').getBoundingClientRect();
+  const px=(event.clientX-rect.left)*(700/rect.width);
+  const {x,p,width,view}=chartGeometry;
+  const months=view.series.baseline.length;
+  const ratio=clamp((px-p.left)/(width-p.left-p.right),0,1);
+  const i=Math.round(ratio*(months-1));
   const tooltip=$('chart-tooltip');
-  const currency=g.view.inputs.currency;
-
-  tooltip.innerHTML=`<strong>Month ${idx+1}</strong>`+
-    `<div class="tooltip-row"><span style="color:${COLORS.baseline}">Without RHEA</span><span>${money(g.series.baseline[idx],currency)}</span></div>`+
-    `<div class="tooltip-row"><span style="color:${COLORS.rhea}">Customer spend with RHEA</span><span>${money(g.series.rhea[idx],currency)}</span></div>`+
-    `<div class="tooltip-row"><span style="color:${COLORS.saved}">Customer savings</span><span>${money(g.series.saved[idx],currency)}</span></div>`;
-
-  const guide=$('chart-guide');
-  const line=$('hover-line');
-  if(guide&&line){
-    guide.setAttribute('visibility','visible');
-    line.setAttribute('x1',g.x(idx));
-    line.setAttribute('x2',g.x(idx));
-  }
-
+  tooltip.innerHTML=`<strong>Month ${i+1}</strong><div class="tooltip-row"><span>Without RHEA</span><span>${energyAmount(view.series.baseline[i])}</span></div><div class="tooltip-row"><span>Private</span><span>${energyAmount(view.series.private[i])}</span></div><div class="tooltip-row"><span>Shared + Private</span><span>${energyAmount(view.series.shared[i])}</span></div>`;
   tooltip.classList.add('visible');
-  tooltip.style.left=clamp((g.x(idx)/g.svgWidth)*rect.width+12,4,Math.max(4,rect.width-tooltip.offsetWidth-5))+'px';
+  const guide=$('chart-guide');guide.setAttribute('x1',x(i));guide.setAttribute('x2',x(i));guide.setAttribute('visibility','visible');
+  tooltip.style.left=`${clamp((x(i)/700)*100,4,70)}%`;
 }
-
-function renderTable(rows,currency){
-  const tbody=$('data-table-body');
-  tbody.replaceChildren();
-  for(const r of rows){
+function renderYearly(view){
+  const body=$('yearly-comparison-body');body.replaceChildren();
+  for(let offset=0;offset<state.months;offset+=12){
+    const slice=view.commercial.slice(offset,Math.min(offset+12,state.months));
+    const sum=k=>slice.reduce((a,r)=>a+r[k],0);
     const tr=document.createElement('tr');
     const values=[
-      `Month ${r.month+1}`,
-      money(r.cumulativeBaseline,currency),
-      money(r.cumulativeCustomerSpend,currency),
-      money(r.cumulativeCustomerSavings,currency),
-      money(r.fee,currency),
-      percentage(r.rate)
+      `Year ${Math.floor(offset/12)+1}${slice.length<12?` · ${slice.length} months`:''}`,
+      money(sum('gross')),money(state.rheaCost*slice.length),money(sum('vns')),
+      money(sum('fee')),money(sum('customerNet'))
     ];
-    values.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td);});
-    tbody.append(tr);
+    values.forEach((v,i)=>{const cell=document.createElement(i===0?'th':'td');if(i===0)cell.scope='row';cell.textContent=v;tr.append(cell);});
+    body.append(tr);
   }
 }
-
-function recalc(){
-  const inputs=buildInputs();
-  if(!inputs.valid){
-    clearDashboard();
-    const ids=['simple-spend','requests','eligible-requests','shared-eligible-requests','avg-input','input-price'];
-    const hasAny=ids.some(id=>$(id)&&$(id).value.trim()!=='');
-    if(hasAny){
-      $('simulation-status').textContent='Check the highlighted inputs. The simulator keeps invalid values out of the calculation.';
-      $('simulation-status').classList.add('error');
-    }
-    lastView=null;
-    return;
-  }
-
-  lastView=calculate(inputs);
-  render(lastView);
-}
-
-function updateCopies(){
-  $('mode-copy').innerHTML=state.mode==='simple'
-    ? '<strong>Simple mode:</strong> use actual spend, request volume, average billed tokens and observed request counts. It assumes each candidate request has approximately the same average cost as the workload as a whole.'
-    : '<strong>Advanced mode:</strong> build the baseline from measured input/output token volumes and actual token prices, then price private and Shared-eligible subsets from their own token profiles.';
-
-  $('plan-copy').innerHTML=state.plan==='private'
-    ? '<strong>Private plan:</strong> savings are calculated only from repeated/equivalent work identified inside the customer\'s own authorized private scope.'
-    : '<strong>Shared Network + Private:</strong> Private savings are calculated from the customer\'s own data. Additional shared/public reuse is included only when a live privacy-safe aggregate network snapshot exists; no company-level data is exposed and no network uplift is invented before then.';
-}
-
-function applyVisibility(){
-  document.querySelectorAll('.simple-only').forEach(el=>el.hidden=state.mode!=='simple');
-  document.querySelectorAll('.advanced-only').forEach(el=>{
-    const alsoShared=el.classList.contains('shared-only');
-    el.hidden=state.mode!=='advanced' || (alsoShared && state.plan!=='shared');
+function renderMonthlyTable(view){
+  const body=$('data-table-body');body.replaceChildren();
+  view.rows.baseline.forEach((base,i)=>{
+    const selected=view.rows[state.plan][i],com=view.commercial[i];
+    const tr=document.createElement('tr');
+    const vals=[
+      `Month ${i+1}`,
+      percentage(selected.privateHits/base.requests),
+      percentage(selected.sharedHits/base.requests),
+      percentage(selected.calls/base.requests),
+      money(com.gross),money(com.fee),money(com.customerNet)
+    ];
+    vals.forEach((v,j)=>{const cell=document.createElement(j===0?'th':'td');if(j===0)cell.scope='row';cell.textContent=v;tr.append(cell);});
+    body.append(tr);
   });
-  document.querySelectorAll('.shared-only').forEach(el=>{
-    if(el.classList.contains('advanced-only')){
-      el.hidden=state.plan!=='shared' || state.mode!=='advanced';
-    }else{
-      el.hidden=state.plan!=='shared';
-    }
-  });
-  $('shared-matched-row').hidden=state.plan!=='shared';
-  $('break-shared-wrap').hidden=state.plan!=='shared';
+}
+function render(){
+  if(!syncState()){$('simulation-status').textContent='Complete the highlighted inputs.';return;}
+  const view=getViewData(),base=view.totals.baseline,selected=view.totals[state.plan];
+  const avoided=base.calls-selected.calls,tokensSaved=base.tokens-selected.tokens,energySaved=base.energy-selected.energy,costSaved=base.cost-selected.cost;
+  const privateRate=base.requests>0?selected.privateHits/base.requests:0;
+  const sharedRate=base.requests>0?selected.sharedHits/base.requests:0;
+  const hitRate=privateRate+sharedRate;
+  const inferenceRate=base.requests>0?selected.calls/base.requests:0;
+
+  $('metric-calls').textContent=compact(avoided);$('metric-calls-note').textContent=`${percentage(avoided/base.calls)} fewer LLM calls`;
+  $('metric-tokens').textContent=compact(tokensSaved);$('metric-tokens-note').textContent=`${percentage(tokensSaved/base.tokens)} less token work`;
+  $('metric-energy').textContent=energyAmount(energySaved);$('metric-energy-note').textContent=`${percentage(energySaved/base.energy)} below baseline`;
+  $('metric-cost').textContent=money(costSaved);
+
+  $('route-period').textContent=`Request distribution · ${durationLabel()} total`;
+  $('hit-rate').textContent=percentage(hitRate);$('private-hits').textContent=percentage(privateRate);$('shared-hits').textContent=percentage(sharedRate);$('inference-hits').textContent=percentage(inferenceRate);
+  const privateEnd=privateRate*100,sharedEnd=hitRate*100;
+  $('routing-donut').style.background=`conic-gradient(${COLORS.private} 0% ${privateEnd}%,${COLORS.shared} ${privateEnd}% ${sharedEnd}%,${COLORS.inference} ${sharedEnd}% 100%)`;
+  $('routing-donut').setAttribute('aria-label',`${percentage(privateRate)} private memory, ${percentage(sharedRate)} shared knowledge, ${percentage(inferenceRate)} new inference.`);
+  const first=view.rows[state.plan][0],last=view.rows[state.plan].at(-1);
+  $('route-note').textContent=`The ring is the average routing mix across the selected period. Monthly memory coverage changes from ${percentage((first.privateHits+first.sharedHits)/first.requests)} in month 1 to ${percentage((last.privateHits+last.sharedHits)/last.requests)} in month ${state.months}.`;
+
+  $('llm-calls').textContent=metricNumber(selected.calls);$('private-hits-count').textContent=metricNumber(selected.privateHits);$('shared-hits-count').textContent=metricNumber(selected.sharedHits);$('avg-latency').textContent=`${number(selected.latencyTotal/base.requests/1000,2)} s`;
+
+  const sum=k=>view.commercial.reduce((a,r)=>a+r[k],0);
+  const gross=sum('gross'),vns=sum('vns'),fee=sum('fee'),customerNet=sum('customerNet');
+  const totalOp=state.rheaCost*state.months;
+  const totalCustomerSpend=view.commercial.reduce((a,r)=>a+r.customerSpend,0);
+  $('charges-period').textContent=`Totals over ${durationLabel()} · monthly settlement in arrears`;
+  $('baseline-model-cost').textContent=money(base.cost);$('rhea-model-cost').textContent=money(selected.cost);$('gross-savings').textContent=money(gross);
+  $('rhea-operating-cost').textContent=money(totalOp);$('verified-net-savings').textContent=money(vns);$('performance-fee').textContent=money(fee);$('company-net-savings').textContent=money(customerNet);$('company-total-spend').textContent=money(totalCustomerSpend);
+  $('fee-label').textContent=`RHEA fee: ${money(fee)} · only on positive Verified Net Savings`;
+  $('net-label').innerHTML=`Customer result: <strong class="${customerNet>=0?'net':'negative'}">${money(customerNet)} net savings</strong>`;
+
+  $('chart-subtitle').textContent=`${state.plan==='private'?'Private':'Shared + Private'} selected · ${compact(base.requests)} requests over ${durationLabel()}`;
+  const month1Hit=(first.privateHits+first.sharedHits)/first.requests,lastHit=(last.privateHits+last.sharedHits)/last.requests;
+  $('chart-insight').innerHTML=`Visible learning inputs move memory coverage from <strong>${percentage(month1Hit)}</strong> in month 1 to <strong>${percentage(lastHit)}</strong> in month ${state.months}. No hidden RHEA learning coefficient is applied.`;
+
+  renderChart(view);renderYearly(view);renderMonthlyTable(view);
+  $('simulation-status').textContent=`Scenario updated · ${durationLabel()} · ${state.plan==='private'?'Private':'Shared + Private'} · ${state.term==='standard'?'standard terms':state.term==='founder1'?'Founding customer #1':'Founding customer #2/#3'}.`;
 }
 
-function setMode(mode){
-  state.mode=mode;
-  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
-  applyVisibility();
-  updateCopies();
-  recalc();
+function updateDuration(){
+  const value=readNumber('duration'),unit=$('duration-unit').value;
+  if(value===null||value<1||!Number.isInteger(value)){$('duration-help').textContent='Enter a whole positive duration.';return;}
+  const months=unit==='years'?value*12:value;
+  if(months>600){$('duration-help').textContent='Maximum horizon is 600 months.';return;}
+  state.months=months;$('duration-help').textContent=`${durationLabel()} · monthly resolution.`;render();
 }
-
+function updateTokenPrice(){
+  const raw=readNumber('token-price'),unit=$('token-price-unit').value;
+  if(raw===null||raw<0)return;
+  state.costPerMillionTokens=unit==='single'?raw*1e6:raw;render();
+}
 function setPlan(plan){
   state.plan=plan;
   document.querySelectorAll('[data-plan]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.plan===plan)));
-  applyVisibility();
-  updateCopies();
-  recalc();
+  $('shared-controls').hidden=plan!=='shared';
+  $('plan-copy').innerHTML=plan==='private'
+    ? '<strong>Private.</strong> Reuse grows only from the company’s own visible private learning inputs.'
+    : '<strong>Shared + Private.</strong> Private reuse is combined with permitted shared knowledge. Real Shared Network values can later come from privacy-safe aggregate metrics.';
+  render();
 }
-
-function validateNetworkSnapshot(raw){
-  if(!raw || typeof raw!=='object') return {...NETWORK_FALLBACK};
-  const out={...NETWORK_FALLBACK,...raw};
-  const numeric=[
-    'shared_public_knowledge_items','aggregate_public_routed_calls_monthly','approved_new_shared_items_monthly',
-    'current_public_match_rate','monthly_public_match_rate_growth','max_public_match_rate'
-  ];
-  for(const key of numeric){
-    const v=Number(out[key]);
-    out[key]=Number.isFinite(v)&&v>=0?v:0;
-  }
-  out.current_public_match_rate=clamp(out.current_public_match_rate,0,1);
-  out.monthly_public_match_rate_growth=clamp(out.monthly_public_match_rate_growth,0,1);
-  out.max_public_match_rate=clamp(out.max_public_match_rate,0,1);
-  if(out.max_public_match_rate<out.current_public_match_rate) out.max_public_match_rate=out.current_public_match_rate;
-  out.safe_for_publication=out.safe_for_publication===true;
-  out.status=out.status==='live'?'live':'prelaunch';
-  return out;
-}
-
-async function loadNetworkState(){
+async function loadNetworkSnapshot(){
   try{
     const response=await fetch(`/saas/simulator/network-state.json?v=${Date.now()}`,{cache:'no-store',credentials:'same-origin'});
-    if(!response.ok) throw new Error(`HTTP ${response.status}`);
-    state.network=validateNetworkSnapshot(await response.json());
-  }catch(_err){
-    state.network={...NETWORK_FALLBACK};
-  }
-  if(state.plan==='shared') recalc();
-  else updateNetworkPanel(lastView);
+    if(!response.ok)return;
+    const data=await response.json();
+    state.network={...NETWORK_FALLBACK,...data};
+    const safe=data.safe_for_publication===true && data.status==='live';
+    if(!safe)return;
+
+    /* A live aggregate snapshot may provide a measured public match rate and
+       its measured monthly change. Convert those aggregate rates into request
+       coverage for this scenario without exposing any company-level value. */
+    const currentRate=clamp(Number(data.current_public_match_rate)||0,0,1);
+    const growthRate=Math.max(0,Number(data.monthly_public_match_rate_growth)||0);
+    $('shared-current').value=Math.round(state.requests*currentRate);
+    $('shared-growth').value=Math.round(state.requests*growthRate);
+    $('shared-current').readOnly=true;$('shared-growth').readOnly=true;
+    $('network-state').textContent='Live aggregate';$('network-state').classList.add('live');
+    $('network-source').textContent=`Privacy-safe aggregate snapshot · ${data.snapshot_month||'current month'} · individual company data is not exposed.`;
+    $('network-explanation').textContent='Shared coverage is being filled from a privacy-safe monthly aggregate snapshot. The public browser receives only aggregate network metrics.';
+    state.networkApplied=true;render();
+  }catch(_){}
 }
 
-document.querySelectorAll('[data-mode]').forEach(button=>{
-  button.addEventListener('click',()=>setMode(button.dataset.mode));
-});
-document.querySelectorAll('[data-plan]').forEach(button=>{
-  button.addEventListener('click',()=>setPlan(button.dataset.plan));
-});
-
-for(const id of [
-  'currency','period-days','simple-spend','requests','simple-tokens','eligible-requests','private-learning-calls','private-new-items','private-matches-per-item','shared-eligible-requests',
-  'avg-input','avg-output','eligible-input','eligible-output','shared-input','shared-output','input-price','output-price',
-  'rhea-cost','commercial-terms','quality','duration','duration-unit'
-]){
-  $(id).addEventListener('input',recalc);
-  $(id).addEventListener('change',recalc);
+function initialize(){
+  const presets=[['200,000 · business demo',200000],['75 billion · platform demo',75000000000],['1 trillion · stress demo',1000000000000]];
+  for(const [label,value] of presets){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.requestPreset=value;b.addEventListener('click',()=>{$('requests').value=value;render();});$('scale-presets').append(b);}
+  document.querySelectorAll('[data-plan]').forEach(b=>b.addEventListener('click',()=>setPlan(b.dataset.plan)));
+  for(const id of ['requests','tokens','private-current','private-growth','shared-current','shared-growth','rhea-cost'])$(id).addEventListener('input',render);
+  $('model').addEventListener('change',render);$('commercial-terms').addEventListener('change',render);$('quality').addEventListener('change',render);
+  $('duration').addEventListener('input',updateDuration);$('duration-unit').addEventListener('change',updateDuration);
+  $('custom-token-price').addEventListener('change',e=>{state.customTokenPrice=e.target.checked;$('token-price').disabled=!e.target.checked;if(e.target.checked&&state.costPerMillionTokens===null)state.costPerMillionTokens=MODELS[state.model].costPerMillionTokens;render();});
+  $('token-price').addEventListener('input',updateTokenPrice);$('token-price-unit').addEventListener('change',updateTokenPrice);
+  $('energy-chart').addEventListener('pointermove',inspectChart);$('energy-chart').addEventListener('pointerdown',inspectChart);$('energy-chart').addEventListener('pointerleave',()=>{$('chart-tooltip').classList.remove('visible');$('chart-guide')?.setAttribute('visibility','hidden');});
+  setPlan('shared');updateDuration();loadNetworkSnapshot();
 }
-
-$('cost-chart').addEventListener('pointermove',inspectChart);
-$('cost-chart').addEventListener('pointerdown',inspectChart);
-$('cost-chart').addEventListener('pointerleave',()=>{
-  $('chart-tooltip').classList.remove('visible');
-  $('chart-guide')?.setAttribute('visibility','hidden');
-});
-
-window.addEventListener('resize',()=>{
-  if(lastView) drawChart(lastView);
-});
-
-applyVisibility();
-updateCopies();
-recalc();
-loadNetworkState();
+initialize();
 </script>
-
 </body>
 </html>
