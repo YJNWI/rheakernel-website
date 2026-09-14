@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "status": "prelaunch",
+  "safe_for_publication": false,
+  "snapshot_month": null,
+  "updated_at": "2026-09-14T00:00:00Z",
+  "shared_public_knowledge_items": 0,
+  "aggregate_public_routed_calls_monthly": 0,
+  "approved_new_shared_items_monthly": 0,
+  "current_public_match_rate": 0,
+  "monthly_public_match_rate_growth": 0,
+  "max_public_match_rate": 0,
+  "privacy_note": "Pre-launch placeholder. Future values must be produced by a private monthly aggregation process and must contain no company-level data."
+}

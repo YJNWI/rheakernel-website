@@ -58,6 +58,24 @@
 .segmented button[aria-pressed="true"]{background:#243047;color:#f0f4ff;box-shadow:0 1px 5px #0003}
 .mode-copy{padding:14px 24px;border-bottom:1px solid var(--sim-border);background:#0f1622;color:var(--sim-muted);font-size:.78rem;line-height:1.55}
 .mode-copy strong{color:var(--sim-text)}
+.toolbar-controls{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.toolbar-group{display:flex;flex-direction:column;gap:5px}
+.toolbar-group>span{color:var(--sim-dim);font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.plan-copy{padding:12px 24px;border-bottom:1px solid var(--sim-border);background:#101925;color:var(--sim-muted);font-size:.76rem;line-height:1.55}
+.plan-copy strong{color:var(--sim-text)}
+.network-panel{border-bottom:1px solid #2c413d;background:#0f1d1b;padding:18px 24px}
+.network-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.network-head h3{margin:0;font-size:.92rem}.network-head p{margin:5px 0 0;color:var(--sim-muted);font-size:.72rem;max-width:760px;line-height:1.55}
+.network-state{display:inline-flex;align-items:center;gap:7px;border:1px solid #35594f;border-radius:999px;padding:6px 10px;color:#bfe8dc;font-size:.68rem;font-weight:750;letter-spacing:.04em;text-transform:uppercase}
+.network-state:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sim-green)}
+.network-state.prelaunch{border-color:#4a4f5a;color:#b9c1cf}.network-state.prelaunch:before{background:#7f899d}
+.network-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:15px}
+.network-metric{border:1px solid #294039;border-radius:9px;background:#101a19;padding:12px;min-width:0}
+.network-metric span{display:block;color:var(--sim-dim);font-size:.66rem;line-height:1.35}
+.network-metric strong{display:block;color:#d5ebe5;font-size:.95rem;margin-top:5px;overflow-wrap:anywhere}
+.network-foot{margin-top:12px;color:var(--sim-dim);font-size:.69rem;line-height:1.55}
+.shared-only[hidden]{display:none!important}
+
 .input-block{border-bottom:1px solid var(--sim-border)}
 .dash-controls{padding:24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 24px;background:#0f1622}
 .control{min-width:0}
@@ -155,9 +173,9 @@
 .actions-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
 .status-line{margin-top:13px;font-size:.74rem;color:var(--sim-dim);line-height:1.5}
 .status-line.error{color:var(--sim-warn)}
-@media(max-width:1050px){.dash-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-layout{grid-template-columns:minmax(0,1fr) 225px}.metric-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1050px){.network-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-layout{grid-template-columns:minmax(0,1fr) 225px}.metric-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:800px){.chart-layout{grid-template-columns:1fr}.routing-panel{display:grid;grid-template-columns:150px 1fr;column-gap:25px}.routing-panel h3,.routing-panel>p{grid-column:1/-1}.donut{grid-column:1;grid-row:3/5;width:125px;height:125px}.routing-row{grid-column:2}.route-note{grid-column:1/-1}.secondary-metrics{grid-template-columns:repeat(2,1fr)}.secondary-metrics>div:nth-child(2){border-right:0}.secondary-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--sim-border)}}
-@media(max-width:620px){.sim-hero{padding:68px 0 42px}.dash-toolbar,.mode-copy,.dash-controls{padding-left:16px;padding-right:16px}.dash-controls{grid-template-columns:1fr}.dash-main{padding:14px}.metric-grid{gap:9px}.metric{padding:13px}.chart-panel{padding:15px 10px}.routing-panel{padding:18px;grid-template-columns:115px 1fr;column-gap:16px}.donut{width:108px;height:108px}.secondary-metrics>div{padding:13px}.cost-breakdown{padding:15px}.cost-breakdown dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.workspace-label{flex-wrap:wrap}.tag{white-space:normal}}
+@media(max-width:620px){.sim-hero{padding:68px 0 42px}.network-metrics{grid-template-columns:1fr}.dash-toolbar,.mode-copy,.plan-copy,.network-panel,.dash-controls{padding-left:16px;padding-right:16px}.dash-controls{grid-template-columns:1fr}.dash-main{padding:14px}.metric-grid{gap:9px}.metric{padding:13px}.chart-panel{padding:15px 10px}.routing-panel{padding:18px;grid-template-columns:115px 1fr;column-gap:16px}.donut{width:108px;height:108px}.secondary-metrics>div{padding:13px}.cost-breakdown{padding:15px}.cost-breakdown dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.workspace-label{flex-wrap:wrap}.tag{white-space:normal}}
 </style>
 </head>
 
@@ -192,14 +210,30 @@
     <span>Workload calculator <small>Your figures stay in this browser</small></span>
     <span class="tag live">DATA-BASED ESTIMATE</span>
   </div>
-  <div class="segmented" role="group" aria-label="Calculator mode">
-    <button type="button" data-mode="simple" aria-pressed="true">Simple</button>
-    <button type="button" data-mode="advanced" aria-pressed="false">Advanced</button>
+  <div class="toolbar-controls">
+    <div class="toolbar-group">
+      <span>Plan</span>
+      <div class="segmented" role="group" aria-label="RHEA service plan">
+        <button type="button" data-plan="private" aria-pressed="true">Private</button>
+        <button type="button" data-plan="shared" aria-pressed="false">Shared + Private</button>
+      </div>
+    </div>
+    <div class="toolbar-group">
+      <span>Calculator</span>
+      <div class="segmented" role="group" aria-label="Calculator mode">
+        <button type="button" data-mode="simple" aria-pressed="true">Simple</button>
+        <button type="button" data-mode="advanced" aria-pressed="false">Advanced</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="mode-copy" id="mode-copy">
 <strong>Simple mode:</strong> use actual spend, request volume, average billed tokens and an observed count of repeated/equivalent requests. It assumes that reusable requests have approximately the same average cost as the workload as a whole.
+</div>
+
+<div class="plan-copy" id="plan-copy">
+<strong>Private plan:</strong> savings are calculated only from repeated/equivalent work identified inside the customer's own authorized private scope.
 </div>
 
 <div class="input-block">
@@ -247,6 +281,25 @@
     <input id="eligible-requests" type="number" min="0" step="1" placeholder="e.g. 40000" inputmode="numeric">
     <p class="control-help">Count identified from your own logs or workload analysis.</p>
     <p class="input-feedback" id="eligible-requests-feedback"></p>
+  </div>
+
+  <div class="control shared-only" hidden>
+    <label for="shared-eligible-requests">Requests eligible for Shared Network lookup</label>
+    <input id="shared-eligible-requests" type="number" min="0" step="1" placeholder="e.g. 60000" inputmode="numeric">
+    <p class="control-help">Requests that may use permitted shared/public knowledge and are not already counted as private repeated/equivalent requests. Optional until a live privacy-safe network snapshot exists.</p>
+    <p class="input-feedback" id="shared-eligible-requests-feedback"></p>
+  </div>
+
+  <div class="control advanced-only shared-only" hidden>
+    <label for="shared-input">Average input tokens / Shared-eligible request</label>
+    <input id="shared-input" type="number" min="0" step="1" placeholder="e.g. 1000" inputmode="numeric">
+    <p class="input-feedback" id="shared-input-feedback"></p>
+  </div>
+
+  <div class="control advanced-only shared-only" hidden>
+    <label for="shared-output">Average output tokens / Shared-eligible request</label>
+    <input id="shared-output" type="number" min="0" step="1" placeholder="e.g. 250" inputmode="numeric">
+    <p class="input-feedback" id="shared-output-feedback"></p>
   </div>
 
   <div class="control advanced-only" hidden>
@@ -312,6 +365,23 @@
   </div>
 
 </div>
+</div>
+
+<div class="network-panel shared-only" id="network-panel" hidden>
+  <div class="network-head">
+    <div>
+      <h3>Privacy-safe Shared Network snapshot</h3>
+      <p>The Shared + Private estimate is designed to use a monthly aggregate snapshot produced outside this public page. Company-level inputs stay in the private aggregation layer; this browser receives only privacy-safe aggregate outputs.</p>
+    </div>
+    <span class="network-state prelaunch" id="network-state-label">Pre-launch</span>
+  </div>
+  <div class="network-metrics">
+    <div class="network-metric"><span>Shared/public knowledge available now</span><strong id="network-items">Not live yet</strong></div>
+    <div class="network-metric"><span>Aggregate public-routed calls / month</span><strong id="network-calls">—</strong></div>
+    <div class="network-metric"><span>Approved new shared items / month</span><strong id="network-growth">—</strong></div>
+    <div class="network-metric"><span>Projected shared/public knowledge at selected horizon</span><strong id="network-projected-items">—</strong></div>
+  </div>
+  <p class="network-foot" id="network-foot">No live customer Shared Network data exists yet, so the simulator currently applies no additional Shared Network uplift. It never invents a network hit rate.</p>
 </div>
 
 <div class="dash-main">
@@ -382,17 +452,17 @@
   </div>
 
   <aside class="routing-panel">
-    <h3>Measured workload split</h3>
+    <h3 id="split-title">Measured workload split</h3>
     <p id="route-period">Repeated/equivalent work versus remaining workload.</p>
     <div class="donut" id="routing-donut" role="img" aria-label="Measured workload split">
       <div class="donut-center">
         <strong id="eligible-rate">—</strong>
-        <span>potentially reusable</span>
+        <span id="eligible-rate-label">privately reusable</span>
       </div>
     </div>
-    <div class="routing-row"><span><i class="swatch"></i>Repeated / equivalent</span><strong id="eligible-count">—</strong></div>
-    <div class="routing-row"><span><i class="swatch remaining"></i>Remaining requests</span><strong id="remaining-count">—</strong></div>
-    <div class="route-note">This split comes from the request counts you enter. The simulator does not infer a hit rate from RHEA benchmarks or invented learning coefficients.</div>
+    <div class="routing-row"><span><i class="swatch"></i>Private repeated / equivalent</span><strong id="eligible-count">—</strong></div>
+    <div class="routing-row shared-only" id="shared-matched-row" hidden><span><i class="swatch" style="background:#a7baff"></i>Shared Network matched</span><strong id="shared-matched-count">—</strong></div><div class="routing-row"><span><i class="swatch remaining"></i>Remaining requests</span><strong id="remaining-count">—</strong></div>
+    <div class="route-note">Private reuse comes from the request counts you enter. Shared Network reuse is added only when a privacy-safe live aggregate snapshot provides a measured public match rate; no benchmark or invented learning coefficient is used.</div>
   </aside>
 </div>
 
@@ -410,6 +480,7 @@
     <div><dt>Model spend without RHEA</dt><dd id="break-baseline">—</dd></div>
     <div><dt>Model spend after potentially reusable work</dt><dd id="break-model-rhea">—</dd></div>
     <div><dt>Attributable RHEA operating cost</dt><dd id="break-rhea-op">—</dd></div>
+    <div class="shared-only" id="break-shared-wrap" hidden><dt>Shared Network added gross savings</dt><dd id="break-shared">—</dd></div>
     <div><dt>Potential Verified Net Savings before fee</dt><dd id="break-vns">—</dd></div>
     <div><dt>RHEA performance fee</dt><dd id="break-fee">—</dd></div>
     <div><dt>Customer net savings</dt><dd id="break-customer">—</dd></div>
@@ -426,7 +497,7 @@
 <details class="data-details">
   <summary>Method, assumptions & month-by-month table</summary>
   <p id="assumptions">
-    This calculator uses customer-provided measured workload data. It does not use historical RHEA benchmark percentages. Simple mode assumes repeated/equivalent requests have the same average cost and token volume as the overall workload. Advanced mode prices the repeated/equivalent subset from its own measured token profile. The projection assumes workload volume, request mix, token prices, eligibility rate and attributable RHEA operating cost remain constant.
+    This calculator uses customer-provided measured workload data. It does not use historical RHEA benchmark percentages. Simple mode assumes privately reusable and Shared-eligible requests have the same average cost and token volume as the overall workload. Advanced mode prices each subset from its own measured token profile. Private plan savings come only from the customer's own repeated/equivalent work. Shared + Private can add a Shared Network component only from a privacy-safe monthly aggregate snapshot; no company-level values are exposed to this page.
   </p>
   <p>
     The estimate deliberately excludes additional savings that cannot be derived from the supplied data. Actual RHEA deployment may classify fewer requests as eligible, and commercial savings require equivalent workload and the agreed quality gate. The simulator is not a guarantee or binding quote.
@@ -455,7 +526,7 @@
 <strong>No historical benchmark multiplier.</strong> The public simulator does not apply the approximately 80% reductions seen in specific historical RHEA experiments to a prospective customer's workload. Every monetary result comes from the workload figures entered on this page.
 </div>
 
-<div class="privacy"><strong>Privacy:</strong> calculator inputs are processed locally by JavaScript in your browser. The simulator does not transmit the values you enter to RHEA and does not store them in local storage.</div>
+<div class="privacy"><strong>Privacy:</strong> calculator inputs are processed locally by JavaScript in your browser and are not transmitted to RHEA or stored in local storage. Shared + Private may read a same-origin, read-only monthly aggregate network snapshot; that snapshot is designed to contain no company-level data.</div>
 
 <div class="actions-row">
   <a class="button primary" href="/saas/#verification">How commercial savings are verified →</a>
@@ -470,7 +541,7 @@
 
 <footer><div class="container footer-inner">
 <span class="footer-brand"><img src="/assets/brand/rhea-mark-light.png" alt=""><span>© 2026 RHEA Kernel</span></span>
-<span>RHEA Savings Simulator · customer-data estimate</span>
+<span>RHEA Savings Simulator · customer-data + privacy-safe network estimate</span>
 </div></footer>
 
 <script>
@@ -479,9 +550,22 @@
 const $ = id => document.getElementById(id);
 const MONTH_DAYS = 365.25 / 12;
 const CHART = {width:700,height:300,padding:{left:60,right:18,top:24,bottom:38},ticks:4,xTicks:7,mobileXTicks:4,mobileBreakpoint:500};
-const COLORS = {baseline:'#929cac',rhea:'#a7baff',saved:'#77d4bc',remaining:'#738099'};
+const COLORS = {baseline:'#929cac',rhea:'#a7baff',saved:'#77d4bc',remaining:'#738099',shared:'#a7baff'};
+const NETWORK_FALLBACK = Object.freeze({
+  schema_version:1,
+  status:'prelaunch',
+  safe_for_publication:false,
+  snapshot_month:null,
+  updated_at:null,
+  shared_public_knowledge_items:0,
+  aggregate_public_routed_calls_monthly:0,
+  approved_new_shared_items_monthly:0,
+  current_public_match_rate:0,
+  monthly_public_match_rate_growth:0,
+  max_public_match_rate:0
+});
 
-const state = {mode:'simple'};
+const state = {mode:'simple',plan:'private',network:{...NETWORK_FALLBACK}};
 let chartGeometry = null;
 let lastView = null;
 
@@ -500,7 +584,7 @@ function money(value, currency){
   return new Intl.NumberFormat('en-GB',{
     style:'currency',currency,
     notation:Math.abs(value)>=1000000?'compact':'standard',
-    maximumFractionDigits:Math.abs(value)>=1000000?2:2
+    maximumFractionDigits:2
   }).format(value);
 }
 
@@ -537,7 +621,9 @@ function monthsFromDuration(){
     $('duration-help').textContent='Use a projection from 1 to 600 months.';
     return null;
   }
-  $('duration-help').textContent=unit==='years'?`${n} ${n===1?'year':'years'} · ${months} months · monthly resolution.`:`${months} ${months===1?'month':'months'} · monthly resolution.`;
+  $('duration-help').textContent=unit==='years'
+    ?`${n} ${n===1?'year':'years'} · ${months} months · monthly resolution.`
+    :`${months} ${months===1?'month':'months'} · monthly resolution.`;
   return months;
 }
 
@@ -547,17 +633,29 @@ function feeRateForMonth(term, monthIndex){
   return 0.25;
 }
 
+function networkIsLive(){
+  const n=state.network;
+  return state.plan==='shared' && n && n.status==='live' && n.safe_for_publication===true;
+}
+
+function networkMatchRateForMonth(monthIndex){
+  if(!networkIsLive()) return 0;
+  const n=state.network;
+  const current=clamp(Number(n.current_public_match_rate)||0,0,1);
+  const growth=Math.max(0,Number(n.monthly_public_match_rate_growth)||0);
+  const max=clamp(Number(n.max_public_match_rate)||current, current, 1);
+  return clamp(current + growth*monthIndex, 0, max);
+}
+
 function validateCommon(){
   const errors=[];
   const days=readNumber('period-days');
   const requests=readNumber('requests');
   const eligible=readNumber('eligible-requests');
   const rheaCost=readNumber('rhea-cost');
+  const sharedEligible=state.plan==='shared'?readNumber('shared-eligible-requests'):0;
 
-  setFeedback('period-days','');
-  setFeedback('requests','');
-  setFeedback('eligible-requests','');
-  setFeedback('rhea-cost','');
+  for(const id of ['period-days','requests','eligible-requests','rhea-cost','shared-eligible-requests']) setFeedback(id,'');
 
   if(days===null || !Number.isInteger(days) || days<1 || days>365){
     setFeedback('period-days','Enter 1–365 whole days.');
@@ -570,16 +668,30 @@ function validateCommon(){
   if(eligible===null || !Number.isInteger(eligible) || eligible<0){
     setFeedback('eligible-requests','Enter a non-negative whole request count.');
     errors.push('eligible');
-  } else if(requests!==null && eligible>requests){
-    setFeedback('eligible-requests','Repeated/equivalent requests cannot exceed total requests.');
+  }else if(requests!==null && eligible>requests){
+    setFeedback('eligible-requests','Private repeated/equivalent requests cannot exceed total requests.');
     errors.push('eligible');
   }
+
+  if(state.plan==='shared'){
+    if(sharedEligible!==null && (!Number.isInteger(sharedEligible) || sharedEligible<0)){
+      setFeedback('shared-eligible-requests','Enter a non-negative whole request count.');
+      errors.push('sharedEligible');
+    }else if(sharedEligible!==null && requests!==null && eligible!==null && sharedEligible > Math.max(0,requests-eligible)){
+      setFeedback('shared-eligible-requests','Shared-eligible requests must exclude requests already counted as privately reusable.');
+      errors.push('sharedEligible');
+    }else if(networkIsLive() && sharedEligible===null){
+      setFeedback('shared-eligible-requests','A live Shared Network snapshot is available. Enter the requests in your workload that are eligible for shared/public lookup.');
+      errors.push('sharedEligible');
+    }
+  }
+
   if(rheaCost===null || rheaCost<0){
     setFeedback('rhea-cost','Enter a non-negative cost.');
     errors.push('rheaCost');
   }
 
-  return {errors,days,requests,eligible,rheaCost};
+  return {errors,days,requests,eligible,rheaCost,sharedEligible:sharedEligible||0};
 }
 
 function buildInputs(){
@@ -593,8 +705,10 @@ function buildInputs(){
   if(months===null) errors.push('duration');
 
   let baselinePeriod=null;
-  let addressablePeriod=null;
-  let tokensAvoidedPeriod=null;
+  let privateAddressablePeriod=null;
+  let privateTokensPeriod=null;
+  let sharedEligibleCostPeriod=0;
+  let sharedEligibleTokensPeriod=0;
 
   if(state.mode==='simple'){
     const spend=readNumber('simple-spend');
@@ -612,43 +726,68 @@ function buildInputs(){
     }
 
     if(!errors.length){
-      const share=common.eligible/common.requests;
+      const avgCostPerRequest=spend/common.requests;
       baselinePeriod=spend;
-      addressablePeriod=spend*share;
-      tokensAvoidedPeriod=common.eligible*avgTokens;
+      privateAddressablePeriod=common.eligible*avgCostPerRequest;
+      privateTokensPeriod=common.eligible*avgTokens;
+      if(state.plan==='shared'){
+        sharedEligibleCostPeriod=common.sharedEligible*avgCostPerRequest;
+        sharedEligibleTokensPeriod=common.sharedEligible*avgTokens;
+      }
     }
   }else{
     const avgIn=readNumber('avg-input');
     const avgOut=readNumber('avg-output');
     const eligibleIn=readNumber('eligible-input');
     const eligibleOut=readNumber('eligible-output');
+    const sharedIn=state.plan==='shared'?readNumber('shared-input'):0;
+    const sharedOut=state.plan==='shared'?readNumber('shared-output'):0;
     const inputPrice=readNumber('input-price');
     const outputPrice=readNumber('output-price');
 
-    for(const id of ['avg-input','avg-output','eligible-input','eligible-output','input-price','output-price']) setFeedback(id,'');
+    for(const id of ['avg-input','avg-output','eligible-input','eligible-output','shared-input','shared-output','input-price','output-price']) setFeedback(id,'');
 
     const fields=[
       ['avg-input',avgIn,'Enter non-negative average input tokens.'],
       ['avg-output',avgOut,'Enter non-negative average output tokens.'],
-      ['eligible-input',eligibleIn,'Enter non-negative reusable-subset input tokens.'],
-      ['eligible-output',eligibleOut,'Enter non-negative reusable-subset output tokens.'],
+      ['eligible-input',eligibleIn,'Enter non-negative private reusable-subset input tokens.'],
+      ['eligible-output',eligibleOut,'Enter non-negative private reusable-subset output tokens.'],
       ['input-price',inputPrice,'Enter a non-negative input price.'],
       ['output-price',outputPrice,'Enter a non-negative output price.']
     ];
+    if(state.plan==='shared' && networkIsLive()){
+      fields.push(
+        ['shared-input',sharedIn,'Enter non-negative Shared-eligible input tokens.'],
+        ['shared-output',sharedOut,'Enter non-negative Shared-eligible output tokens.']
+      );
+    }
+
     for(const [id,val,msg] of fields){
       if(val===null || val<0){ setFeedback(id,msg); errors.push(id); }
     }
 
     if(!errors.length){
       const avgCost=(avgIn/1e6)*inputPrice+(avgOut/1e6)*outputPrice;
-      const eligibleCost=(eligibleIn/1e6)*inputPrice+(eligibleOut/1e6)*outputPrice;
-      baselinePeriod=common.requests*avgCost;
-      addressablePeriod=common.eligible*eligibleCost;
-      tokensAvoidedPeriod=common.eligible*(eligibleIn+eligibleOut);
+      const privateCost=(eligibleIn/1e6)*inputPrice+(eligibleOut/1e6)*outputPrice;
+      const sharedCost=networkIsLive()
+        ? (((sharedIn||0)/1e6)*inputPrice+((sharedOut||0)/1e6)*outputPrice)
+        : 0;
 
-      if(addressablePeriod>baselinePeriod+1e-9){
-        setFeedback('eligible-input','Subset figures imply more reusable cost than the total baseline. Check token averages and prices.');
-        setFeedback('eligible-output','Subset figures imply more reusable cost than the total baseline. Check token averages and prices.');
+      baselinePeriod=common.requests*avgCost;
+      privateAddressablePeriod=common.eligible*privateCost;
+      privateTokensPeriod=common.eligible*(eligibleIn+eligibleOut);
+      if(state.plan==='shared'){
+        sharedEligibleCostPeriod=common.sharedEligible*sharedCost;
+        sharedEligibleTokensPeriod=common.sharedEligible*((sharedIn||0)+(sharedOut||0));
+      }
+
+      if(privateAddressablePeriod+sharedEligibleCostPeriod>baselinePeriod+1e-9){
+        setFeedback('eligible-input','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
+        setFeedback('eligible-output','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
+        if(state.plan==='shared'){
+          setFeedback('shared-input','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
+          setFeedback('shared-output','Subset figures imply more candidate cost than the total baseline. Check subset token averages.');
+        }
         errors.push('subset-cost');
       }
     }
@@ -659,27 +798,34 @@ function buildInputs(){
   return {
     valid:true,
     mode:state.mode,
+    plan:state.plan,
     days:common.days,
     requests:common.requests,
     eligible:common.eligible,
+    sharedEligible:common.sharedEligible,
     rheaCostPeriod:common.rheaCost,
     months,
     currency,
     term,
     quality,
     baselinePeriod,
-    addressablePeriod,
-    tokensAvoidedPeriod
+    privateAddressablePeriod,
+    privateTokensPeriod,
+    sharedEligibleCostPeriod,
+    sharedEligibleTokensPeriod
   };
 }
 
 function calculate(inputs){
   const factor=MONTH_DAYS/inputs.days;
   const baselineMonthly=inputs.baselinePeriod*factor;
-  const addressableMonthly=inputs.addressablePeriod*factor;
+  const privateAddressableMonthly=inputs.privateAddressablePeriod*factor;
+  const privateCallsMonthly=inputs.eligible*factor;
+  const privateTokensMonthly=inputs.privateTokensPeriod*factor;
+  const sharedEligibleCallsMonthly=inputs.sharedEligible*factor;
+  const sharedEligibleCostMonthly=inputs.sharedEligibleCostPeriod*factor;
+  const sharedEligibleTokensMonthly=inputs.sharedEligibleTokensPeriod*factor;
   const rheaOpMonthly=inputs.rheaCostPeriod*factor;
-  const callsAvoidedMonthly=inputs.eligible*factor;
-  const tokensAvoidedMonthly=inputs.tokensAvoidedPeriod*factor;
 
   const rows=[];
   let cumulativeBaseline=0;
@@ -687,12 +833,23 @@ function calculate(inputs){
   let cumulativeCustomerSavings=0;
   let cumulativeFee=0;
   let cumulativeGross=0;
+  let cumulativeSharedGross=0;
   let cumulativeVns=0;
   let cumulativeCalls=0;
+  let cumulativePrivateCalls=0;
+  let cumulativeSharedCalls=0;
   let cumulativeTokens=0;
 
   for(let month=0;month<inputs.months;month++){
-    const grossModelSavings=addressableMonthly;
+    const publicMatchRate=inputs.plan==='shared'?networkMatchRateForMonth(month):0;
+    const sharedMatchedCalls=sharedEligibleCallsMonthly*publicMatchRate;
+    const sharedGrossSavings=sharedEligibleCostMonthly*publicMatchRate;
+    const sharedTokensSaved=sharedEligibleTokensMonthly*publicMatchRate;
+
+    const grossModelSavings=Math.min(
+      baselineMonthly,
+      privateAddressableMonthly+sharedGrossSavings
+    );
     const vns=inputs.quality?Math.max(0,grossModelSavings-rheaOpMonthly):0;
     const rate=feeRateForMonth(inputs.term,month);
     const fee=vns*rate;
@@ -705,15 +862,21 @@ function calculate(inputs){
     cumulativeCustomerSavings+=customerSavings;
     cumulativeFee+=fee;
     cumulativeGross+=grossModelSavings;
+    cumulativeSharedGross+=sharedGrossSavings;
     cumulativeVns+=vns;
-    cumulativeCalls+=callsAvoidedMonthly;
-    cumulativeTokens+=tokensAvoidedMonthly;
+    cumulativePrivateCalls+=privateCallsMonthly;
+    cumulativeSharedCalls+=sharedMatchedCalls;
+    cumulativeCalls+=privateCallsMonthly+sharedMatchedCalls;
+    cumulativeTokens+=privateTokensMonthly+sharedTokensSaved;
 
     rows.push({
       month,
       rate,
+      publicMatchRate,
+      sharedMatchedCalls,
       baselineMonthly,
       grossModelSavings,
+      sharedGrossSavings,
       vns,
       fee,
       customerSavings,
@@ -723,36 +886,51 @@ function calculate(inputs){
       cumulativeBaseline,
       cumulativeCustomerSpend,
       cumulativeCustomerSavings,
-      cumulativeFee
+      cumulativeFee,
+      cumulativeSharedGross
     });
   }
 
   const last=rows.at(-1);
   const savingRate=last.cumulativeBaseline>0?last.cumulativeCustomerSavings/last.cumulativeBaseline:0;
-  const requestRate=inputs.requests>0?inputs.eligible/inputs.requests:0;
+  const privateRequestRate=inputs.requests>0?inputs.eligible/inputs.requests:0;
+  const measuredPeriodSharedMatched = inputs.plan==='shared'
+    ? inputs.sharedEligible*networkMatchRateForMonth(0)
+    : 0;
+  const combinedPeriodRate=inputs.requests>0
+    ? (inputs.eligible+measuredPeriodSharedMatched)/inputs.requests
+    : 0;
 
   return {
     inputs,rows,
-    baselineMonthly,addressableMonthly,rheaOpMonthly,callsAvoidedMonthly,tokensAvoidedMonthly,
+    baselineMonthly,privateAddressableMonthly,rheaOpMonthly,
     cumulativeBaseline:last.cumulativeBaseline,
     cumulativeCustomerSpend:last.cumulativeCustomerSpend,
     cumulativeCustomerSavings:last.cumulativeCustomerSavings,
     cumulativeFee,
     cumulativeGross,
+    cumulativeSharedGross,
     cumulativeVns,
     cumulativeCalls,
+    cumulativePrivateCalls,
+    cumulativeSharedCalls,
     cumulativeTokens,
     savingRate,
-    requestRate
+    privateRequestRate,
+    combinedPeriodRate,
+    measuredPeriodSharedMatched
   };
 }
 
 function clearDashboard(){
   for(const id of [
-    'metric-calls','metric-tokens','metric-gross','metric-percent','eligible-rate','eligible-count','remaining-count',
+    'metric-calls','metric-tokens','metric-gross','metric-percent','eligible-rate','eligible-count','shared-matched-count','remaining-count',
     'baseline-cost','addressable-cost','rhea-fee','customer-savings','break-baseline','break-model-rhea',
-    'break-rhea-op','break-vns','break-fee','break-customer','break-total-spend','break-percent'
-  ]) $(id).textContent='—';
+    'break-rhea-op','break-shared','break-vns','break-fee','break-customer','break-total-spend','break-percent'
+  ]){
+    const el=$(id);
+    if(el) el.textContent='—';
+  }
   $('net-label').textContent='';
   $('charges-period').textContent='Complete the measured workload inputs to calculate.';
   $('chart-insight').textContent='Enter workload data to build the projection.';
@@ -760,7 +938,8 @@ function clearDashboard(){
   $('simulation-status').classList.remove('error');
   drawEmptyChart();
   renderTable([]);
-  renderDonut(null);
+  renderDonut(null,0);
+  updateNetworkPanel(null);
 }
 
 function durationLabel(inputs){
@@ -778,11 +957,15 @@ function render(view){
   $('metric-tokens-note').textContent=`Projected over ${durationLabel(inputs)}`;
   $('metric-percent-note').textContent=`${money(view.cumulativeCustomerSavings,inputs.currency)} kept by customer`;
 
-  $('eligible-rate').textContent=percentage(view.requestRate);
+  const sharedMatchedPeriod=view.measuredPeriodSharedMatched;
+  const remaining=Math.max(0,inputs.requests-inputs.eligible-sharedMatchedPeriod);
+  $('eligible-rate').textContent=percentage(view.combinedPeriodRate);
+  $('eligible-rate-label').textContent=inputs.plan==='shared'?'potentially reusable':'privately reusable';
   $('eligible-count').textContent=compact(inputs.eligible);
-  $('remaining-count').textContent=compact(inputs.requests-inputs.eligible);
+  $('shared-matched-count').textContent=compact(sharedMatchedPeriod);
+  $('remaining-count').textContent=compact(remaining);
   $('route-period').textContent=`Measured request split · ${number(inputs.days,0)} ${inputs.days===1?'day':'days'}`;
-  renderDonut(view.requestRate);
+  renderDonut(view.combinedPeriodRate, inputs.plan==='shared'&&inputs.requests>0?sharedMatchedPeriod/inputs.requests:0);
 
   $('baseline-cost').textContent=money(view.cumulativeBaseline,inputs.currency);
   $('addressable-cost').textContent=money(view.cumulativeGross,inputs.currency);
@@ -793,36 +976,74 @@ function render(view){
   $('break-baseline').textContent=money(view.cumulativeBaseline,inputs.currency);
   $('break-model-rhea').textContent=money(view.rows.reduce((s,r)=>s+r.modelSpendWithRhea,0),inputs.currency);
   $('break-rhea-op').textContent=money(view.rows.reduce((s,r)=>s+r.rheaOpMonthly,0),inputs.currency);
+  $('break-shared').textContent=money(view.cumulativeSharedGross,inputs.currency);
   $('break-vns').textContent=money(view.cumulativeVns,inputs.currency);
   $('break-fee').textContent=money(view.cumulativeFee,inputs.currency);
   $('break-customer').textContent=money(view.cumulativeCustomerSavings,inputs.currency);
   $('break-total-spend').textContent=money(view.cumulativeCustomerSpend,inputs.currency);
   $('break-percent').textContent=percentage(view.savingRate);
 
-  $('charges-period').textContent=`Projected totals over ${durationLabel(inputs)} from a ${inputs.days}-day measured workload period.`;
+  $('charges-period').textContent=`${inputs.plan==='shared'?'Shared + Private':'Private'} plan · projected totals over ${durationLabel(inputs)} from a ${inputs.days}-day measured workload period.`;
   $('fee-label').textContent=`RHEA fee starts at ${percentage(first.rate)} under the selected terms${inputs.term==='standard'?'.':' and moves to 25% after month 12.'}`;
   $('net-label').innerHTML=`Customer keeps <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> over the selected horizon.`;
 
   if(!inputs.quality){
     $('simulation-status').textContent='Quality gate is not maintained in this scenario, so potential Verified Net Savings and the RHEA performance fee are set to 0.';
     $('simulation-status').classList.add('error');
+  }else if(inputs.plan==='shared' && !networkIsLive()){
+    $('simulation-status').textContent=`Shared + Private selected. No live privacy-safe Shared Network snapshot is available yet, so this estimate currently includes Private savings only; no network uplift is invented.`;
+    $('simulation-status').classList.remove('error');
   }else{
-    $('simulation-status').textContent=`Estimate calculated only from the supplied workload data. Customer net saving: ${percentage(view.savingRate)} over the selected horizon.`;
+    $('simulation-status').textContent=`Estimate calculated from supplied workload data${inputs.plan==='shared'?' plus the privacy-safe monthly Shared Network snapshot':''}. Customer net saving: ${percentage(view.savingRate)} over the selected horizon.`;
     $('simulation-status').classList.remove('error');
   }
 
+  const sharedPart=inputs.plan==='shared' && view.cumulativeSharedGross>0
+    ? ` Shared Network adds ${money(view.cumulativeSharedGross,inputs.currency)} of gross model savings over the horizon.`
+    : '';
   $('chart-insight').innerHTML=view.cumulativeCustomerSavings>0
-    ? `Projected customer savings: <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> (${percentage(view.savingRate)} of equivalent baseline spend) over ${durationLabel(inputs)}.`
+    ? `Projected customer savings: <strong>${money(view.cumulativeCustomerSavings,inputs.currency)}</strong> (${percentage(view.savingRate)} of equivalent baseline spend) over ${durationLabel(inputs)}.${sharedPart}`
     : `The entered data does not produce positive customer net savings under the selected assumptions.`;
 
+  updateNetworkPanel(view);
   drawChart(view);
   renderTable(view.rows,inputs.currency);
 }
 
-function renderDonut(rate){
-  const pctValue=rate===null?0:clamp(rate,0,1)*100;
-  $('routing-donut').style.background=`conic-gradient(${COLORS.saved} 0% ${pctValue}%,${COLORS.remaining} ${pctValue}% 100%)`;
-  $('routing-donut').setAttribute('aria-label',rate===null?'No measured workload split yet':`${number(pctValue,1)}% potentially reusable and ${number(100-pctValue,1)}% remaining workload.`);
+function renderDonut(totalRate,sharedRate){
+  const total=totalRate===null?0:clamp(totalRate,0,1)*100;
+  const shared=clamp(sharedRate||0,0,1)*100;
+  const privatePart=Math.max(0,total-shared);
+  $('routing-donut').style.background=`conic-gradient(${COLORS.saved} 0% ${privatePart}%,${COLORS.shared} ${privatePart}% ${total}%,${COLORS.remaining} ${total}% 100%)`;
+  $('routing-donut').setAttribute('aria-label',totalRate===null
+    ?'No measured workload split yet'
+    :`${number(privatePart,1)}% private reusable, ${number(shared,1)}% Shared Network matched and ${number(100-total,1)}% remaining workload.`);
+}
+
+function updateNetworkPanel(view){
+  if(state.plan!=='shared') return;
+  const n=state.network||NETWORK_FALLBACK;
+  const live=networkIsLive();
+  const label=$('network-state-label');
+  label.classList.toggle('prelaunch',!live);
+  label.textContent=live?`Aggregate · ${n.snapshot_month||'current'}`:'Pre-launch';
+
+  $('network-items').textContent=live?compact(Number(n.shared_public_knowledge_items)||0):'Not live yet';
+  $('network-calls').textContent=live?compact(Number(n.aggregate_public_routed_calls_monthly)||0):'—';
+  $('network-growth').textContent=live?compact(Number(n.approved_new_shared_items_monthly)||0):'—';
+
+  const months=view?.inputs?.months || monthsFromDuration() || 0;
+  const current=Number(n.shared_public_knowledge_items)||0;
+  const monthly=Number(n.approved_new_shared_items_monthly)||0;
+  $('network-projected-items').textContent=live?compact(current+monthly*months):'—';
+
+  if(live){
+    const start=networkMatchRateForMonth(0);
+    const end=networkMatchRateForMonth(Math.max(0,months-1));
+    $('network-foot').textContent=`Privacy-safe aggregate snapshot loaded. Public/shared match rate used by the calculator moves from ${percentage(start)} to ${percentage(end)} across the selected horizon according to the privately generated monthly aggregate trend. No company-level values are shipped to this page.`;
+  }else{
+    $('network-foot').textContent='No live customer Shared Network data exists yet, so the simulator currently applies no additional Shared Network uplift. The page is ready to consume a privacy-safe monthly aggregate snapshot later; it never invents a network hit rate.';
+  }
 }
 
 function svgEl(tag,attrs={},text){
@@ -954,7 +1175,8 @@ function recalc(){
   const inputs=buildInputs();
   if(!inputs.valid){
     clearDashboard();
-    const hasAny=['simple-spend','requests','eligible-requests','avg-input','input-price'].some(id=>$(id).value.trim()!=='');
+    const ids=['simple-spend','requests','eligible-requests','shared-eligible-requests','avg-input','input-price'];
+    const hasAny=ids.some(id=>$(id)&&$(id).value.trim()!=='');
     if(hasAny){
       $('simulation-status').textContent='Check the highlighted inputs. The simulator keeps invalid values out of the calculation.';
       $('simulation-status').classList.add('error');
@@ -967,24 +1189,91 @@ function recalc(){
   render(lastView);
 }
 
+function updateCopies(){
+  $('mode-copy').innerHTML=state.mode==='simple'
+    ? '<strong>Simple mode:</strong> use actual spend, request volume, average billed tokens and observed request counts. It assumes each candidate request has approximately the same average cost as the workload as a whole.'
+    : '<strong>Advanced mode:</strong> build the baseline from measured input/output token volumes and actual token prices, then price private and Shared-eligible subsets from their own token profiles.';
+
+  $('plan-copy').innerHTML=state.plan==='private'
+    ? '<strong>Private plan:</strong> savings are calculated only from repeated/equivalent work identified inside the customer\'s own authorized private scope.'
+    : '<strong>Shared Network + Private:</strong> Private savings are calculated from the customer\'s own data. Additional shared/public reuse is included only when a live privacy-safe aggregate network snapshot exists; no company-level data is exposed and no network uplift is invented before then.';
+}
+
+function applyVisibility(){
+  document.querySelectorAll('.simple-only').forEach(el=>el.hidden=state.mode!=='simple');
+  document.querySelectorAll('.advanced-only').forEach(el=>{
+    const alsoShared=el.classList.contains('shared-only');
+    el.hidden=state.mode!=='advanced' || (alsoShared && state.plan!=='shared');
+  });
+  document.querySelectorAll('.shared-only').forEach(el=>{
+    if(el.classList.contains('advanced-only')){
+      el.hidden=state.plan!=='shared' || state.mode!=='advanced';
+    }else{
+      el.hidden=state.plan!=='shared';
+    }
+  });
+  $('shared-matched-row').hidden=state.plan!=='shared';
+  $('break-shared-wrap').hidden=state.plan!=='shared';
+}
+
 function setMode(mode){
   state.mode=mode;
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
-  document.querySelectorAll('.simple-only').forEach(el=>el.hidden=mode!=='simple');
-  document.querySelectorAll('.advanced-only').forEach(el=>el.hidden=mode!=='advanced');
-  $('mode-copy').innerHTML=mode==='simple'
-    ? '<strong>Simple mode:</strong> use actual spend, request volume, average billed tokens and an observed count of repeated/equivalent requests. It assumes that reusable requests have approximately the same average cost as the workload as a whole.'
-    : '<strong>Advanced mode:</strong> build the baseline from measured input/output token volumes and actual token prices, then price the repeated/equivalent subset from its own token profile for a more precise estimate.';
+  applyVisibility();
+  updateCopies();
   recalc();
+}
+
+function setPlan(plan){
+  state.plan=plan;
+  document.querySelectorAll('[data-plan]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.plan===plan)));
+  applyVisibility();
+  updateCopies();
+  recalc();
+}
+
+function validateNetworkSnapshot(raw){
+  if(!raw || typeof raw!=='object') return {...NETWORK_FALLBACK};
+  const out={...NETWORK_FALLBACK,...raw};
+  const numeric=[
+    'shared_public_knowledge_items','aggregate_public_routed_calls_monthly','approved_new_shared_items_monthly',
+    'current_public_match_rate','monthly_public_match_rate_growth','max_public_match_rate'
+  ];
+  for(const key of numeric){
+    const v=Number(out[key]);
+    out[key]=Number.isFinite(v)&&v>=0?v:0;
+  }
+  out.current_public_match_rate=clamp(out.current_public_match_rate,0,1);
+  out.monthly_public_match_rate_growth=clamp(out.monthly_public_match_rate_growth,0,1);
+  out.max_public_match_rate=clamp(out.max_public_match_rate,0,1);
+  if(out.max_public_match_rate<out.current_public_match_rate) out.max_public_match_rate=out.current_public_match_rate;
+  out.safe_for_publication=out.safe_for_publication===true;
+  out.status=out.status==='live'?'live':'prelaunch';
+  return out;
+}
+
+async function loadNetworkState(){
+  try{
+    const response=await fetch(`/saas/simulator/network-state.json?v=${Date.now()}`,{cache:'no-store',credentials:'same-origin'});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    state.network=validateNetworkSnapshot(await response.json());
+  }catch(_err){
+    state.network={...NETWORK_FALLBACK};
+  }
+  if(state.plan==='shared') recalc();
+  else updateNetworkPanel(lastView);
 }
 
 document.querySelectorAll('[data-mode]').forEach(button=>{
   button.addEventListener('click',()=>setMode(button.dataset.mode));
 });
+document.querySelectorAll('[data-plan]').forEach(button=>{
+  button.addEventListener('click',()=>setPlan(button.dataset.plan));
+});
 
 for(const id of [
-  'currency','period-days','simple-spend','requests','simple-tokens','eligible-requests',
-  'avg-input','avg-output','eligible-input','eligible-output','input-price','output-price',
+  'currency','period-days','simple-spend','requests','simple-tokens','eligible-requests','shared-eligible-requests',
+  'avg-input','avg-output','eligible-input','eligible-output','shared-input','shared-output','input-price','output-price',
   'rhea-cost','commercial-terms','quality','duration','duration-unit'
 ]){
   $(id).addEventListener('input',recalc);
@@ -1002,7 +1291,11 @@ window.addEventListener('resize',()=>{
   if(lastView) drawChart(lastView);
 });
 
-setMode('simple');
+applyVisibility();
+updateCopies();
+recalc();
+loadNetworkState();
 </script>
+
 </body>
 </html>
