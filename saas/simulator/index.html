@@ -181,7 +181,7 @@
 
 <body>
 <header><div class="container nav">
-<a class="sim-brand" href="/saas/" aria-label="RHEA Kernel as a Service"><img src="/assets/brand/rhea-saas-logo.png" alt="RHEA Kernel as a Service" width="1920" height="800"></a>
+<a class="sim-brand" href="/saas/" aria-label="RHEA Kernel as a Service"><img src="/assets/brand/rhea-saas-logo-transparent-v2.png" alt="RHEA Kernel as a Service" width="1920" height="800"></a>
 <nav aria-label="Primary navigation"><ul>
 <li><a href="/">Project</a></li>
 <li><a href="/results/">Results</a></li>
@@ -403,7 +403,7 @@
     <small>Before attributable RHEA cost and performance fee</small>
   </div>
   <div class="metric primary">
-    <div class="metric-label">Customer net saving</div>
+    <div class="metric-label">Customer net saving %</div>
     <strong id="metric-percent">—</strong>
     <small id="metric-percent-note">Of equivalent baseline spend</small>
   </div>
@@ -457,12 +457,12 @@
     <div class="donut" id="routing-donut" role="img" aria-label="Measured workload split">
       <div class="donut-center">
         <strong id="eligible-rate">—</strong>
-        <span id="eligible-rate-label">privately reusable</span>
+        <span id="eligible-rate-label">of requests potentially reusable</span>
       </div>
     </div>
     <div class="routing-row"><span><i class="swatch"></i>Private repeated / equivalent</span><strong id="eligible-count">—</strong></div>
     <div class="routing-row shared-only" id="shared-matched-row" hidden><span><i class="swatch" style="background:#a7baff"></i>Shared Network matched</span><strong id="shared-matched-count">—</strong></div><div class="routing-row"><span><i class="swatch remaining"></i>Remaining requests</span><strong id="remaining-count">—</strong></div>
-    <div class="route-note">Private reuse comes from the request counts you enter. Shared Network reuse is added only when a privacy-safe live aggregate snapshot provides a measured public match rate; no benchmark or invented learning coefficient is used.</div>
+    <div class="route-note" id="route-note">The percentage inside this ring is the share of requests that are potentially reusable, not the financial savings percentage. Private reuse comes from the request counts you enter; Shared Network reuse is added only from a privacy-safe live aggregate snapshot.</div>
   </aside>
 </div>
 
@@ -591,6 +591,15 @@ function money(value, currency){
 function percentage(rate){
   if(!Number.isFinite(rate)) return '—';
   return `${number(rate*100,1)}%`;
+}
+
+function reusableRequestRate(totalRequests, privateReusableRequests, sharedMatchedRequests=0){
+  const total=Number(totalRequests);
+  const privatePart=Number(privateReusableRequests);
+  const sharedPart=Number(sharedMatchedRequests);
+  return Number.isFinite(total) && total>0 && Number.isFinite(privatePart) && Number.isFinite(sharedPart)
+    ? Math.min(1,Math.max(0,(privatePart+sharedPart)/total))
+    : 0;
 }
 
 function readNumber(id){
@@ -893,13 +902,15 @@ function calculate(inputs){
 
   const last=rows.at(-1);
   const savingRate=last.cumulativeBaseline>0?last.cumulativeCustomerSavings/last.cumulativeBaseline:0;
-  const privateRequestRate=inputs.requests>0?inputs.eligible/inputs.requests:0;
   const measuredPeriodSharedMatched = inputs.plan==='shared'
     ? inputs.sharedEligible*networkMatchRateForMonth(0)
     : 0;
-  const combinedPeriodRate=inputs.requests>0
-    ? (inputs.eligible+measuredPeriodSharedMatched)/inputs.requests
-    : 0;
+  const privateRequestRate=reusableRequestRate(inputs.requests,inputs.eligible,0);
+  const combinedPeriodRate=reusableRequestRate(
+    inputs.requests,
+    inputs.eligible,
+    measuredPeriodSharedMatched
+  );
 
   return {
     inputs,rows,
@@ -960,11 +971,12 @@ function render(view){
   const sharedMatchedPeriod=view.measuredPeriodSharedMatched;
   const remaining=Math.max(0,inputs.requests-inputs.eligible-sharedMatchedPeriod);
   $('eligible-rate').textContent=percentage(view.combinedPeriodRate);
-  $('eligible-rate-label').textContent=inputs.plan==='shared'?'potentially reusable':'privately reusable';
+  $('eligible-rate-label').textContent='of requests potentially reusable';
   $('eligible-count').textContent=compact(inputs.eligible);
   $('shared-matched-count').textContent=compact(sharedMatchedPeriod);
   $('remaining-count').textContent=compact(remaining);
   $('route-period').textContent=`Measured request split · ${number(inputs.days,0)} ${inputs.days===1?'day':'days'}`;
+  $('route-note').textContent=`The ring shows ${percentage(view.combinedPeriodRate)} of requests as potentially reusable. This is a request-share metric, not the financial savings percentage. Customer net saving is ${percentage(view.savingRate)} under the entered costs and current fee terms.`;
   renderDonut(view.combinedPeriodRate, inputs.plan==='shared'&&inputs.requests>0?sharedMatchedPeriod/inputs.requests:0);
 
   $('baseline-cost').textContent=money(view.cumulativeBaseline,inputs.currency);
